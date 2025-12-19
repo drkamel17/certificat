@@ -49,6 +49,15 @@ function loadData() {
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('dateCertificat').value = today;
     }
+    
+    // Initialiser l'état des boutons de format
+    const format = localStorage.getItem('certificatFormat');
+    if (format === 'sansEntete') {
+        document.getElementById('formatSansEntete').classList.add('selected-format');
+    } else {
+        // Par défaut, on utilise avec en-tête
+        document.getElementById('formatAvecEntete').classList.add('selected-format');
+    }
 }
 
 // Fonction pour calculer l'âge à partir de la date de naissance
@@ -135,6 +144,40 @@ function generateHeader() {
     </div>
     `;
 }
+
+// Fonction pour configurer les gestionnaires d'événements des boutons de format
+function setupFormatButtons() {
+    const formatAvecEnteteBtn = document.getElementById('formatAvecEntete');
+    const formatSansEnteteBtn = document.getElementById('formatSansEntete');
+    
+    if (formatAvecEnteteBtn) {
+        formatAvecEnteteBtn.addEventListener('click', function() {
+            // Mettre à jour le localStorage
+            localStorage.setItem('certificatFormat', 'avecEntete');
+            
+            // Mettre à jour l'interface utilisateur
+            formatAvecEnteteBtn.classList.add('selected-format');
+            formatSansEnteteBtn.classList.remove('selected-format');
+        });
+    }
+    
+    if (formatSansEnteteBtn) {
+        formatSansEnteteBtn.addEventListener('click', function() {
+            // Mettre à jour le localStorage
+            localStorage.setItem('certificatFormat', 'sansEntete');
+            
+            // Mettre à jour l'interface utilisateur
+            formatSansEnteteBtn.classList.add('selected-format');
+            formatAvecEnteteBtn.classList.remove('selected-format');
+        });
+    }
+}
+
+// Configurer les gestionnaires d'événements lorsque le DOM est chargé
+document.addEventListener('DOMContentLoaded', function() {
+    loadData();
+    setupFormatButtons();
+});
 
 // Fonction pour générer un certificat d'éviction scolaire
 function genererCertificat() {
