@@ -410,31 +410,35 @@
         </div>
 
         <div class="section-title">Certificats</div>
-        <div class="button-group">
-            <button id="genererCertificat"><i class="fas fa-user-shield"></i> Éviction Scolaire</button>
-            <button id="justification"><i class="fas fa-file-contract"></i> justification</button>
-            <button id="inaptSport"><i class="fas fa-running"></i> Inapte Sport</button>
-            <button id="genererArret"><i class="fas fa-briefcase"></i> Arrêt Travail</button>
-            <button id="genererProlongation"><i class="fas fa-calendar-plus"></i> Prolongation</button>
-            <button id="genererRadiox"><i class="fas fa-radiation"></i> Radiox</button>
-            <button id="genererLettre"><i class="fas fa-envelope-open-text"></i> Lettre Médicale</button>
-            <button id="genererChronique"><i class="fas fa-heartbeat"></i> Maladie Chronique</button>
-            <button id="NON-GROSSESSE"><i class="fas fa-female"></i> NON-GROSSESSE</button>
-            <button id="genererReprise"><i class="fas fa-check-circle"></i> Reprise Travail</button>
-            <button id="cbv"><i class="fas fa-file-medical"></i> cbv</button>
-            <button id="prenuptial"><i class="fas fa-heart"></i> Certificat Prénuptial</button>
-            <button id="genererLeishmaniose"><i class="fas fa-paw"></i> Bilan Leishmaniose</button>
-            <button id="catLeishmaniose"><i class="fas fa-tag"></i> Cat. Leishmaniose</button>
-            <button id="catAntiRabique"><i class="fas fa-syringe"></i> Cat. Anti-Rabique</button>
-            <button id="classe02" class="hidden">Classe 02</button>
-            <button id="classe03" class="hidden">Classe 03</button>
-            <button id="prex" class="hidden">Prophylaxie Pré-exposition</button>
-            <button id="brucellose"><i class="fas fa-microscope"></i> Brucellose</button>
-            <button id="requisition"><i class="fas fa-file-prescription"></i> requisition</button>
-            <button id="bonSante"><i class="fas fa-heart"></i> Certificat de Bonne Santé</button>
-            <button id="malVision"><i class="fas fa-eye-slash"></i> Certificat de Mauvaise Vision</button>
-            <button id="permisVierge"><i class="fas fa-id-card"></i> Permis Vierge</button>
-        </div>
+
+<!-- Boutons de génération de certificats -->
+<div class="button-group">
+    <button onclick="genererCertificat()"><i class="fas fa-user-shield"></i> Éviction Scolaire</button>
+    <button onclick="justification()"><i class="fas fa-file-contract"></i> Justification</button>
+    <button onclick="inaptitudeSport()"><i class="fas fa-running"></i> Inapte Sport</button>
+    <button onclick="genererArretTravail()"><i class="fas fa-briefcase"></i> Arrêt Travail</button>
+    <button onclick="genererProlongation()"><i class="fas fa-calendar-plus"></i> Prolongation</button>
+    <button onclick="genererRadiox()"><i class="fas fa-radiation"></i> Radiox</button>
+    
+    <!-- Nouveaux boutons ajoutés -->
+    <button onclick="genererLettre()"><i class="fas fa-envelope-open-text"></i> Lettre Médicale</button>
+    <button onclick="genererChronique()"><i class="fas fa-heartbeat"></i> Maladie Chronique</button>
+    <button onclick="genererNonGrossesse()"><i class="fas fa-female"></i> NON-GROSSESSE</button>
+    <button onclick="genererReprise()"><i class="fas fa-check-circle"></i> Reprise Travail</button>
+    <button onclick="genererCvb()"><i class="fas fa-file-medical"></i> CBV</button>
+    <button onclick="genererPrenuptial()"><i class="fas fa-heart"></i> Certificat Prénuptial</button>
+    <button onclick="genererLeishmaniose()"><i class="fas fa-paw"></i> Bilan Leishmaniose</button>
+    <button onclick="genererCatLeishmaniose()"><i class="fas fa-tag"></i> Cat. Leishmaniose</button>
+    <button onclick="genererCatAntiRabique()"><i class="fas fa-syringe"></i> Cat. Anti-Rabique</button>
+    <button onclick="genererClasse02()" class="hidden" id="classe02">Classe 02</button>
+    <button onclick="genererClasse03()" class="hidden" id="classe03">Classe 03</button>
+    <button onclick="genererProphylaxiePreExposition()" class="hidden" id="prex">Prophylaxie Pré-exposition</button>
+    <button onclick="genererBrucellose()"><i class="fas fa-microscope"></i> Brucellose</button>
+    <button onclick="genererRequisition()"><i class="fas fa-file-prescription"></i> Requisition</button>
+    <button onclick="genererBonSante()"><i class="fas fa-heart"></i> Certificat de Bonne Santé</button>
+    <button onclick="genererMalVision()"><i class="fas fa-eye-slash"></i> Certificat de Mauvaise Vision</button>
+    <button onclick="genererPermisVierge()"><i class="fas fa-id-card"></i> Permis Vierge</button>
+</div>
 
         <div id="leishmanioseButtons" class="hidden"></div>
 
