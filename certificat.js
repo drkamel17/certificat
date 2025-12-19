@@ -133,7 +133,7 @@ function generateHeader() {
                 </tr>
                 <tr>
                     <td colspan="2">
-                        <div style="width: 100%; font-size: 12px; white-space: pre-wrap;">${polyclinique}</div>
+                        <div style="text-align: left; width: 100%; font-size: 12px; white-space: pre-wrap;">${polyclinique}</div>
                     </td>
                     <td colspan="2" style="text-align: right;">
                         <div style="text-align: right; width: 100%; font-size: 12px; white-space: pre-wrap;" class="arabic-text">${polycliniqueAr}</div>
@@ -2242,6 +2242,7 @@ input[type="date"]:focus,
 textarea:focus {
     border: none !important;
     outline: none !important;
+
 }
 
 /* Styles existants */
@@ -2983,52 +2984,97 @@ Dont certificat&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<br>
     newWindow.document.write(certificatHtml);
     newWindow.document.close();
 }
-// Configuration des écouteurs d'événements
-document.addEventListener('DOMContentLoaded', () => {
-    loadData(); // Chargement des données de la polyclinique et du docteur
+
+function setupFormatButtons() {
+    const formatAvecEnteteBtn = document.getElementById("formatAvecEntete");
+    const formatSansEnteteBtn = document.getElementById("formatSansEntete");
+    
+    if (formatAvecEnteteBtn) {
+        formatAvecEnteteBtn.addEventListener("click", function() {
+            localStorage.setItem('certificatFormat', 'avecEntete');
+            this.classList.add('selected-format');
+            if (formatSansEnteteBtn) {
+                formatSansEnteteBtn.classList.remove('selected-format');
+            }
+        });
+    }
+    
+    if (formatSansEnteteBtn) {
+        formatSansEnteteBtn.addEventListener("click", function() {
+            localStorage.setItem('certificatFormat', 'sansEntete');
+            this.classList.add('selected-format');
+            if (formatAvecEnteteBtn) {
+                formatAvecEnteteBtn.classList.remove('selected-format');
+            }
+        });
+    }
+}
+
+// Configurer les gestionnaires d'événements lorsque le DOM est chargé
+document.addEventListener('DOMContentLoaded', function() {
+    loadData();
+    setupFormatButtons();
     
     // Initialiser le format au chargement
     const format = localStorage.getItem('certificatFormat');
-    if (format === 'sansEntete') {
-        document.getElementById('formatSansEntete').classList.add('selected-format');
-    } else {
+    const formatAvecEnteteBtn = document.getElementById('formatAvecEntete');
+    const formatSansEnteteBtn = document.getElementById('formatSansEntete');
+    
+    if (format === 'sansEntete' && formatSansEnteteBtn) {
+        formatSansEnteteBtn.classList.add('selected-format');
+    } else if (formatAvecEnteteBtn) {
         // Par défaut, on utilise avec en-tete
-        document.getElementById('formatAvecEntete').classList.add('selected-format');
+        formatAvecEnteteBtn.classList.add('selected-format');
     }
     
     // Écouteurs pour les boutons
-    document.getElementById("SavePolycliniqueDocteur").addEventListener("click", saveData);
-    document.getElementById("genererCertificat").addEventListener("click", genererCertificat);
-    document.getElementById("inaptSport").addEventListener("click", inaptitudeSport);
-    document.getElementById("genererArret").addEventListener("click", genererArretTravail);
-    document.getElementById("genererRadiox").addEventListener("click", genererRadiox);
+    const saveBtn = document.getElementById("SavePolycliniqueDocteur");
+    if (saveBtn) {
+        saveBtn.addEventListener("click", saveData);
+    }
     
-    // Écouteurs pour les formats
-    document.getElementById("formatAvecEntete").addEventListener("click", function() {
-        localStorage.setItem('certificatFormat', 'avecEntete');
-        this.classList.add('selected-format');
-        document.getElementById('formatSansEntete').classList.remove('selected-format');
-    });
+    const certificatBtn = document.getElementById("genererCertificat");
+    if (certificatBtn) {
+        certificatBtn.addEventListener("click", genererCertificat);
+    }
     
-    document.getElementById("formatSansEntete").addEventListener("click", function() {
-        localStorage.setItem('certificatFormat', 'sansEntete');
-        this.classList.add('selected-format');
-        document.getElementById('formatAvecEntete').classList.remove('selected-format');
-    });
+    const inaptSportBtn = document.getElementById("inaptSport");
+    if (inaptSportBtn) {
+        inaptSportBtn.addEventListener("click", inaptitudeSport);
+    }
+    
+    const arretBtn = document.getElementById("genererArret");
+    if (arretBtn) {
+        arretBtn.addEventListener("click", genererArretTravail);
+    }
+    
+    const radioxBtn = document.getElementById("genererRadiox");
+    if (radioxBtn) {
+        radioxBtn.addEventListener("click", genererRadiox);
+    }
     
     // Écouteur pour le champ date de naissance - calcul automatique de l'âge
-    document.getElementById('patientDateNaissance').addEventListener('change', function() {
-        const dateNaissance = this.value;
-        if (dateNaissance) {
-            const ageCalcule = calculerAge(dateNaissance);
-            document.getElementById('patientAge').value = ageCalcule;
-        }
-    });
+    const dateNaissanceInput = document.getElementById('patientDateNaissance');
+    if (dateNaissanceInput) {
+        dateNaissanceInput.addEventListener('change', function() {
+            const dateNaissance = this.value;
+            if (dateNaissance) {
+                const ageCalcule = calculerAge(dateNaissance);
+                const ageInput = document.getElementById('patientAge');
+                if (ageInput) {
+                    ageInput.value = ageCalcule;
+                }
+            }
+        });
+    }
     
     // Écouteur pour le champ âge - effacer la date de naissance si l'âge est modifié manuellement
-    document.getElementById('patientAge').addEventListener('input', function() {
-        // Si l'utilisateur commence à taper dans le champ âge, on ne force plus le calcul automatique
-        // Mais on ne vide la date de naissance que si l'âge est significativement différent
-        // Pour permettre les deux modes de saisie
-    });
+    const ageInput = document.getElementById('patientAge');
+    if (ageInput) {
+        ageInput.addEventListener('input', function() {
+            // Si l'utilisateur commence à taper dans le champ âge, on ne force plus le calcul automatique
+            // Mais on ne vide la date de naissance que si l'âge est significativement différent
+            // Pour permettre les deux modes de saisie
+        });
+    }
 });
