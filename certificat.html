@@ -432,14 +432,15 @@
     <button onclick="genererNonGrossesse()"><i class="fas fa-female"></i> NON-GROSSESSE</button>
     <button onclick="genererReprise()"><i class="fas fa-check-circle"></i> Reprise Travail</button>
     <button onclick="genererCvb()"><i class="fas fa-file-medical"></i> CBV</button>
-    <button onclick="genererPrenuptial()"><i class="fas fa-heart"></i> Certificat Prénuptial</button>
-    <button onclick="genererLeishmaniose()"><i class="fas fa-paw"></i> Bilan Leishmaniose</button>
-    <button onclick="genererCatLeishmaniose()"><i class="fas fa-tag"></i> Cat. Leishmaniose</button>
+<button onclick="window.open('prenuptial.html', '_blank')"><i class="fas fa-heart"></i> Certificat Prénuptial</button>
+    
+    <button id="genererLeishmaniose" onclick="ouvrirCertificatLeishmaniose()"><i class="fas fa-paw"></i> Bilan Leishmaniose</button>
+    <button id="catLeishmaniose" onclick="genererCatLeishmaniose()"><i class="fas fa-tag"></i> Cat. Leishmaniose</button>
     <button onclick="genererCatAntiRabique()"><i class="fas fa-syringe"></i> Cat. Anti-Rabique</button>
     <button onclick="genererClasse02()" class="hidden" id="classe02">Classe 02</button>
     <button onclick="genererClasse03()" class="hidden" id="classe03">Classe 03</button>
     <button onclick="genererProphylaxiePreExposition()" class="hidden" id="prex">Prophylaxie Pré-exposition</button>
-    <button onclick="genererBrucellose()"><i class="fas fa-microscope"></i> Brucellose</button>
+    <button id="brucellose" onclick="window.open('brucellose.html', '_blank')"><i class="fas fa-microscope"></i> Brucellose</button>
     <button onclick="genererRequisition()"><i class="fas fa-file-prescription"></i> Requisition</button>
     <button onclick="genererBonSante()"><i class="fas fa-heart"></i> Certificat de Bonne Santé</button>
     <button onclick="genererMalVision()"><i class="fas fa-eye-slash"></i> Certificat de Mauvaise Vision</button>
