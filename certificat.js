@@ -5324,6 +5324,237 @@ Confraternellement,<br>
     newWindow.document.close();
 }
 
+// Fonction pour générer un certificat de bonne santé
+function genererBonSante() {
+    // Get patient information from the form fields
+    const patientNomPrenom = document.getElementById('patientNomPrenom').value || '[Nom du patient]';
+    const patientAge = document.getElementById('patientAge').value;
+    const patientDateNaissance = document.getElementById('patientDateNaissance').value;
+    const dateCertificat = document.getElementById('dateCertificat').value || new Date().toISOString().split('T')[0];
+    
+    // Construire la partie de l'âge/date de naissance
+    let ageInfo = '';
+    if (patientAge) {
+        ageInfo = 'âgé(e) de ' + patientAge;
+    } else if (patientDateNaissance) {
+        ageInfo = 'né(e) le ' + patientDateNaissance;
+    } else {
+        ageInfo = 'né(e) le [Date de naissance]';
+    }
+    
+    // Format the date for display
+    const formattedDate = new Date(dateCertificat).toLocaleDateString('fr-FR');
+    
+    const polyclinique = localStorage.getItem('polyclinique') || "";
+    const docteur = localStorage.getItem('docteur') || "";
+
+    // Vérifier le format choisi
+    const avecEntete = localStorage.getItem('certificatFormat') === 'avecEntete';
+
+    let enteteContent = '';
+    if (avecEntete) {
+        enteteContent = generateHeader();
+    } else {
+        // Espace vide pour garder la meme mise en page
+        enteteContent = '<div style="height: 155px;"></div>';
+    }
+
+    const certificatContent = `
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificat de Bonne Santé</title>
+    <style>
+body {
+font-family: Arial, sans-serif;
+padding: 20px;
+background-color: #f9f9f9;
+}
+.certificat {
+background-color: white;
+border: 1px solid #ddd;
+padding: 20px;
+max-width: 600px;
+margin: 0 auto;
+margin-top: 60px;
+box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+h1 {
+text-align: center;
+color: #333;
+text-decoration: underline;
+font-size: 20px;
+}
+p {
+line-height: 1.5;
+color: #555;
+}
+.editable-field {
+border-bottom: 1px dashed #666;
+display: inline-block;
+min-width: 50px;
+min-height: 20px;
+padding: 2px 4px;
+margin: 0 3px;
+}
+.editable-area {
+border: 1px solid #ddd;
+border-radius: 4px;
+padding: 8px;
+margin: 5px 0;
+width: 100%;
+min-height: 20px;
+resize: vertical;
+overflow: hidden;
+font-family: inherit;
+font-size: inherit;
+line-height: inherit;
+}
+.editable-area:focus {
+outline: none;
+border-color: #007bff;
+}
+#head {
+margin-bottom: 20px;
+}
+#head table {
+width: 100%;
+border: 0px solid #000000;
+padding: 4px;
+margin-bottom: 15px;
+}
+#head td {
+text-align: center;
+}
+.print-button {
+text-align: center;
+margin-top: 20px;
+}
+.print-button button {
+padding: 10px 20px;
+font-size: 16px;
+background-color: #007bff;
+color: white;
+border: none;
+border-radius: 5px;
+cursor: pointer;
+}
+.print-button button:hover {
+background-color: #0056b3;
+}
+@media print {
+@page {
+    size: A5;
+    margin: 0.2cm 0.2cm 0.2cm 0.2cm;
+}
+
+body {
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 10pt !important;
+    line-height: 1.2 !important;
+    background-color: white;
+}
+
+.certificat {
+    border: none;
+    box-shadow: none;
+    margin: 0 !important;
+    padding: 2px 8px !important;
+    max-width: 100% !important;
+}
+
+h1 {
+    font-size: 14pt !important;
+    margin: 5px 0 !important;
+    margin-top: 2cm !important;
+}
+
+input[type="text"],
+input[type="date"],
+textarea {
+    border: none !important;
+    background: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    font-size: 9pt !important;
+}
+
+input[type="text"]:focus,
+input[type="date"]:focus,
+textarea:focus {
+    border: none !important;
+    outline: none !important;
+}
+
+/* Styles existants */
+.print-button {
+    display: none;
+}
+.editable-field, .editable-area {
+    border: none !important;
+}
+
+/* Additional space optimization */
+* {
+    margin-top: 0 !important;
+    margin-bottom: 2px !important;
+}
+
+p {
+    margin: 2px 0 !important;
+    font-size: 9pt !important;
+}
+}
+</style>
+</head>
+<body>
+${enteteContent}
+    <div class="certificat">
+        <h1>CERTIFICAT DE BONNE SANTÉ</h1>
+        <div class="contenu-certificat" style="margin-top: 1.5cm !important;">
+        <p>
+            Je soussigné, Dr <input type="text" id="docteur" value="${docteur}" placeholder="" style="width: 120px;">, 
+            certifie avoir examiné ce jour le(la) susnommé(e) 
+            <strong><input type="text" value="${patientNomPrenom}" style="width: 180px;"></strong>,
+            <span class="editable-field" contenteditable="true" style="min-width: 100px; display: inline-block;">${ageInfo}</span>.
+        </p>
+        <p>
+            Déclare que son état de santé est bon et qu'il/elle est apte à exercer ses activités normales.
+        </p>
+        <p>
+            Ce certificat est délivré à la demande de l'intéressé(e) et remis en main propre pour servir et valoir ce que de droit.
+        </p>
+        <p style="text-align: right; margin-top: 30px;">
+            Fait à <strong>${polyclinique || '[Lieu]'}</strong>, le <strong>${formattedDate}</strong><br><br>
+            Dont certificat<br>
+            <span class="docteur" style="font-weight: bold;">Dr ${docteur}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        </p>
+    </div>
+    <div class="print-button" style="display: flex; align-items: center; justify-content: center; gap: 15px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <label for="fontSize" style="font-size: 14px; margin: 0;">Taille du texte:</label>
+            <input type="number" id="fontSize" min="8" max="20" value="14" style="width: 60px; padding: 5px; border: 1px solid #bdbdbd; border-radius: 4px;">
+        </div>
+        <button id="printButton">Imprimer le Certificat</button>
+    </div>
+    <script>
+    // Fonction pour imprimer le certificat
+    document.getElementById('printButton').addEventListener('click', function() {
+        window.print();
+    });
+    </script>
+</body>
+</html>
+`;
+
+    const newWindow = window.open("", "_blank");
+    newWindow.document.write(certificatContent);
+    newWindow.document.close();
+}
+
 // Fonction pour générer une requisition
 function genererRequisition() {
     console.log("Fonction genererRequisition appelée");
@@ -5450,15 +5681,447 @@ function genererRequisition() {
 
 // Fonctions pour la requisition
 function requisitionApte() {
-    // Logique pour le cas "Apte pour garde à vue"
-    console.log("Requisition Apte cliquée");
-    // Ajoutez ici le code pour ouvrir la modale de choix Zagreb ou Essens
+    // Fermer la modale si elle existe
+    const existingModal = document.querySelector('.modal');
+    if (existingModal) {
+        existingModal.remove();
+        window.location.reload();
+    }
+
+    // Get patient information from the new fields
+    const patientNomPrenom = document.getElementById('patientNomPrenom').value || '';
+    const patientAge = document.getElementById('patientAge').value;
+    const patientDateNaissance = document.getElementById('patientDateNaissance').value;
+    const dateCertificat = document.getElementById('dateCertificat').value || new Date().toISOString().split('T')[0];
+    
+    // Construire la partie de l'âge/date de naissance
+    let ageInfo = '';
+    let dob = '';
+    if (patientAge) {
+        ageInfo = patientAge;
+        dob = patientAge; // Utiliser l'âge si pas de date de naissance
+    } else if (patientDateNaissance) {
+        ageInfo = patientDateNaissance;
+        dob = patientDateNaissance;
+    } else {
+        ageInfo = '[Date de naissance]';
+        dob = '[Date de naissance]';
+    }
+
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    const todayFormatted = `${year}-${month}-${day}`;
+
+    const polyclinique = localStorage.getItem('polyclinique') || "";
+    const polycliniqueAr = localStorage.getItem('polyclinique-ar') || "";
+    const docteur = localStorage.getItem('docteur') || "";
+    const avecEntete = localStorage.getItem('certificatFormat') === 'avecEntete';
+    let enteteContent = avecEntete ? generateHeader() : '<div style="height: 155px;"></div>';
+
+    const certificatContent = `
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Requisition Apte</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f9f9f9;
+    }
+    .certificat {
+      background-color: white;
+      border: 1px solid #ddd;
+      padding: 20px;
+      max-width: 600px;
+      margin: 0 auto;
+      margin-top: 60px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+      text-decoration: underline;
+      font-size: 20px;
+    }
+    p {
+      line-height: 1.5;
+      color: #555;
+    }
+    input[readonly] {
+      border: none;
+      background: transparent;
+	  
+    }
+    textarea.auto-expand {
+      overflow: hidden;
+       border: none;
+   
+      transition: height 0.2s ease;
+      min-height: 20px;
+      width: 100%;
+      font-family: inherit;
+      font-size: 14px;
+    }
+    .print-button {
+      text-align: center;
+      margin-top: 20px;
+    }
+    .print-button button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .print-button button:hover {
+      background-color: #0056b3;
+    }
+    @media print {
+      @page {
+        size: A5;
+        margin: 0.2cm 0.2cm 0.2cm 0.2cm;
+      }
+      body {
+        margin: 0 !important;
+        padding: 0 !important;
+        font-size: 10pt !important;
+        background-color: white;
+      }
+      .certificat {
+        padding: 2px 8px !important;
+        max-width: 100% !important;
+        border: none;
+        box-shadow: none;
+        margin-top: 0;
+      }
+      h1 {
+        font-size: 14pt !important;
+        margin: 2cm 0 5px 0 !important;
+      }
+      p {
+        font-size: 9pt !important;
+        margin: 2px 0 !important;
+        line-height: 1.2 !important;
+      }
+      input[type="text"],
+      input[type="date"],
+      textarea {
+        border: none !important;
+        background: none !important;
+        box-shadow: none !important;
+        outline: none !important;
+        font-size: 9pt !important;
+      }
+      input[type="text"]:focus,
+      input[type="date"]:focus,
+      textarea:focus {
+        border: none !important;
+        outline: none !important;
+      }
+      ::placeholder {
+        color: transparent !important;
+      }
+      .print-button {
+        display: none;
+      }
+      .docteur {
+        font-weight: bold;
+        font-size: 14pt !important;
+        margin-right: 50px;
+      }
+      /* Additional space optimization */
+      * {
+        margin-top: 0 !important;
+        margin-bottom: 2px !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  ${enteteContent}
+  <div class="certificat">
+    <h1>CERTIFICAT MEDICAL</h1>
+    <div class="contenu-certificat" style="margin-top: 1.5cm !important;">
+    <p>
+      Je soussigné(e), Dr 
+      <input type="text" value="${docteur}" readonly style="width: 120px;">, 
+      certifie avoir examiné ce jour le nomee 
+      <strong><input type="text" value="${patientNomPrenom}" readonly placeholder="Nom et prénom" style="width: 180px; padding: 4px; border: 1px solid #ddd; border-radius: 4px; margin: 0 5px;"></strong>
+      né(e) le 
+      <strong><input type="text" value="${dob}" readonly style="width: 100px;"></strong>, 
+      suite à  la réquisition numéro 
+      <input type="text" placeholder="Numéro de réquisition" style="width: 240px;">
+    </p>
+    <p>
+      Après un examen médical :<br>
+      <textarea class="auto-expand" placeholder=" "></textarea><br>
+      Je déclare que le sus nommé est compatible avec les conditions de garde à  vue. Le présent certificat est remis à  l'autorité pour servir et valoir ce que de droit.
+    </p>
+    <p style="text-align: right; margin-top: 30px;">
+      Dont certificat<br>
+      <span class="docteur" style="font-weight: bold;">Dr ${docteur}</span>
+    </p>
+  </div>
+ 
+  <div class="print-button">
+<button id="printButton">Imprimer le Certificat</button>
+
+</div>
+<script src="print.js"></script>
+</body>
+</html>
+`;
+
+    const newWindow = window.open("", "_blank");
+    if (newWindow) {
+        newWindow.document.write(certificatContent);
+        newWindow.document.close();
+        newWindow.onload = function () {
+            const modal = document.querySelector('div[style*="position: fixed;"]');
+            if (modal) document.body.removeChild(modal);
+
+            const printButton = newWindow.document.getElementById('printButton');
+            if (printButton) {
+                printButton.addEventListener('click', function () {
+                    newWindow.print();
+                });
+            }
+        };
+    } else {
+        console.log("Popup bloquée par le navigateur.");
+    }
 }
 
 function requisitionInapte() {
-    // Logique pour le cas "Inapte pour garde à vue"
-    console.log("Requisition Inapte cliquée");
-    // Ajoutez ici le code pour appeler la fonction Tissulairesanssar
+    // Fermer la modale si elle existe
+    const existingModal = document.querySelector('.modal');
+    if (existingModal) {
+        existingModal.remove();
+        window.location.reload();
+    }
+
+    // Get patient information from the new fields
+    const patientNomPrenom = document.getElementById('patientNomPrenom').value || '';
+    const patientAge = document.getElementById('patientAge').value;
+    const patientDateNaissance = document.getElementById('patientDateNaissance').value;
+    const dateCertificat = document.getElementById('dateCertificat').value || new Date().toISOString().split('T')[0];
+    
+    // Construire la partie de l'âge/date de naissance
+    let ageInfo = '';
+    let dob = '';
+    if (patientAge) {
+        ageInfo = patientAge;
+        dob = patientAge; // Utiliser l'âge si pas de date de naissance
+    } else if (patientDateNaissance) {
+        ageInfo = patientDateNaissance;
+        dob = patientDateNaissance;
+    } else {
+        ageInfo = '[Date de naissance]';
+        dob = '[Date de naissance]';
+    }
+
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    const todayFormatted = `${year}-${month}-${day}`;
+
+    const polyclinique = localStorage.getItem('polyclinique') || "";
+    const polycliniqueAr = localStorage.getItem('polyclinique-ar') || "";
+    const docteur = localStorage.getItem('docteur') || "";
+    const avecEntete = localStorage.getItem('certificatFormat') === 'avecEntete';
+    let enteteContent = avecEntete ? generateHeader() : '<div style="height: 155px;"></div>';
+
+    const certificatContent = `
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Requisition Inapte</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f9f9f9;
+    }
+    .certificat {
+      background-color: white;
+      border: 1px solid #ddd;
+      padding: 20px;
+      max-width: 600px;
+      margin: 0 auto;
+      margin-top: 20px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+      text-decoration: underline;
+      font-size: 20px;
+    }
+    p {
+      line-height: 1.4;
+      color: #555;
+    }
+    input[readonly] {
+      border: none;
+      background: transparent;
+	  
+    }
+    textarea.auto-expand {
+      overflow: hidden;
+       border: none;
+   
+      transition: height 0.2s ease;
+      min-height: 5px;
+      width: 100%;
+      font-family: inherit;
+      font-size: 14px;
+    }
+    .print-button {
+      text-align: center;
+      margin-top: 20px;
+    }
+    .print-button button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .print-button button:hover {
+      background-color: #0056b3;
+    }
+    @media print {
+      @page {
+        size: A5;
+        margin: 0.2cm 0.2cm 0.2cm 0.2cm;
+      }
+      body {
+        margin: 0 !important;
+        padding: 0 !important;
+        font-size: 10pt !important;
+        background-color: white;
+      }
+      .certificat {
+        padding: 2px 8px !important;
+        max-width: 100% !important;
+        border: none;
+        box-shadow: none;
+        margin-top: 0;
+      }
+      h1 {
+        font-size: 14pt !important;
+        margin: 5px 0 !important;
+        margin-top: 2cm !important;
+      }
+      p {
+        font-size: 9pt !important;
+        margin: 2px 0 !important;
+        line-height: 1.2 !important;
+      }
+      input[type="text"],
+      input[type="date"],
+      textarea {
+        border: none !important;
+        background: none !important;
+        box-shadow: none !important;
+        outline: none !important;
+        font-size: 9pt !important;
+      }
+      input[type="text"]:focus,
+      input[type="date"]:focus,
+      textarea:focus {
+        border: none !important;
+        outline: none !important;
+      }
+      ::placeholder {
+        color: transparent !important;
+      }
+      .print-button {
+        display: none;
+      }
+      .docteur {
+        font-weight: bold;
+        font-size: 14pt !important;
+        margin-right: 50px;
+      }
+      /* Additional space optimization */
+      * {
+        margin-top: 0 !important;
+        margin-bottom: 2px !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  ${enteteContent}
+  <div class="certificat">
+    <h1>CERTIFICAT MEDICAL D'INAPTITUDE AU GARDE-à-VUE</h1>
+    <div class="contenu-certificat" style="margin-top: 1.5cm !important;">
+    <p>
+      Je soussigné(e), Dr 
+      <input type="text" value="${docteur}" readonly style="width: 120px;">, 
+      certifie avoir examiné ce jour le nomee 
+      <strong><input type="text" value="${patientNomPrenom}" readonly placeholder="Nom et prénom" style="width: 180px; padding: 4px; border: 1px solid #ddd; border-radius: 4px; margin: 0 5px;"></strong>
+      né(e) le 
+      <strong><input type="text" value="${dob}" readonly style="width: 100px;"></strong>, 
+      suite à  la réquisition numéro 
+      <input type="text" placeholder="Numéro de réquisition" style="width: 240px;"><br>
+    
+              Après un examen clinique :<br>
+
+Je déclare que le(a) susnommé(e) présente des contre-indications à  la garde à  vue pour les raisons suivantes :<br>
+
+<textarea style="width: 100%;  margin-top: 10px;" placeholder="Décrire brièvement les contre-indications"></textarea><br>
+
+En conséquence, je recommande qu'il/elle ne soit pas soumis(e) à  la garde à  vue.<br>
+
+Le présent certificat est remis à  l'autorité compétente pour servir et valoir ce que de droit.
+
+
+    </p>
+    <p style="text-align: right; margin-top: 30px;">
+      Dont certificat<br>
+      <span class="docteur" style="font-weight: bold;">Dr ${docteur}</span>
+    </p>
+  </div>
+ 
+  <div class="print-button">
+<button id="printButton">Imprimer le Certificat</button>
+
+</div>
+<script src="print.js"></script>
+</body>
+</html>
+`;
+
+    const newWindow = window.open("", "_blank");
+    if (newWindow) {
+        newWindow.document.write(certificatContent);
+        newWindow.document.close();
+        newWindow.onload = function () {
+            const modal = document.querySelector('div[style*="position: fixed;"]');
+            if (modal) document.body.removeChild(modal);
+
+            const printButton = newWindow.document.getElementById('printButton');
+            if (printButton) {
+                printButton.addEventListener('click', function () {
+                    newWindow.print();
+                });
+            }
+        };
+    } else {
+        console.log("Popup bloquée par le navigateur.");
+    }
 }
 
 
@@ -5917,4 +6580,244 @@ document.addEventListener('DOMContentLoaded', () => {
     const newWindow = window.open("", "_blank");
     newWindow.document.write(certificatContent);
     newWindow.document.close();
+}
+function ouvrirCertificatMalVision() {
+    // Récupérer les informations du patient depuis les champs du formulaire
+    const patientNomPrenom = document.getElementById('patientNomPrenom').value || '';
+    const patientAge = document.getElementById('patientAge').value || '';
+    const patientDateNaissance = document.getElementById('patientDateNaissance').value || '';
+    
+    // Diviser le nom et prénom
+    let nom = '';
+    let prenom = '';
+    if (patientNomPrenom) {
+        const parts = patientNomPrenom.split(' ');
+        nom = parts[0] || '';
+        prenom = parts.slice(1).join(' ') || '';
+    }
+    
+    // Utiliser la date de naissance si disponible
+    const dob = patientDateNaissance || '';
+
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    const todayFormatted = `${year}-${month}-${day}`;
+
+    const polyclinique = localStorage.getItem('polyclinique') || "";
+    const polycliniqueAr = localStorage.getItem('polyclinique-ar') || "";
+    const docteur = localStorage.getItem('docteur') || "";
+
+    // Vérifier le format choisi
+    const avecEntete = localStorage.getItem('certificatFormat') === 'avecEntete';
+
+    let enteteContent = '';
+    if (avecEntete) {
+        enteteContent = generateHeader();
+    } else {
+        // Espace vide pour garder la meme mise en page
+        enteteContent = '<div style="height: 155px;"></div>';
+    }
+
+    const certificatContent = `
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificat de Mauvaise Vision</title>
+    <style>
+body {
+font-family: Arial, sans-serif;
+padding: 20px;
+background-color: #f9f9f9;
+}
+.certificat {
+background-color: white;
+border: 1px solid #ddd;
+padding: 20px;
+max-width: 600px;
+margin: 0 auto;
+margin-top: 60px;
+box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+h1 {
+text-align: center;
+color: #333;
+text-decoration: underline;
+font-size: 20px;
+}
+p {
+line-height: 1.5;
+color: #555;
+}
+.editable-field {
+border-bottom: 1px dashed #666;
+display: inline-block;
+min-width: 50px;
+min-height: 20px;
+padding: 2px 4px;
+margin: 0 3px;
+}
+.editable-area {
+border: 1px solid #ddd;
+border-radius: 4px;
+padding: 8px;
+margin: 5px 0;
+width: 100%;
+min-height: 20px;
+resize: vertical;
+overflow: hidden;
+font-family: inherit;
+font-size: inherit;
+line-height: inherit;
+}
+.editable-area:focus {
+outline: none;
+border-color: #007bff;
+}
+#head {
+margin-bottom: 20px;
+}
+#head table {
+width: 100%;
+border: 0px solid #000000;
+padding: 4px;
+margin-bottom: 15px;
+}
+#head td {
+text-align: center;
+}
+.print-button {
+text-align: center;
+margin-top: 20px;
+}
+.print-button button {
+padding: 10px 20px;
+font-size: 16px;
+background-color: #007bff;
+color: white;
+border: none;
+border-radius: 5px;
+cursor: pointer;
+}
+.print-button button:hover {
+background-color: #0056b3;
+}
+@media print {
+@page {
+    size: A5;
+    margin: 0.2cm 0.2cm 0.2cm 0.2cm;
+}
+
+body {
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 10pt !important;
+    line-height: 1.2 !important;
+    background-color: white;
+}
+
+.certificat {
+    border: none;
+    box-shadow: none;
+    margin: 0 !important;
+    padding: 2px 8px !important;
+    max-width: 100% !important;
+}
+
+h1 {
+    font-size: 14pt !important;
+    margin: 5px 0 !important;
+    margin-top: 2cm !important;
+}
+
+input[type="text"],
+input[type="date"],
+textarea {
+    border: none !important;
+    background: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    font-size: 9pt !important;
+}
+
+input[type="text"]:focus,
+input[type="date"]:focus,
+textarea:focus {
+    border: none !important;
+    outline: none !important;
+}
+
+/* Styles existants */
+.print-button {
+    display: none;
+}
+.editable-field, .editable-area {
+    border: none !important;
+}
+
+/* Additional space optimization */
+* {
+    margin-top: 0 !important;
+    margin-bottom: 2px !important;
+}
+
+p {
+    margin: 2px 0 !important;
+    font-size: 9pt !important;
+}
+}
+</style>
+</head>
+<body>
+${enteteContent}
+    <div class="certificat">
+        <h1>CERTIFICAT MEDICAL</h1>
+        <div class="contenu-certificat" style="margin-top: 1.5cm !important;">
+        <p>
+            Je soussigné, Dr <input type="text" id="docteur" value="${docteur}" placeholder="" style="width: 120px;">,
+            certifie avoir examiné <strong><input type="text" value="${nom} ${prenom}" style="width: 180px;"></strong>,
+            <span class="editable-field" contenteditable="true" style="min-width: 100px; display: inline-block;">né(e) le ${dob}</span> dont l'examen ce jour retrouve : <span class="editable-field" contenteditable="true" style="min-width: 300px; display: inline-block;">Une mal vision bilatérale nécessitant le port de lunettes</span> et d'être placé aux premiers rangs de la classe.
+        </p>
+        <p style="text-align: right; margin-top: 30px;">
+            Le <span class="editable-field" contenteditable="true" style="min-width: 120px; display: inline-block;">${todayFormatted}</span>
+        </p>
+        <p style="text-align: right; margin-top: 30px;">
+            Dont certificat<br>
+            <span class="docteur" style="font-weight: bold;">Dr ${docteur}</span>
+        </p>
+    </div>
+    <div class="print-button" style="display: flex; align-items: center; justify-content: center; gap: 15px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <label for="fontSize" style="font-size: 14px; margin: 0;">Taille du texte:</label>
+            <input type="number" id="fontSize" min="8" max="20" value="14" style="width: 60px; padding: 5px; border: 1px solid #bdbdbd; border-radius: 4px;">
+        </div>
+        <button id="printButton">Imprimer le Certificat</button>
+    </div>
+    <script src="print.js"></script>
+    <script src="certificat-unified-font-size.js"></script>
+
+</body>
+</html>
+`;
+
+    var newWindow = window.open("", "_blank");
+    if (newWindow) {
+        newWindow.document.write(certificatContent);
+        newWindow.document.close();
+
+        // Attacher l'événement d'impression directement après la fermeture du document
+        newWindow.onload = function () {
+            const printButton = newWindow.document.getElementById('printButton');
+            if (printButton) {
+                printButton.addEventListener('click', function () {
+                    newWindow.print();
+                });
+            }
+        };
+    } else {
+        console.log("Popup bloquée par le navigateur.");
+    }
 }
