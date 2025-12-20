@@ -200,6 +200,23 @@ document.addEventListener('DOMContentLoaded', function() {
         container.appendChild(buttonSup);
     });
 
+    // Fonction pour gérer le clic sur le bouton Catégorie Anti-Rabique
+    // Cette fonction rend visibles les boutons classe02, classe03 et prex
+    function genererCatAntiRabique() {
+        const classe02 = document.getElementById('classe02');
+        const classe03 = document.getElementById('classe03');
+        const prex = document.getElementById('prex');
+        
+        // Supprimer la classe 'hidden' pour les rendre visibles
+        if (classe02) classe02.classList.remove('hidden');
+        if (classe03) classe03.classList.remove('hidden');
+        if (prex) prex.classList.remove('hidden');
+    }
+
+    // Ecouteur pour le bouton Catégorie Anti-Rabique
+    // This will make the classe02, classe03, and prex buttons visible when clicked
+    document.getElementById('genererCatAntiRabique').addEventListener('click', genererCatAntiRabique);
+
     // Ecouteur pour le bouton de requisition
     document.getElementById('requisition').addEventListener('click', function () {
         const modal = document.createElement('div');
