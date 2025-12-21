@@ -9129,28 +9129,38 @@ function vaccint3(dateMorsure, poidsInput) {
     }
     sar = Math.round(sar * 100) / 100;
     
-    // Calculer les dates pour le schéma Tissulaire avec SAR (J0, J3, J7, J14, J28, J90)
+    // Calculer les dates pour le schéma Tissulaire avec SAR (J0, J3, J7, J14, J24,J34, J90)
+
+
+  
+
     const dateJour0 = new Date(dateMorsure);
+    const dateJour1 = new Date(dateJour0);
+    dateJour1.setDate(dateJour0.getDate() + 1);
+    const dateJour2 = new Date(dateJour0);
+    dateJour2.setDate(dateJour0.getDate() + 2);
     const dateJour3 = new Date(dateJour0);
     dateJour3.setDate(dateJour0.getDate() + 3);
-    const dateJour7 = new Date(dateJour0);
-    dateJour7.setDate(dateJour0.getDate() + 7);
+    const dateJour4 = new Date(dateJour0);
+    dateJour4.setDate(dateJour0.getDate() + 4);
+    const dateJour5 = new Date(dateJour0);
+    dateJour5.setDate(dateJour0.getDate() + 5);
+    const dateJour6 = new Date(dateJour0);
+    dateJour6.setDate(dateJour0.getDate() + 6);
+    const dateJour10 = new Date(dateJour0);
+    dateJour10.setDate(dateJour0.getDate() + 10);
     const dateJour14 = new Date(dateJour0);
     dateJour14.setDate(dateJour0.getDate() + 14);
-    const dateJour28 = new Date(dateJour0);
-    dateJour28.setDate(dateJour0.getDate() + 28);
+    const dateJour24 = new Date(dateJour0);
+    dateJour24.setDate(dateJour0.getDate() + 24);
+    const dateJour34 = new Date(dateJour0);
+    dateJour34.setDate(dateJour0.getDate() + 34);
     const dateJour90 = new Date(dateJour0);
     dateJour90.setDate(dateJour0.getDate() + 90);
-
-    // Fonction pour formater la date
+	
+	 // Formatage des dates
     const formatDate = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 
-    const dateFormattedJour0 = formatDate(dateJour0);
-    const dateFormattedJour3 = formatDate(dateJour3);
-    const dateFormattedJour7 = formatDate(dateJour7);
-    const dateFormattedJour14 = formatDate(dateJour14);
-    const dateFormattedJour28 = formatDate(dateJour28);
-    const dateFormattedJour90 = formatDate(dateJour90);
 
     const polyclinique = localStorage.getItem('polyclinique') || "";
     const polycliniqueAr = localStorage.getItem('polyclinique-ar') || "";
@@ -9293,26 +9303,34 @@ function vaccint3(dateMorsure, poidsInput) {
    ${enteteContent}
 
     <div class="certificat">
-        <h1>Schéma Antirabique - Classe 03 (Vaccin T Schema 3)</h1>
+        <h1>Schéma Antirabique - Tissulaire avec SAR</h1>
         <h2>Selon l'instruction N16 du 15 Juillet 2024 relative à la conduite à tenir devant un risque rabique</h2>
         <p>
         NOM : <strong><input type="text" value="${patientNomPrenom}" style="width: auto;"></strong><br>
         Date de naissance : <strong><input type="text" value="${ageInfo}" style="width: auto;"></strong><br>
         Animal en cause : <strong><input type="text" value="${animal}" style="width: auto;"></strong><br>
         Poids : <strong><input type="text" value="${poidsInput} kg" style="width: auto;"></strong><br>
-        SAR : <strong><input type="text" value="${sar} UI" style="width: auto;"></strong><br>
+        SAR : <strong><input type="text" value="${sar} cc" style="width: auto;"></strong><br>
+		
         </p>
         <p>
          <br>
-         Vaccin Tissulaire avec SAR :<br><br>
-         Jour 0 : <input type="date" id="dateJour0" value="${dateFormattedJour0}" readonly> (Vaccin T en IM + SAR en IM)<br>
-         Jour 3 : <input type="date" id="dateJour3" value="${dateFormattedJour3}" readonly> (Vaccin T en IM)<br>
-         Jour 7 : <input type="date" id="dateJour7" value="${dateFormattedJour7}" readonly> (Vaccin T en IM)<br>
-         Jour 14 : <input type="date" id="dateJour14" value="${dateFormattedJour14}" readonly> (Vaccin T en IM)<br>
-         Jour 28 : <input type="date" id="dateJour28" value="${dateFormattedJour28}" readonly> (Vaccin T en IM)<br>
-         Jour 90 : <input type="date" id="dateJour90" value="${dateFormattedJour90}" readonly> (Vaccin T en IM)<br>
-         <br><br>
-        NB: Vaccin T = 01 dose=0,5mI
+          <span style="font-size: smaller;">Classe 03, schéma choisi : vaccin tissulaire / avec SAR</span><br><br>
+        
+Jour 0 : <input type="date" id="dateJour0" value="${formatDate(dateJour0)}" readonly> <span class="small-text">( les 07 premiers jours les inj s/cutanée péri-ombilicale)</span><br>
+Jour 1 : <input type="date" id="dateJour1" value="${formatDate(dateJour1)}" readonly><br>
+Jour 2 : <input type="date" id="dateJour2" value="${formatDate(dateJour2)}" readonly><br>
+Jour 3 : <input type="date" id="dateJour3" value="${formatDate(dateJour3)}" readonly><br>
+Jour 4 : <input type="date" id="dateJour4" value="${formatDate(dateJour4)}" readonly><br>
+Jour 5 : <input type="date" id="dateJour5" value="${formatDate(dateJour5)}" readonly><br>
+Jour 6 : <input type="date" id="dateJour6" value="${formatDate(dateJour6)}" readonly><br>
+=========== les rappeles en ID dans dans les av bras=====<br>
+Jour 10 : <input type="date" id="dateJour10" value="${formatDate(dateJour10)}" readonly><br>
+Jour 14 : <input type="date" id="dateJour14" value="${formatDate(dateJour14)}" readonly><br>
+Jour 24 : <input type="date" id="dateJour24" value="${formatDate(dateJour24)}" readonly><br>
+Jour 34 : <input type="date" id="dateJour34" value="${formatDate(dateJour34)}" readonly><br>
+Jour 90 : <input type="date" id="dateJour90" value="${formatDate(dateJour90)}" readonly><br>
+<span class="small-text">en cas d'âge <05ans la dose sera 1/2 amp( 01 ml)</span><br>
         </p>
         <p style="text-align: right; margin-top: 30px;">
         Medecin traitant <br>
