@@ -281,10 +281,9 @@ class VaccinationApp {
     }
 
     onVaccineFocus(input) {
-        const vaccineName = this.getVaccineNameFromInput(input);
-        const config = this.vaccineConfig[vaccineName];
-        if (config) {
-            this.showMessage(`💡 ${vaccineName}\n\n${config.message}`);
+        const comment = input.getAttribute('data-comment');
+        if (comment) {
+            this.showMessage(comment);
         }
     }
 
