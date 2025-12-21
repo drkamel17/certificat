@@ -323,6 +323,19 @@ document.addEventListener('DOMContentLoaded', function() {
     `;
         document.head.appendChild(style);
     });
+
+    // Ecouteurs pour les classes
+    document.getElementById('classe02').addEventListener('click', function () {
+        ouvrirModalClasse02();
+    });
+
+    document.getElementById('classe03').addEventListener('click', function () {
+        ouvrirModalClasse03();
+    });
+
+    document.getElementById('prex').addEventListener('click', function () {
+        ouvrirModalPrex();
+    });
 });
 
 // Fonction pour générer un certificat d'éviction scolaire
@@ -6834,6 +6847,4214 @@ ${enteteContent}
                 });
             }
         };
+    } else {
+        console.log("Popup bloquée par le navigateur.");
+    }
+}
+
+// Fonction pour ouvrir une modale
+function openModal(content) {
+    const modal = document.createElement('div');
+    modal.style.position = 'fixed';
+    modal.style.top = '0';
+    modal.style.left = '0';
+    modal.style.width = '100%';
+    modal.style.height = '100%';
+    modal.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+    modal.style.display = 'flex';
+    modal.style.justifyContent = 'center';
+    modal.style.alignItems = 'center';
+    modal.innerHTML = content;
+
+    document.body.appendChild(modal);
+
+    // Ajout des écouteurs pour les boutons
+    // (Vous pouvez ajouter ici les écouteurs pour les autres boutons dans cette modal)
+
+    // Fermer la modale si l'utilisateur clique en dehors
+    modal.addEventListener('click', (event) => {
+        if (event.target === modal) {
+            document.body.removeChild(modal);
+        }
+    });
+}
+
+// Fonction pour demander le poids du patient
+function demanderPoids() {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    const todayFormatted = `${year}-${month}-${day}`;
+
+    const modalContent = `
+                <div style="background: white; padding: 20px; border-radius: 5px; text-align: center;">
+                    <h3>Poids du Patient</h3>
+                    <p>Quel est le poids de votre patient en kg ?</p>
+                    <input type="number" id="poidsPatient" style="padding: 8px; margin: 10px 0;">
+                    <p>Date de la morsure :</p>
+                    <input type="date" id="dateMorsure" value="${todayFormatted}" style="padding: 8px; margin: 10px 0;">
+                    <div>
+                        <button id="confirmPoids" style="padding: 8px 16px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">Confirmer</button>
+                    </div>
+                </div>`;
+
+    const modal = document.createElement('div');
+    modal.style.position = 'fixed';
+    modal.style.top = '0';
+    modal.style.left = '0';
+    modal.style.width = '100%';
+    modal.style.height = '100%';
+    modal.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+    modal.style.display = 'flex';
+    modal.style.justifyContent = 'center';
+    modal.style.alignItems = 'center';
+    modal.style.zIndex = '1000';
+    modal.innerHTML = modalContent;
+
+    document.body.appendChild(modal);
+
+    modal.querySelector('#confirmPoids').addEventListener('click', function () {
+        const poidsInput = modal.querySelector('#poidsPatient').value;
+        const dateMorsure = modal.querySelector('#dateMorsure').value;
+
+        if (!poidsInput || !dateMorsure) {
+            alert("Veuillez remplir tous les champs.(valeur numérique dans la case de poids)");
+            return;
+        }
+
+        document.body.removeChild(modal);
+        // Ouvrir la modale de choix du schéma pour Vaccin C (sans Tissulaire avec SAR)
+        ouvrirModalChoixSchemaVaccinC(dateMorsure, poidsInput);
+    });
+
+    modal.addEventListener('click', function (e) {
+        if (e.target === modal) {
+            document.body.removeChild(modal);
+        }
+    });
+}
+
+// Fonction pour demander le poids du patient pour le vaccin T
+function demanderPoidsT() {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    const todayFormatted = `${year}-${month}-${day}`;
+
+    const modalContent = `
+                <div style="background: white; padding: 20px; border-radius: 5px; text-align: center;">
+                    <h3>Poids du Patient</h3>
+                    <p>Quel est le poids de votre patient en kg ?</p>
+                    <input type="number" id="poidsPatient" style="padding: 8px; margin: 10px 0;">
+                    <p>Date de la morsure :</p>
+                    <input type="date" id="dateMorsure" value="${todayFormatted}" style="padding: 8px; margin: 10px 0;">
+                    <div>
+                        <button id="confirmPoids" style="padding: 8px 16px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">Confirmer</button>
+                    </div>
+                </div>`;
+
+    const modal = document.createElement('div');
+    modal.style.position = 'fixed';
+    modal.style.top = '0';
+    modal.style.left = '0';
+    modal.style.width = '100%';
+    modal.style.height = '100%';
+    modal.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+    modal.style.display = 'flex';
+    modal.style.justifyContent = 'center';
+    modal.style.alignItems = 'center';
+    modal.style.zIndex = '1000';
+    modal.innerHTML = modalContent;
+
+    document.body.appendChild(modal);
+
+    modal.querySelector('#confirmPoids').addEventListener('click', function () {
+        const poidsInput = modal.querySelector('#poidsPatient').value;
+        const dateMorsure = modal.querySelector('#dateMorsure').value;
+
+        if (!poidsInput || !dateMorsure) {
+            alert("Veuillez remplir tous les champs.(valeur numérique dans la case de poids)");
+            return;
+        }
+
+        document.body.removeChild(modal);
+        // Appeler directement le certificat Tissulaire avec SAR
+        vaccint3(dateMorsure, poidsInput);
+    });
+
+    modal.addEventListener('click', function (e) {
+        if (e.target === modal) {
+            document.body.removeChild(modal);
+        }
+    });
+}
+
+// Fonction pour demander la date pour les patients immunocompétents (sans poids)
+function demanderDateImmunocompetent() {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    const todayFormatted = `${year}-${month}-${day}`;
+
+    const modalContent = `
+        <div style="background: white; padding: 20px; border-radius: 5px; text-align: center;">
+            <h3>Prophylaxie Pré-exposition - Patient Immunocompétent</h3>
+            <p>Date de début de la prophylaxie :</p>
+            <input type="date" id="dateDebut" value="${todayFormatted}" style="padding: 8px; margin: 10px 0;">
+            <div>
+                <button id="confirmDate" style="padding: 8px 16px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">Confirmer</button>
+            </div>
+        </div>`;
+
+    const modal = document.createElement('div');
+    modal.style.position = 'fixed';
+    modal.style.top = '0';
+    modal.style.left = '0';
+    modal.style.width = '100%';
+    modal.style.height = '100%';
+    modal.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+    modal.style.display = 'flex';
+    modal.style.justifyContent = 'center';
+    modal.style.alignItems = 'center';
+    modal.style.zIndex = '1000';
+    modal.innerHTML = modalContent;
+
+    document.body.appendChild(modal);
+
+    modal.querySelector('#confirmDate').addEventListener('click', function () {
+        const dateDebut = modal.querySelector('#dateDebut').value;
+
+        if (!dateDebut) {
+            alert("Veuillez sélectionner une date.");
+            return;
+        }
+
+        document.body.removeChild(modal);
+        // Appeler la fonction pour générer le certificat de prophylaxie pré-exposition
+        genererCertificatProphylaxieImmunocompetent(dateDebut);
+    });
+
+    modal.addEventListener('click', function (e) {
+        if (e.target === modal) {
+            document.body.removeChild(modal);
+        }
+    });
+}
+
+// Fonction pour demander la date pour les patients immunodéprimés
+function demanderDateImmunoDeprime() {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    const todayFormatted = `${year}-${month}-${day}`;
+
+    const modalContent = `
+        <div style="background: white; padding: 20px; border-radius: 5px; text-align: center;">
+            <h3>Prophylaxie Pré-exposition - Patient Immunodéprimé</h3>
+            <p>Date de début de la prophylaxie :</p>
+            <input type="date" id="dateDebut" value="${todayFormatted}" style="padding: 8px; margin: 10px 0;">
+            <div>
+                <button id="confirmDate" style="padding: 8px 16px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">Confirmer</button>
+            </div>
+        </div>`;
+
+    const modal = document.createElement('div');
+    modal.style.position = 'fixed';
+    modal.style.top = '0';
+    modal.style.left = '0';
+    modal.style.width = '100%';
+    modal.style.height = '100%';
+    modal.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+    modal.style.display = 'flex';
+    modal.style.justifyContent = 'center';
+    modal.style.alignItems = 'center';
+    modal.style.zIndex = '1000';
+    modal.innerHTML = modalContent;
+
+    document.body.appendChild(modal);
+
+    modal.querySelector('#confirmDate').addEventListener('click', function () {
+        const dateDebut = modal.querySelector('#dateDebut').value;
+
+        if (!dateDebut) {
+            alert("Veuillez sélectionner une date.");
+            return;
+        }
+
+        document.body.removeChild(modal);
+        // Appeler la fonction pour générer le certificat de prophylaxie pré-exposition pour immunodéprimé
+        genererCertificatProphylaxieImmunoDeprime(dateDebut);
+    });
+
+    modal.addEventListener('click', function (e) {
+        if (e.target === modal) {
+            document.body.removeChild(modal);
+        }
+    });
+}
+
+// Fonction pour demander la date et le poids pour ATCD Prophylaxie Pré-exposition
+function demanderDateATCDProphylaxie() {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    const todayFormatted = `${year}-${month}-${day}`;
+
+    const modalContent = `
+        <div style="background: white; padding: 20px; border-radius: 5px; text-align: center;">
+            <h3>Avec ATCD Prophylaxie Pré-exposition</h3>
+            <p>Date de la morsure :</p>
+            <input type="date" id="dateMorsure" value="${todayFormatted}" style="padding: 8px; margin: 10px 0;">
+            <div>
+                <button id="confirmDate" style="padding: 8px 16px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">Confirmer</button>
+            </div>
+        </div>`;
+
+    const modal = document.createElement('div');
+    modal.style.position = 'fixed';
+    modal.style.top = '0';
+    modal.style.left = '0';
+    modal.style.width = '100%';
+    modal.style.height = '100%';
+    modal.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+    modal.style.display = 'flex';
+    modal.style.justifyContent = 'center';
+    modal.style.alignItems = 'center';
+    modal.style.zIndex = '1000';
+    modal.innerHTML = modalContent;
+
+    document.body.appendChild(modal);
+
+    modal.querySelector('#confirmDate').addEventListener('click', function () {
+        const dateMorsure = modal.querySelector('#dateMorsure').value;
+
+        if (!dateMorsure) {
+            alert("Veuillez sélectionner une date.");
+            return;
+        }
+
+        document.body.removeChild(modal);
+        // Appeler la fonction prophylaxiePreExpositionSchema3 avec seulement la date
+        prophylaxiePreExpositionSchema3(dateMorsure);
+    });
+
+    modal.addEventListener('click', function (e) {
+        if (e.target === modal) {
+            document.body.removeChild(modal);
+        }
+    });
+}
+
+
+// Fonction pour ouvrir la modale pour Classe 02
+function ouvrirModalClasse02() {
+    const modalContent = `
+        <div>
+            <h3 style="color: green;">Choisissez un vaccin :</h3>
+            <button id="vaccinCellulaire">Vaccin Cellulaire</button>
+            <button id="vaccinTissulaire">Vaccin Tissulaire</button>
+        </div>
+    `;
+    openModal(modalContent);
+
+    // Ecouteur pour le bouton Vaccin Cellulaire
+    document.querySelector('#vaccinCellulaire').addEventListener('click', () => {
+        // Demander uniquement la date (le poids n'est pas nécessaire pour la classe 02)
+        demanderDatePourClasse02();
+    });
+
+    // Ecouteur pour le bouton Vaccin Tissulaire
+    document.querySelector('#vaccinTissulaire').addEventListener('click', () => {
+        // Demander uniquement la date (le poids n'est pas nécessaire pour la classe 02)
+        demanderDatePourClasse02Tissulaire();
+    });
+}
+
+// Fonction pour ouvrir la modale pour Classe 03
+function ouvrirModalClasse03() {
+    const modalContent = `
+<div>
+<h3 style="color: green;">Choisissez un vaccin :</h3>
+<button id="vaccinC">Vaccin C (Cellulaire)</button>
+<button id="vaccinT">Vaccin T (Tissulaire)</button>
+</div>
+`;
+    openModal(modalContent);
+    // Ecouteur pour le bouton Vaccin C
+    document.querySelector('#vaccinC').addEventListener('click', () => {
+        demanderPoids(); // Demande le poids du patient
+    });
+
+    // Ecouteur pour le bouton Vaccin T
+    document.querySelector('#vaccinT').addEventListener('click', () => {
+        demanderPoidsT(); // Appelle la fonction qui ouvre la modale de choix de schéma
+    });
+}
+
+// Fonction pour ouvrir la modale pour Prophylaxie Pré-exposition
+function ouvrirModalPrex() {
+    const modalContent = `
+<div>
+<h3 style="color: green;">Choisissez le type de patient :</h3>
+<button id="immunocompetent">01 Immunocompétent</button>
+<button id="immunodeprime">02 Immunodéprimé</button>
+<button id="prophylaxiePreExpositionSchema3" style="padding: 8px 16px; margin: 5px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">03 Avec Risque Hemorragique</button>
+</div>
+`;
+    openModal(modalContent);
+// Écouteur pour le bouton Immunocompétent
+    document.querySelector('#immunocompetent').addEventListener('click', () => {
+        // Demander uniquement la date (pas de poids nécessaire pour prophylaxie pré-exposition)
+        demanderDateImmunocompetent();
+    });
+
+// Écouteur pour le bouton Immunodéprimé
+    document.querySelector('#immunodeprime').addEventListener('click', () => {
+        // Demander uniquement la date (pas de poids nécessaire pour prophylaxie pré-exposition)
+        demanderDateImmunoDeprime();
+    });
+
+// Écouteur pour le bouton Avec ATCD Prophylaxie Pré-exposition
+    document.querySelector('#prophylaxiePreExpositionSchema3').addEventListener('click', () => {
+        // Demander uniquement la date (pas de poids nécessaire pour prophylaxie pré-exposition)
+        demanderDateATCDProphylaxie();
+    });
+}
+
+// Fonction pour demander la date pour la classe 02 (vaccin cellulaire)
+function demanderDatePourClasse02() {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    const todayFormatted = `${year}-${month}-${day}`;
+
+    const modalContent = `
+                <div style="background: white; padding: 20px; border-radius: 5px; text-align: center;">
+                    <h3>Date de la morsure</h3>
+                    <p>Veuillez entrer la date du 01er jour de vaccination (Jour 0) :</p>
+                    <input type="date" id="dateMorsure" value="${todayFormatted}" style="padding: 8px; margin: 10px 0;">
+                    <div>
+                        <button id="confirmDate" style="padding: 8px 16px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">Confirmer</button>
+                    </div>
+                </div>`;
+
+    const modal = document.createElement('div');
+    modal.style.position = 'fixed';
+    modal.style.top = '0';
+    modal.style.left = '0';
+    modal.style.width = '100%';
+    modal.style.height = '100%';
+    modal.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+    modal.style.display = 'flex';
+    modal.style.justifyContent = 'center';
+    modal.style.alignItems = 'center';
+    modal.style.zIndex = '1000';
+    modal.innerHTML = modalContent;
+
+    document.body.appendChild(modal);
+
+    modal.querySelector('#confirmDate').addEventListener('click', function () {
+        const dateMorsure = modal.querySelector('#dateMorsure').value;
+
+        if (!dateMorsure) {
+            alert("Veuillez entrer une date valide.");
+            return;
+        }
+
+        document.body.removeChild(modal);
+        // Ouvrir la modale de choix du schéma pour Vaccin Cellulaire
+        openVaccinChoiceModal(dateMorsure, '');
+    });
+
+    modal.addEventListener('click', function (e) {
+        if (e.target === modal) {
+            document.body.removeChild(modal);
+        }
+    });
+}
+
+// Fonction pour demander la date pour la classe 02 (vaccin tissulaire)
+function demanderDatePourClasse02Tissulaire() {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    const todayFormatted = `${year}-${month}-${day}`;
+
+    const modalContent = `
+                <div style="background: white; padding: 20px; border-radius: 5px; text-align: center;">
+                    <h3>Date de la morsure</h3>
+                    <p>Veuillez entrer la date du 01er jour de vaccination (Jour 0) :</p>
+                    <input type="date" id="dateMorsure" value="${todayFormatted}" style="padding: 8px; margin: 10px 0;">
+                    <div>
+                        <button id="confirmDate" style="padding: 8px 16px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">Confirmer</button>
+                    </div>
+                </div>`;
+
+    const modal = document.createElement('div');
+    modal.style.position = 'fixed';
+    modal.style.top = '0';
+    modal.style.left = '0';
+    modal.style.width = '100%';
+    modal.style.height = '100%';
+    modal.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+    modal.style.display = 'flex';
+    modal.style.justifyContent = 'center';
+    modal.style.alignItems = 'center';
+    modal.style.zIndex = '1000';
+    modal.innerHTML = modalContent;
+
+    document.body.appendChild(modal);
+
+    modal.querySelector('#confirmDate').addEventListener('click', function () {
+        const dateMorsure = modal.querySelector('#dateMorsure').value;
+
+        if (!dateMorsure) {
+            alert("Veuillez entrer une date valide.");
+            return;
+        }
+
+        document.body.removeChild(modal);
+        // Appeler directement la fonction Tissulairesanssar sans le poids
+        Tissulairesanssar(dateMorsure, '');
+    });
+
+    modal.addEventListener('click', function (e) {
+        if (e.target === modal) {
+            document.body.removeChild(modal);
+        }
+    });
+}
+
+// Fonction pour ouvrir une modale pour le choix entre Zagreb et Essens
+function openVaccinChoiceModal(dateMorsure, poidsInput) {
+    const modalContent = `
+        <div>
+            <h3 style="color: green;">Choisissez un schéma :</h3>
+            <button id="zegreb">Zagreb</button>
+            <button id="essens">Essen</button>
+            <button id="risqueHemorragique" style="padding: 8px 16px; margin: 5px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">Risque hémorragique/qte limitées</button>
+            <button id="prophylaxiePreExpositionSchema1Classe2" style="padding: 8px 16px; margin: 5px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">Avec ATCD Vaccinaux (Schéma 1)</button>
+            <button id="prophylaxiePreExpositionSchema2Classe2" style="padding: 8px 16px; margin: 5px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">Avec ATCD Vaccinaux (Schéma 2)</button>
+        </div>
+    `;
+
+    const modal = document.createElement('div');
+    modal.style.position = 'fixed';
+    modal.style.top = '0';
+    modal.style.left = '0';
+    modal.style.width = '100%';
+    modal.style.height = '100%';
+    modal.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+    modal.style.display = 'flex';
+    modal.style.justifyContent = 'center';
+    modal.style.alignItems = 'center';
+    modal.innerHTML = modalContent;
+
+    document.body.appendChild(modal);
+
+    // Ecouteurs pour les boutons dans la modale
+    modal.querySelector('#zegreb').addEventListener('click', () => {
+        zegreb(dateMorsure, poidsInput); // Pass the date and weight
+        document.body.removeChild(modal);
+    });
+
+    modal.querySelector('#essens').addEventListener('click', () => {
+        essens(dateMorsure, poidsInput); // Pass the date and weight
+        document.body.removeChild(modal);
+    });
+
+    // Removed event listener for #avecATCDVaccinauxIM as this button was removed per user request
+
+    modal.querySelector('#risqueHemorragique').addEventListener('click', () => {
+        risqueHemorragiqueClasse2(dateMorsure, poidsInput); // Pass the date and weight
+        document.body.removeChild(modal);
+    });
+
+    modal.querySelector('#prophylaxiePreExpositionSchema1Classe2').addEventListener('click', () => {
+        prophylaxiePreExpositionSchema1Classe2(dateMorsure, poidsInput); // Pass the date and weight
+        document.body.removeChild(modal);
+    });
+
+    modal.querySelector('#prophylaxiePreExpositionSchema2Classe2').addEventListener('click', () => {
+        prophylaxiePreExpositionSchema2Classe2(dateMorsure); // Only pass the date, no weight needed
+        document.body.removeChild(modal);
+    });
+
+    // Fermer la modale si l'utilisateur clique en dehors
+    modal.addEventListener('click', (event) => {
+        // Vérifier si le clic est sur la modal elle-même (et non sur un élément enfant)
+        if (event.target === modal) {
+            document.body.removeChild(modal);
+        }
+    });
+}
+
+// Nouvelle fonction pour ouvrir la modale de choix de schéma pour Vaccin C uniquement (sans Tissulaire avec SAR)
+function ouvrirModalChoixSchemaVaccinC(dateMorsure, poidsInput) {
+    const modalContent = `
+    <div style="background: white; padding: 20px; border-radius: 5px; text-align: center;">
+        <h3 style="color: green;">Choisissez un schéma :</h3>
+        <button id="zegreb3" style="padding: 8px 16px; margin: 5px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">Zagreb3</button>
+        <button id="essen3" style="padding: 8px 16px; margin: 5px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">Essen3</button>
+        <button id="risqueHemorragique3" style="padding: 8px 16px; margin: 5px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">Risque Hémorragique/Qte Limitées</button>
+        <button id="prophylaxiePreExpositionSchema1Classe3" style="padding: 8px 16px; margin: 5px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">Avec ATCD Vaccinaux (Schéma 1)</button>
+        <button id="prophylaxiePreExpositionSchema2Classe3" style="padding: 8px 16px; margin: 5px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">Avec ATCD Vaccinaux (Schéma 2)</button>
+    </div>`;
+
+    const modal = document.createElement('div');
+    modal.style.position = 'fixed';
+    modal.style.top = '0';
+    modal.style.left = '0';
+    modal.style.width = '100%';
+    modal.style.height = '100%';
+    modal.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+    modal.style.display = 'flex';
+    modal.style.justifyContent = 'center';
+    modal.style.alignItems = 'center';
+    modal.style.zIndex = '1000';
+    modal.innerHTML = modalContent;
+
+    document.body.appendChild(modal);
+
+    // Ecouteur pour le bouton Zagreb3
+    modal.querySelector('#zegreb3').addEventListener('click', () => {
+        document.body.removeChild(modal);
+        vaccinc3(dateMorsure, poidsInput);
+    });
+
+    // Ecouteur pour le bouton Essen3
+    modal.querySelector('#essen3').addEventListener('click', () => {
+        document.body.removeChild(modal);
+        essen3(dateMorsure, poidsInput);
+    });
+
+    // Ecouteur pour le bouton Risque Hémorragique/Qte Limitées
+    modal.querySelector('#risqueHemorragique3').addEventListener('click', () => {
+        document.body.removeChild(modal);
+        risqueHemorragique3(dateMorsure, poidsInput);
+    });
+
+    // Ecouteur pour le bouton Avec ATCD Vaccinaux (Schéma 1)
+    modal.querySelector('#prophylaxiePreExpositionSchema1Classe3').addEventListener('click', () => {
+        document.body.removeChild(modal);
+        prophylaxiePreExpositionSchema1Classe3(dateMorsure, poidsInput);
+    });
+
+    // Ecouteur pour le bouton  Avec ATCD Vaccinaux (Schéma 2)
+    modal.querySelector('#prophylaxiePreExpositionSchema2Classe3').addEventListener('click', () => {
+        document.body.removeChild(modal);
+        prophylaxiePreExpositionSchema2Classe3(dateMorsure, poidsInput);
+    });
+
+    // Fermer la modale si l'utilisateur clique en dehors
+    modal.addEventListener('click', function (e) {
+        if (e.target === modal) {
+            document.body.removeChild(modal);
+        }
+    });
+}
+
+// Fonctions de schéma de vaccination (placeholders)
+// Ces fonctions seront appelées avec dateMorsure et poidsInput comme paramètres
+function zegreb(dateMorsure, poidsInput) {
+    // Récupérer les informations du patient depuis le formulaire
+    const patientNomPrenom = document.getElementById('patientNomPrenom').value || '';
+    const patientAge = document.getElementById('patientAge').value || '';
+    const patientDateNaissance = document.getElementById('patientDateNaissance').value || '';
+    
+    // Utiliser la date de naissance si disponible, sinon l'âge
+    let ageInfo = '';
+    if (patientDateNaissance) {
+        ageInfo = patientDateNaissance;
+    } else if (patientAge) {
+        ageInfo = patientAge;
+    } else {
+        ageInfo = '[Date de naissance]';
+    }
+    
+    // Calculer les dates pour le schéma Zagreb (J0, J7, J21)
+    const dateJour0 = new Date(dateMorsure);
+    const datePlus7 = new Date(dateJour0);
+    datePlus7.setDate(dateJour0.getDate() + 7);
+    const datePlus21 = new Date(dateJour0);
+    datePlus21.setDate(dateJour0.getDate() + 21);
+
+    const dateFormattedJour0 = `${dateJour0.getFullYear()}-${String(dateJour0.getMonth() + 1).padStart(2, '0')}-${String(dateJour0.getDate()).padStart(2, '0')}`;
+    const dateFormattedPlus7 = `${datePlus7.getFullYear()}-${String(datePlus7.getMonth() + 1).padStart(2, '0')}-${String(datePlus7.getDate()).padStart(2, '0')}`;
+    const dateFormattedPlus21 = `${datePlus21.getFullYear()}-${String(datePlus21.getMonth() + 1).padStart(2, '0')}-${String(datePlus21.getDate()).padStart(2, '0')}`;
+
+    const polyclinique = localStorage.getItem('polyclinique') || "";
+    const polycliniqueAr = localStorage.getItem('polyclinique-ar') || "";
+    const docteur = localStorage.getItem('docteur') || "";
+    const animal = "chien"; // Animal en cause (valeur par défaut)
+
+    // Vérifier le format choisi
+    const avecEntete = localStorage.getItem('certificatFormat') === 'avecEntete';
+
+    let enteteContent = '';
+    if (avecEntete) {
+        enteteContent = generateHeader();
+    } else {
+        // Espace vide pour garder la meme mise en page
+        enteteContent = '<div style="height: 155px;"></div>';
+    }
+
+    // Générer le certificat Zagreb
+    const certificatContent = `
+    <!DOCTYPE html>
+    <html lang="fr">
+    <head>
+    <meta charset="UTF-8">
+    <title>Certificat Antirabique - Schéma Zagreb</title>
+    <style>
+    body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        background-color: #f9f9f9;
+    }
+    .certificat {
+        background-color: white;
+        border: 1px solid #ddd;
+        padding: 20px;
+        max-width: 600px;
+        margin: 0 auto;
+        margin-top: 60px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+        text-align: center;
+        color: #333;
+        text-decoration: underline;
+        font-size: 16px;
+    }
+    h2 {
+        text-align: center;
+        color: #555;
+        font-size: 10px;
+        margin-top: 5px;
+        margin-bottom: 15px;
+    }
+    p {
+        line-height: 1.5;
+        color: #555;
+    }
+    .small-text {
+        font-size: 12px;
+    }
+    .print-button {
+        text-align: center;
+        margin-top: 20px;
+    }
+    .print-button button {
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .print-button button:hover {
+        background-color: #0056b3;
+    }
+    @media print {
+        @page {
+            size: A5;
+            margin: 0.2cm 0.2cm 0.2cm 0.2cm;
+        }
+        body {
+            margin: 0 !important;
+            padding: 0 !important;
+            font-size: 10pt !important;
+            background-color: white;
+        }
+        .certificat {
+            padding: 2px 8px !important;
+            max-width: 100% !important;
+            border: none;
+            box-shadow: none;
+            margin-top: 0;
+        }
+        h1 {
+            font-size: 14pt !important;
+            margin: 5px 0 !important;
+            margin-top: 2cm !important;
+        }
+        h2 {
+            font-size: 12pt !important;
+            margin: 3px 0 !important;
+        }
+        p {
+            font-size: 9pt !important;
+            margin: 2px 0 !important;
+            line-height: 1.2 !important;
+        }
+        input[type="text"],
+        input[type="date"],
+        textarea {
+            border: none !important;
+            background: none !important;
+            box-shadow: none !important;
+            outline: none !important;
+            font-size: 9pt !important;
+        }
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        textarea:focus {
+            border: none !important;
+            outline: none !important;
+        }
+        .print-button {
+            display: none;
+        }
+        .docteur {
+            font-weight: bold;
+            font-size: 14pt !important;
+            margin-right: 50px;
+        }
+        /* Additional space optimization */
+        * {
+            margin-top: 0 !important;
+            margin-bottom: 2px !important;
+        }
+    }
+    </style>
+    </head>
+    <body>
+   ${enteteContent}
+
+    <div class="certificat">
+        <h1>Schéma Antirabique - Classe 02 (Zagreb)</h1>
+        <h2>Selon l'instruction N16 du 15 Juillet 2024 relative à la conduite à tenir devant un risque rabique</h2>
+        <p>
+        NOM : <strong><input type="text" value="${patientNomPrenom}" style="width: auto;"></strong><br>
+        Date de naissance : <strong><input type="text" value="${ageInfo}" style="width: auto;"></strong><br>
+        Animal en cause : <strong><input type="text" value="${animal}" style="width: auto;"></strong><br>
+        </p>
+		<br><br>
+      Classe 02, schéma choisi : vaccin cellulaire / schéma de Zagreb / sans SAR
+       <br><br><br>
+        <p>
+         <br>
+         <br><br>
+         Jour 0 : <input type="date" id="dateJour0" value="${dateFormattedJour0}" readonly> ( 02 doses chacune dans un deltoïde ) <br>
+         Jour 7 : <input type="date" id="datePlus7" value="${dateFormattedPlus7}" readonly> <br>
+         Jour 21 : <input type="date" id="datePlus21" value="${dateFormattedPlus21}" readonly> <br>
+         <br><br><br>
+         <br><br>
+           en cas d'âge <02 ans Face antérolatéral externe de la cuisse droite et gauche<br>
+        </p>
+        <p style="text-align: right; margin-top: 30px;">
+        Medecin traitant <br>
+        <span class="docteur" style="font-weight: bold;">Dr ${docteur}</span>&nbsp&nbsp&nbsp&nbsp&nbsp;
+        </p>
+    </div>
+
+    <div class="print-button">
+        <button id="printButton">Imprimer le schéma</button>
+    </div>
+    
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const polycliniqueInput = document.getElementById('polyclinique');
+        if (polycliniqueInput) {
+            polycliniqueInput.addEventListener('input', function () {
+                localStorage.setItem('polyclinique', this.value);
+            });
+        }
+
+        const polycliniqueArInput = document.getElementById('polyclinique-ar');
+        if (polycliniqueArInput) {
+            polycliniqueArInput.addEventListener('input', function () {
+                localStorage.setItem('polyclinique-ar', this.value);
+            });
+        }
+
+        document.getElementById('printButton').addEventListener('click', function () {
+            window.print();
+        });
+    });
+    </script>
+    </body>
+    </html>
+    `;
+
+    var newWindow = window.open("", "_blank");
+    if (newWindow) {
+        newWindow.document.write(certificatContent);
+        newWindow.document.close();
+    } else {
+        console.log("Popup bloquée par le navigateur.");
+    }
+}
+
+function essens(dateMorsure, poidsInput) {
+    // Récupérer les informations du patient depuis le formulaire
+    const patientNomPrenom = document.getElementById('patientNomPrenom').value || '';
+    const patientAge = document.getElementById('patientAge').value || '';
+    const patientDateNaissance = document.getElementById('patientDateNaissance').value || '';
+    
+    // Utiliser la date de naissance si disponible, sinon l'âge
+    let ageInfo = '';
+    if (patientDateNaissance) {
+        ageInfo = patientDateNaissance;
+    } else if (patientAge) {
+        ageInfo = patientAge;
+    } else {
+        ageInfo = '[Date de naissance]';
+    }
+    
+    // Calculer les dates pour le schéma Essen (J0, J3, J7, J14)
+    const dateJour0 = new Date(dateMorsure);
+    const datePlus3 = new Date(dateJour0);
+    datePlus3.setDate(dateJour0.getDate() + 3);
+    const datePlus7 = new Date(dateJour0);
+    datePlus7.setDate(dateJour0.getDate() + 7);
+    const datePlus14 = new Date(dateJour0);
+    datePlus14.setDate(dateJour0.getDate() + 14);
+
+    const dateFormattedJour0 = `${dateJour0.getFullYear()}-${String(dateJour0.getMonth() + 1).padStart(2, '0')}-${String(dateJour0.getDate()).padStart(2, '0')}`;
+    const dateFormattedPlus3 = `${datePlus3.getFullYear()}-${String(datePlus3.getMonth() + 1).padStart(2, '0')}-${String(datePlus3.getDate()).padStart(2, '0')}`;
+    const dateFormattedPlus7 = `${datePlus7.getFullYear()}-${String(datePlus7.getMonth() + 1).padStart(2, '0')}-${String(datePlus7.getDate()).padStart(2, '0')}`;
+    const dateFormattedPlus14 = `${datePlus14.getFullYear()}-${String(datePlus14.getMonth() + 1).padStart(2, '0')}-${String(datePlus14.getDate()).padStart(2, '0')}`;
+
+    const polyclinique = localStorage.getItem('polyclinique') || "";
+    const polycliniqueAr = localStorage.getItem('polyclinique-ar') || "";
+    const docteur = localStorage.getItem('docteur') || "";
+    const animal = "chien"; // Animal en cause (valeur par défaut)
+
+    // Vérifier le format choisi
+    const avecEntete = localStorage.getItem('certificatFormat') === 'avecEntete';
+
+    let enteteContent = '';
+    if (avecEntete) {
+        enteteContent = generateHeader();
+    } else {
+        // Espace vide pour garder la meme mise en page
+        enteteContent = '<div style="height: 155px;"></div>';
+    }
+
+    // Générer le certificat Essen
+    const certificatContent = `
+    <!DOCTYPE html>
+    <html lang="fr">
+    <head>
+    <meta charset="UTF-8">
+    <title>Certificat Antirabique - Schéma Essen</title>
+    <style>
+    body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        background-color: #f9f9f9;
+    }
+    .certificat {
+        background-color: white;
+        border: 1px solid #ddd;
+        padding: 20px;
+        max-width: 600px;
+        margin: 0 auto;
+        margin-top: 60px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+        text-align: center;
+        color: #333;
+        text-decoration: underline;
+        font-size: 16px;
+    }
+    h2 {
+        text-align: center;
+        color: #555;
+        font-size: 10px;
+        margin-top: 5px;
+        margin-bottom: 15px;
+    }
+    p {
+        line-height: 1.5;
+        color: #555;
+    }
+    .small-text {
+        font-size: 12px;
+    }
+    .print-button {
+        text-align: center;
+        margin-top: 20px;
+    }
+    .print-button button {
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .print-button button:hover {
+        background-color: #0056b3;
+    }
+    @media print {
+        @page {
+            size: A5;
+            margin: 0.2cm 0.2cm 0.2cm 0.2cm;
+        }
+        body {
+            margin: 0 !important;
+            padding: 0 !important;
+            font-size: 10pt !important;
+            background-color: white;
+        }
+        .certificat {
+            padding: 2px 8px !important;
+            max-width: 100% !important;
+            border: none;
+            box-shadow: none;
+            margin-top: 0;
+        }
+        h1 {
+            font-size: 14pt !important;
+            margin: 5px 0 !important;
+            margin-top: 2cm !important;
+        }
+        h2 {
+            font-size: 12pt !important;
+            margin: 3px 0 !important;
+        }
+        p {
+            font-size: 9pt !important;
+            margin: 2px 0 !important;
+            line-height: 1.2 !important;
+        }
+        input[type="text"],
+        input[type="date"],
+        textarea {
+            border: none !important;
+            background: none !important;
+            box-shadow: none !important;
+            outline: none !important;
+            font-size: 9pt !important;
+        }
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        textarea:focus {
+            border: none !important;
+            outline: none !important;
+        }
+        .print-button {
+            display: none;
+        }
+        .docteur {
+            font-weight: bold;
+            font-size: 14pt !important;
+            margin-right: 50px;
+        }
+        /* Additional space optimization */
+        * {
+            margin-top: 0 !important;
+            margin-bottom: 2px !important;
+        }
+    }
+    </style>
+    </head>
+    <body>
+   ${enteteContent}
+
+    <div class="certificat">
+        <h1>Schéma Antirabique - Classe 02 (Essen)</h1>
+        <h2>Selon l'instruction N16 du 15 Juillet 2024 relative à la conduite à tenir devant un risque rabique</h2>
+        <p>
+        NOM : <strong><input type="text" value="${patientNomPrenom}" style="width: auto;"></strong><br>
+        Date de naissance : <strong><input type="text" value="${ageInfo}" style="width: auto;"></strong><br>
+        Animal en cause : <strong><input type="text" value="${animal}" style="width: auto;"></strong><br>
+		<br><br>
+      Classe 02, schéma choisi : vaccin cellulaire / schéma de Essen / sans SAR
+      <br><br><br>
+        </p>
+        <p>
+         <br>
+         <br><br>
+         Jour 0 : <input type="date" id="dateJour0" value="${dateFormattedJour0}" readonly> ( dans le deltoïde )<br>
+         Jour 3 : <input type="date" id="datePlus7" value="${dateFormattedPlus3}" readonly> <br>
+         Jour 7 : <input type="date" id="datePlus21" value="${dateFormattedPlus7}" readonly><br>
+         Jour 14 : <input type="date" id="datePlus28" value="${dateFormattedPlus14}" readonly> <br>
+         <br><br>
+        en cas d'âge <02 ans Face antérolatéral externe de la cuisse droite et gauche<br>
+        </p>
+        <p style="text-align: right; margin-top: 30px;">
+        Medecin traitant <br>
+        <span class="docteur" style="font-weight: bold;">Dr ${docteur}</span>&nbsp&nbsp&nbsp&nbsp&nbsp;
+        </p>
+    </div>
+
+    <div class="print-button">
+        <button id="printButton">Imprimer le schéma</button>
+    </div>
+   
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const polycliniqueInput = document.getElementById('polyclinique');
+        if (polycliniqueInput) {
+            polycliniqueInput.addEventListener('input', function () {
+                localStorage.setItem('polyclinique', this.value);
+            });
+        }
+
+        const polycliniqueArInput = document.getElementById('polyclinique-ar');
+        if (polycliniqueArInput) {
+            polycliniqueArInput.addEventListener('input', function () {
+                localStorage.setItem('polyclinique-ar', this.value);
+            });
+        }
+
+        document.getElementById('printButton').addEventListener('click', function () {
+            window.print();
+        });
+    });
+    </script>
+    </body>
+    </html>
+    `;
+
+    var newWindow = window.open("", "_blank");
+    if (newWindow) {
+        newWindow.document.write(certificatContent);
+        newWindow.document.close();
+    } else {
+        console.log("Popup bloquée par le navigateur.");
+    }
+}
+
+function risqueHemorragiqueClasse2(dateMorsure, poidsInput) {
+    // Récupérer les informations du patient depuis le formulaire
+    const patientNomPrenom = document.getElementById('patientNomPrenom').value || '';
+    const patientAge = document.getElementById('patientAge').value || '';
+    const patientDateNaissance = document.getElementById('patientDateNaissance').value || '';
+    
+    // Utiliser la date de naissance si disponible, sinon l'âge
+    let ageInfo = '';
+    if (patientDateNaissance) {
+        ageInfo = patientDateNaissance;
+    } else if (patientAge) {
+        ageInfo = patientAge;
+    } else {
+        ageInfo = '[Date de naissance]';
+    }
+    
+    // Calculer les dates pour le schéma Risque Hémorragique (J0, J7, J21, J28)
+    const dateJour0 = new Date(dateMorsure);
+    const datePlus7 = new Date(dateJour0);
+    datePlus7.setDate(dateJour0.getDate() + 7);
+    const datePlus21 = new Date(dateJour0);
+    datePlus21.setDate(dateJour0.getDate() + 21);
+    const datePlus3 = new Date(dateJour0);
+    datePlus3.setDate(dateJour0.getDate() + 3);
+
+    const dateFormattedJour0 = `${dateJour0.getFullYear()}-${String(dateJour0.getMonth() + 1).padStart(2, '0')}-${String(dateJour0.getDate()).padStart(2, '0')}`;
+    const dateFormattedPlus7 = `${datePlus7.getFullYear()}-${String(datePlus7.getMonth() + 1).padStart(2, '0')}-${String(datePlus7.getDate()).padStart(2, '0')}`;
+    const dateFormattedPlus21 = `${datePlus21.getFullYear()}-${String(datePlus21.getMonth() + 1).padStart(2, '0')}-${String(datePlus21.getDate()).padStart(2, '0')}`;
+    const dateFormattedPlus3 = `${datePlus3.getFullYear()}-${String(datePlus3.getMonth() + 1).padStart(2, '0')}-${String(datePlus3.getDate()).padStart(2, '0')}`;
+
+    const polyclinique = localStorage.getItem('polyclinique') || "";
+    const polycliniqueAr = localStorage.getItem('polyclinique-ar') || "";
+    const docteur = localStorage.getItem('docteur') || "";
+    const animal = "chien"; // Animal en cause (valeur par défaut)
+
+    // Vérifier le format choisi
+    const avecEntete = localStorage.getItem('certificatFormat') === 'avecEntete';
+
+    let enteteContent = '';
+    if (avecEntete) {
+        enteteContent = generateHeader();
+    } else {
+        // Espace vide pour garder la meme mise en page
+        enteteContent = '<div style="height: 155px;"></div>';
+    }
+
+    // Générer le certificat Risque Hémorragique
+    const certificatContent = `
+    <!DOCTYPE html>
+    <html lang="fr">
+    <head>
+    <meta charset="UTF-8">
+    <title>Certificat Antirabique - Risque Hémorragique/Qte Limitées</title>
+    <style>
+    body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        background-color: #f9f9f9;
+    }
+    .certificat {
+        background-color: white;
+        border: 1px solid #ddd;
+        padding: 20px;
+        max-width: 600px;
+        margin: 0 auto;
+        margin-top: 60px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+        text-align: center;
+        color: #333;
+        text-decoration: underline;
+        font-size: 16px;
+    }
+    h2 {
+        text-align: center;
+        color: #555;
+        font-size: 10px;
+        margin-top: 5px;
+        margin-bottom: 15px;
+    }
+    p {
+        line-height: 1.5;
+        color: #555;
+    }
+    .small-text {
+        font-size: 12px;
+    }
+    .print-button {
+        text-align: center;
+        margin-top: 20px;
+    }
+    .print-button button {
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .print-button button:hover {
+        background-color: #0056b3;
+    }
+    @media print {
+        @page {
+            size: A5;
+            margin: 0.2cm 0.2cm 0.2cm 0.2cm;
+        }
+        body {
+            margin: 0 !important;
+            padding: 0 !important;
+            font-size: 10pt !important;
+            background-color: white;
+        }
+        .certificat {
+            padding: 2px 8px !important;
+            max-width: 100% !important;
+            border: none;
+            box-shadow: none;
+            margin-top: 0;
+        }
+        h1 {
+            font-size: 14pt !important;
+            margin: 5px 0 !important;
+            margin-top: 2cm !important;
+        }
+        h2 {
+            font-size: 12pt !important;
+            margin: 3px 0 !important;
+        }
+        p {
+            font-size: 9pt !important;
+            margin: 2px 0 !important;
+            line-height: 1.2 !important;
+        }
+        input[type="text"],
+        input[type="date"],
+        textarea {
+            border: none !important;
+            background: none !important;
+            box-shadow: none !important;
+            outline: none !important;
+            font-size: 9pt !important;
+        }
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        textarea:focus {
+            border: none !important;
+            outline: none !important;
+        }
+        .print-button {
+            display: none;
+        }
+        .docteur {
+            font-weight: bold;
+            font-size: 14pt !important;
+            margin-right: 50px;
+        }
+        /* Additional space optimization */
+        * {
+            margin-top: 0 !important;
+            margin-bottom: 2px !important;
+        }
+    }
+    </style>
+    </head>
+    <body>
+   ${enteteContent}
+
+    <div class="certificat">
+        <h1>Schéma Antirabique - Classe 02 (Risque Hémorragique/Qte Limitées)</h1>
+        <h2>Selon l'instruction N16 du 15 Juillet 2024 relative à la conduite à tenir devant un risque rabique</h2>
+        <p>
+        NOM : <strong><input type="text" value="${patientNomPrenom}" style="width: auto;"></strong><br>
+        Date de naissance : <strong><input type="text" value="${ageInfo}" style="width: auto;"></strong><br>
+        Animal en cause : <strong><input type="text" value="${animal}" style="width: auto;"></strong><br>
+		<br>
+     <span class="small-text">Schéma adapté pour patient à  risque hémorragique ou quantités limitées</span>
+     <br>
+        </p>
+        <p>
+         <br>
+		 <strong>Personne sans antécédent de vaccination:</strong><br><br>
+         Un total de six doses : 2 doses en deux [2] sites différents<br><br>
+         Jour 0 : <input type="date" id="dateJour0" value="${dateFormattedJour0}" readonly> ( 2 doses en ID  ))<br>
+         Jour 3 : <input type="date" id="datePlus3" value="${dateFormattedPlus3}" readonly> ( 2 doses en ID  )<br>
+         Jour 7 : <input type="date" id="datePlus7" value="${dateFormattedPlus7}" readonly> ( 2 doses en ID  )<br>
+       
+         <br><br>
+        NB: 01 dose=0,1mI (administration en ID)
+        </p>
+        <p style="text-align: right; margin-top: 30px;">
+        Medecin traitant <br>
+        <span class="docteur" style="font-weight: bold;">Dr ${docteur}</span>&nbsp&nbsp&nbsp&nbsp&nbsp;
+        </p>
+    </div>
+
+    <div class="print-button">
+        <button id="printButton">Imprimer le schéma</button>
+    </div>
+    
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const polycliniqueInput = document.getElementById('polyclinique');
+        if (polycliniqueInput) {
+            polycliniqueInput.addEventListener('input', function () {
+                localStorage.setItem('polyclinique', this.value);
+            });
+        }
+
+        const polycliniqueArInput = document.getElementById('polyclinique-ar');
+        if (polycliniqueArInput) {
+            polycliniqueArInput.addEventListener('input', function () {
+                localStorage.setItem('polyclinique-ar', this.value);
+            });
+        }
+
+        document.getElementById('printButton').addEventListener('click', function () {
+            window.print();
+        });
+    });
+    </script>
+    </body>
+    </html>
+    `;
+
+    var newWindow = window.open("", "_blank");
+    if (newWindow) {
+        newWindow.document.write(certificatContent);
+        newWindow.document.close();
+    } else {
+        console.log("Popup bloquée par le navigateur.");
+    }
+}
+
+function prophylaxiePreExpositionSchema1Classe2(dateMorsure, poidsInput) {
+    // Récupérer les informations du patient depuis le formulaire
+    const patientNomPrenom = document.getElementById('patientNomPrenom').value || '';
+    const patientAge = document.getElementById('patientAge').value || '';
+    const patientDateNaissance = document.getElementById('patientDateNaissance').value || '';
+    
+    // Utiliser la date de naissance si disponible, sinon l'âge
+    let ageInfo = '';
+    if (patientDateNaissance) {
+        ageInfo = patientDateNaissance;
+    } else if (patientAge) {
+        ageInfo = patientAge;
+    } else {
+        ageInfo = '[Date de naissance]';
+    }
+    
+    // Calculer les dates pour le schéma ATCD Vaccinaux Schéma 1 (J0, J3)
+    const dateJour0 = new Date(dateMorsure);
+    const datePlus3 = new Date(dateJour0);
+    datePlus3.setDate(dateJour0.getDate() + 3);
+
+    const dateFormattedJour0 = `${dateJour0.getFullYear()}-${String(dateJour0.getMonth() + 1).padStart(2, '0')}-${String(dateJour0.getDate()).padStart(2, '0')}`;
+    const dateFormattedPlus3 = `${datePlus3.getFullYear()}-${String(datePlus3.getMonth() + 1).padStart(2, '0')}-${String(datePlus3.getDate()).padStart(2, '0')}`;
+
+    const polyclinique = localStorage.getItem('polyclinique') || "";
+    const polycliniqueAr = localStorage.getItem('polyclinique-ar') || "";
+    const docteur = localStorage.getItem('docteur') || "";
+    const animal = "chien"; // Animal en cause (valeur par défaut)
+
+    // Vérifier le format choisi
+    const avecEntete = localStorage.getItem('certificatFormat') === 'avecEntete';
+
+    let enteteContent = '';
+    if (avecEntete) {
+        enteteContent = generateHeader();
+    } else {
+        // Espace vide pour garder la meme mise en page
+        enteteContent = '<div style="height: 155px;"></div>';
+    }
+
+    // Générer le certificat ATCD Vaccinaux Schéma 1
+    const certificatContent = `
+    <!DOCTYPE html>
+    <html lang="fr">
+    <head>
+    <meta charset="UTF-8">
+    <title>Certificat Antirabique - Avec ATCD Vaccinaux (Schéma 1)</title>
+    <style>
+    body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        background-color: #f9f9f9;
+    }
+    .certificat {
+        background-color: white;
+        border: 1px solid #ddd;
+        padding: 20px;
+        max-width: 600px;
+        margin: 0 auto;
+        margin-top: 60px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+        text-align: center;
+        color: #333;
+        text-decoration: underline;
+        font-size: 16px;
+    }
+    h2 {
+        text-align: center;
+        color: #555;
+        font-size: 10px;
+        margin-top: 5px;
+        margin-bottom: 15px;
+    }
+    p {
+        line-height: 1.5;
+        color: #555;
+    }
+    .small-text {
+        font-size: 12px;
+    }
+    .print-button {
+        text-align: center;
+        margin-top: 20px;
+    }
+    .print-button button {
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .print-button button:hover {
+        background-color: #0056b3;
+    }
+    @media print {
+        @page {
+            size: A5;
+            margin: 0.2cm 0.2cm 0.2cm 0.2cm;
+        }
+        body {
+            margin: 0 !important;
+            padding: 0 !important;
+            font-size: 10pt !important;
+            background-color: white;
+        }
+        .certificat {
+            padding: 2px 8px !important;
+            max-width: 100% !important;
+            border: none;
+            box-shadow: none;
+            margin-top: 0;
+        }
+        h1 {
+            font-size: 14pt !important;
+            margin: 5px 0 !important;
+            margin-top: 2cm !important;
+        }
+        h2 {
+            font-size: 12pt !important;
+            margin: 3px 0 !important;
+        }
+        p {
+            font-size: 9pt !important;
+            margin: 2px 0 !important;
+            line-height: 1.2 !important;
+        }
+        input[type="text"],
+        input[type="date"],
+        textarea {
+            border: none !important;
+            background: none !important;
+            box-shadow: none !important;
+            outline: none !important;
+            font-size: 9pt !important;
+        }
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        textarea:focus {
+            border: none !important;
+            outline: none !important;
+        }
+        .print-button {
+            display: none;
+        }
+        .docteur {
+            font-weight: bold;
+            font-size: 14pt !important;
+            margin-right: 50px;
+        }
+        /* Additional space optimization */
+        * {
+            margin-top: 0 !important;
+            margin-bottom: 2px !important;
+        }
+    }
+    </style>
+    </head>
+    <body>
+   ${enteteContent}
+
+    <div class="certificat">
+        <h1>Schéma Antirabique - Avec ATCD Vaccinaux (Schéma 1)</h1>
+        <h2>Selon l'instruction N16 du 15 Juillet 2024 relative à la conduite à tenir devant un risque rabique</h2>
+        <p>
+        NOM : <strong><input type="text" value="${patientNomPrenom}" style="width: auto;"></strong><br>
+        Date de naissance : <strong><input type="text" value="${ageInfo}" style="width: auto;"></strong><br>
+        Animal en cause : <strong><input type="text" value="${animal}" style="width: auto;"></strong><br>
+        </p>
+        <p>
+         <strong style="font-size: 14px;">Personne ayant reçu une prophylaxie Pré-exPosition, ou (>= 02 doses):</strong><br>
+         <br><br>
+         Schéma 1 : Un total de deux (2) doses<br><br>
+         Jour 0 : <input type="date" id="dateJour0" value="${dateFormattedJour0}" readonly> (une (1) dose ID en un seul site)<br>
+         Jour 3 : <input type="date" id="datePlus3" value="${dateFormattedPlus3}" readonly> (une (1) dose ID en un seul site)<br>
+         <br><br>
+        NB: 01 dose=0,1mI
+        </p>
+        <p style="text-align: right; margin-top: 30px;">
+        Medecin traitant <br>
+        <span class="docteur" style="font-weight: bold;">Dr ${docteur}</span>&nbsp&nbsp&nbsp&nbsp&nbsp;
+        </p>
+    </div>
+
+    <div class="print-button">
+        <button id="printButton">Imprimer le schéma</button>
+    </div>
+    
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const polycliniqueInput = document.getElementById('polyclinique');
+        if (polycliniqueInput) {
+            polycliniqueInput.addEventListener('input', function () {
+                localStorage.setItem('polyclinique', this.value);
+            });
+        }
+
+        const polycliniqueArInput = document.getElementById('polyclinique-ar');
+        if (polycliniqueArInput) {
+            polycliniqueArInput.addEventListener('input', function () {
+                localStorage.setItem('polyclinique-ar', this.value);
+            });
+        }
+
+        document.getElementById('printButton').addEventListener('click', function () {
+            window.print();
+        });
+    });
+    </script>
+    </body>
+    </html>
+    `;
+
+    var newWindow = window.open("", "_blank");
+    if (newWindow) {
+        newWindow.document.write(certificatContent);
+        newWindow.document.close();
+    } else {
+        console.log("Popup bloquée par le navigateur.");
+    }
+}
+
+function prophylaxiePreExpositionSchema2Classe2(dateMorsure) {
+    // Récupérer les informations du patient depuis le formulaire
+    const patientNomPrenom = document.getElementById('patientNomPrenom').value || '';
+    const patientAge = document.getElementById('patientAge').value || '';
+    const patientDateNaissance = document.getElementById('patientDateNaissance').value || '';
+    
+    // Utiliser la date de naissance si disponible, sinon l'âge
+    let ageInfo = '';
+    if (patientDateNaissance) {
+        ageInfo = patientDateNaissance;
+    } else if (patientAge) {
+        ageInfo = patientAge;
+    } else {
+        ageInfo = '[Date de naissance]';
+    }
+    
+    // Calculer les dates pour le schéma ATCD Vaccinaux Schéma 2 (J0 uniquement)
+    const dateJour0 = new Date(dateMorsure);
+
+    const dateFormattedJour0 = `${dateJour0.getFullYear()}-${String(dateJour0.getMonth() + 1).padStart(2, '0')}-${String(dateJour0.getDate()).padStart(2, '0')}`;
+
+    const polyclinique = localStorage.getItem('polyclinique') || "";
+    const polycliniqueAr = localStorage.getItem('polyclinique-ar') || "";
+    const docteur = localStorage.getItem('docteur') || "";
+    const animal = "chien"; // Animal en cause (valeur par défaut)
+
+    // Vérifier le format choisi
+    const avecEntete = localStorage.getItem('certificatFormat') === 'avecEntete';
+
+    let enteteContent = '';
+    if (avecEntete) {
+        enteteContent = generateHeader();
+    } else {
+        // Espace vide pour garder la meme mise en page
+        enteteContent = '<div style="height: 155px;"></div>';
+    }
+
+    // Générer le certificat ATCD Vaccinaux Schéma 2
+    const certificatContent = `
+    <!DOCTYPE html>
+    <html lang="fr">
+    <head>
+    <meta charset="UTF-8">
+    <title>Certificat Antirabique - Avec ATCD Vaccinaux (Schéma 2)</title>
+    <style>
+    body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        background-color: #f9f9f9;
+    }
+    .certificat {
+        background-color: white;
+        border: 1px solid #ddd;
+        padding: 20px;
+        max-width: 600px;
+        margin: 0 auto;
+        margin-top: 60px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+        text-align: center;
+        color: #333;
+        text-decoration: underline;
+        font-size: 16px;
+    }
+    h2 {
+        text-align: center;
+        color: #555;
+        font-size: 10px;
+        margin-top: 5px;
+        margin-bottom: 15px;
+    }
+    p {
+        line-height: 1.5;
+        color: #555;
+    }
+    .small-text {
+        font-size: 12px;
+    }
+    .print-button {
+        text-align: center;
+        margin-top: 20px;
+    }
+    .print-button button {
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .print-button button:hover {
+        background-color: #0056b3;
+    }
+    @media print {
+        @page {
+            size: A5;
+            margin: 0.2cm 0.2cm 0.2cm 0.2cm;
+        }
+        body {
+            margin: 0 !important;
+            padding: 0 !important;
+            font-size: 10pt !important;
+            background-color: white;
+        }
+        .certificat {
+            padding: 2px 8px !important;
+            max-width: 100% !important;
+            border: none;
+            box-shadow: none;
+            margin-top: 0;
+        }
+        h1 {
+            font-size: 14pt !important;
+            margin: 5px 0 !important;
+            margin-top: 2cm !important;
+        }
+        h2 {
+            font-size: 12pt !important;
+            margin: 3px 0 !important;
+        }
+        p {
+            font-size: 9pt !important;
+            margin: 2px 0 !important;
+            line-height: 1.2 !important;
+        }
+        input[type="text"],
+        input[type="date"],
+        textarea {
+            border: none !important;
+            background: none !important;
+            box-shadow: none !important;
+            outline: none !important;
+            font-size: 9pt !important;
+        }
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        textarea:focus {
+            border: none !important;
+            outline: none !important;
+        }
+        .print-button {
+            display: none;
+        }
+        .docteur {
+            font-weight: bold;
+            font-size: 14pt !important;
+            margin-right: 50px;
+        }
+        /* Additional space optimization */
+        * {
+            margin-top: 0 !important;
+            margin-bottom: 2px !important;
+        }
+    }
+    </style>
+    </head>
+    <body>
+   ${enteteContent}
+
+    <div class="certificat">
+        <h1>Schéma Antirabique - Avec ATCD Vaccinaux (Schéma 2)</h1>
+        <h2>Selon l'instruction N16 du 15 Juillet 2024 relative à la conduite à tenir devant un risque rabique</h2>
+        <p>
+        NOM : <strong><input type="text" value="${patientNomPrenom}" style="width: auto;"></strong><br>
+        Date de naissance : <strong><input type="text" value="${ageInfo}" style="width: auto;"></strong><br>
+        Animal en cause : <strong><input type="text" value="${animal}" style="width: auto;"></strong><br>
+        </p>
+        <p>
+         <strong>Personne ayant reçu une prophylaxie Pré-exPosition, ou (≥ 02 doses):</strong><br>
+         Schéma 2 : Un total de quatre (4) doses<br><br>
+         Jour 0 : <input type="date" id="dateJour0" value="${dateFormattedJour0}" readonly> (une dose en ID en quatre (4) sites différents)<br>
+         <br><br>
+        NB: 01 dose=0,1mI
+        </p>
+        <p style="text-align: right; margin-top: 30px;">
+        Medecin traitant <br>
+        <span class="docteur" style="font-weight: bold;">Dr ${docteur}</span>&nbsp&nbsp&nbsp&nbsp&nbsp;
+        </p>
+    </div>
+
+    <div class="print-button">
+        <button id="printButton">Imprimer le schéma</button>
+    </div>
+  
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const polycliniqueInput = document.getElementById('polyclinique');
+        if (polycliniqueInput) {
+            polycliniqueInput.addEventListener('input', function () {
+                localStorage.setItem('polyclinique', this.value);
+            });
+        }
+
+        const polycliniqueArInput = document.getElementById('polyclinique-ar');
+        if (polycliniqueArInput) {
+            polycliniqueArInput.addEventListener('input', function () {
+                localStorage.setItem('polyclinique-ar', this.value);
+            });
+        }
+
+        document.getElementById('printButton').addEventListener('click', function () {
+            window.print();
+        });
+    });
+    </script>
+    </body>
+    </html>
+    `;
+
+    var newWindow = window.open("", "_blank");
+    if (newWindow) {
+        newWindow.document.write(certificatContent);
+        newWindow.document.close();
+    } else {
+        console.log("Popup bloquée par le navigateur.");
+    }
+}
+
+function vaccinc3(dateMorsure, poidsInput) {
+    // Récupérer les informations du patient depuis le formulaire
+    const patientNomPrenom = document.getElementById('patientNomPrenom').value || '';
+    const patientAge = document.getElementById('patientAge').value || '';
+    const patientDateNaissance = document.getElementById('patientDateNaissance').value || '';
+    
+    // Utiliser la date de naissance si disponible, sinon l'âge
+    let ageInfo = '';
+    if (patientDateNaissance) {
+        ageInfo = patientDateNaissance;
+    } else if (patientAge) {
+        ageInfo = patientAge;
+    } else {
+        ageInfo = '[Date de naissance]';
+    }
+    
+    // Calculer le SAR (Sérum Antirabique) en fonction du poids
+    const poids = parseFloat(poidsInput) || 0;
+    let sar = poids / 5;
+    if (poids >= 75) {
+        sar = 15;
+    }
+    sar = Math.round(sar * 100) / 100;
+    
+    // Calculer les dates pour le schéma Zagreb 3 (J0, J7, J21)
+    const dateJour0 = new Date(dateMorsure);
+    const datePlus7 = new Date(dateJour0);
+    datePlus7.setDate(dateJour0.getDate() + 7);
+    const datePlus21 = new Date(dateJour0);
+    datePlus21.setDate(dateJour0.getDate() + 21);
+
+    const dateFormattedJour0 = `${dateJour0.getFullYear()}-${String(dateJour0.getMonth() + 1).padStart(2, '0')}-${String(dateJour0.getDate()).padStart(2, '0')}`;
+    const dateFormattedPlus7 = `${datePlus7.getFullYear()}-${String(datePlus7.getMonth() + 1).padStart(2, '0')}-${String(datePlus7.getDate()).padStart(2, '0')}`;
+    const dateFormattedPlus21 = `${datePlus21.getFullYear()}-${String(datePlus21.getMonth() + 1).padStart(2, '0')}-${String(datePlus21.getDate()).padStart(2, '0')}`;
+
+    const polyclinique = localStorage.getItem('polyclinique') || "";
+    const polycliniqueAr = localStorage.getItem('polyclinique-ar') || "";
+    const docteur = localStorage.getItem('docteur') || "";
+    const animal = "chien"; // Animal en cause (valeur par défaut)
+
+    // Vérifier le format choisi
+    const avecEntete = localStorage.getItem('certificatFormat') === 'avecEntete';
+
+    let enteteContent = '';
+    if (avecEntete) {
+        enteteContent = generateHeader();
+    } else {
+        // Espace vide pour garder la meme mise en page
+        enteteContent = '<div style="height: 155px;"></div>';
+    }
+
+    // Générer le certificat Vaccin C Schema 3
+    const certificatContent = `
+    <!DOCTYPE html>
+    <html lang="fr">
+    <head>
+    <meta charset="UTF-8">
+    <title>Certificat Antirabique - Vaccin C Schema 3 (Zagreb)</title>
+    <style>
+    body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        background-color: #f9f9f9;
+    }
+    .certificat {
+        background-color: white;
+        border: 1px solid #ddd;
+        padding: 20px;
+        max-width: 600px;
+        margin: 0 auto;
+        margin-top: 60px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+        text-align: center;
+        color: #333;
+        text-decoration: underline;
+        font-size: 16px;
+    }
+    h2 {
+        text-align: center;
+        color: #555;
+        font-size: 10px;
+        margin-top: 5px;
+        margin-bottom: 15px;
+    }
+    p {
+        line-height: 1.5;
+        color: #555;
+    }
+    .small-text {
+        font-size: 12px;
+    }
+    .print-button {
+        text-align: center;
+        margin-top: 20px;
+    }
+    .print-button button {
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .print-button button:hover {
+        background-color: #0056b3;
+    }
+    @media print {
+        @page {
+            size: A5;
+            margin: 0.2cm 0.2cm 0.2cm 0.2cm;
+        }
+        body {
+            margin: 0 !important;
+            padding: 0 !important;
+            font-size: 10pt !important;
+            background-color: white;
+        }
+        .certificat {
+            padding: 2px 8px !important;
+            max-width: 100% !important;
+            border: none;
+            box-shadow: none;
+            margin-top: 0;
+        }
+        h1 {
+            font-size: 14pt !important;
+            margin: 5px 0 !important;
+            margin-top: 2cm !important;
+        }
+        h2 {
+            font-size: 12pt !important;
+            margin: 3px 0 !important;
+        }
+        p {
+            font-size: 9pt !important;
+            margin: 2px 0 !important;
+            line-height: 1.2 !important;
+        }
+        input[type="text"],
+        input[type="date"],
+        textarea {
+            border: none !important;
+            background: none !important;
+            box-shadow: none !important;
+            outline: none !important;
+            font-size: 9pt !important;
+        }
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        textarea:focus {
+            border: none !important;
+            outline: none !important;
+        }
+        .print-button {
+            display: none;
+        }
+        .docteur {
+            font-weight: bold;
+            font-size: 14pt !important;
+            margin-right: 50px;
+        }
+        /* Additional space optimization */
+        * {
+            margin-top: 0 !important;
+            margin-bottom: 2px !important;
+        }
+    }
+    </style>
+    </head>
+    <body>
+   ${enteteContent}
+
+    <div class="certificat">
+        <h1>Schéma Antirabique - Classe 03 (Vaccin C Schema 3)</h1>
+        <h2>Selon l'instruction N16 du 15 Juillet 2024 relative à la conduite à tenir devant un risque rabique</h2>
+        <p>
+        NOM : <strong><input type="text" value="${patientNomPrenom}" style="width: auto;"></strong><br>
+        Date de naissance : <strong><input type="text" value="${ageInfo}" style="width: auto;"></strong><br>
+        Animal en cause : <strong><input type="text" value="${animal}" style="width: auto;"></strong><br>
+        Poids : <strong><input type="text" value="${poidsInput} kg" style="width: auto;"></strong><br>
+        SAR : <strong><input type="text" value="${sar} cc" style="width: auto;"></strong><br><br>		
+        Classe 03, schéma choisi : vaccin cellulaire / schéma de Zagreb / avec SAR
+        <br>
+        </p>
+        <p>
+         <br><br>
+         Jour 0 : <input type="date" id="dateJour0" value="${dateFormattedJour0}" readonly>( 02 doses chacune dans un deltoïde )<br>
+         Jour 7 : <input type="date" id="datePlus7" value="${dateFormattedPlus7}" readonly> <br>
+         Jour 21 : <input type="date" id="datePlus21" value="${dateFormattedPlus21}" readonly> <br>
+         <br><br>
+         en cas d'âge <02 ans Face antérolatéral externe de la cuisse droite et gauche<br>
+        </p>
+        <p style="text-align: right; margin-top: 30px;">
+        Medecin traitant <br>
+        <span class="docteur" style="font-weight: bold;">Dr ${docteur}</span>&nbsp&nbsp&nbsp&nbsp&nbsp;
+        </p>
+    </div>
+
+    <div class="print-button">
+        <button id="printButton">Imprimer le schéma</button>
+    </div>
+    
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const polycliniqueInput = document.getElementById('polyclinique');
+        if (polycliniqueInput) {
+            polycliniqueInput.addEventListener('input', function () {
+                localStorage.setItem('polyclinique', this.value);
+            });
+        }
+
+        const polycliniqueArInput = document.getElementById('polyclinique-ar');
+        if (polycliniqueArInput) {
+            polycliniqueArInput.addEventListener('input', function () {
+                localStorage.setItem('polyclinique-ar', this.value);
+            });
+        }
+
+        document.getElementById('printButton').addEventListener('click', function () {
+            window.print();
+        });
+    });
+    </script>
+    </body>
+    </html>
+    `;
+
+    var newWindow = window.open("", "_blank");
+    if (newWindow) {
+        newWindow.document.write(certificatContent);
+        newWindow.document.close();
+    } else {
+        console.log("Popup bloquée par le navigateur.");
+    }
+}
+
+function essen3(dateMorsure, poidsInput) {
+    // Récupérer les informations du patient depuis le formulaire
+    const patientNomPrenom = document.getElementById('patientNomPrenom').value || '';
+    const patientAge = document.getElementById('patientAge').value || '';
+    const patientDateNaissance = document.getElementById('patientDateNaissance').value || '';
+    
+    // Utiliser la date de naissance si disponible, sinon l'âge
+    let ageInfo = '';
+    if (patientDateNaissance) {
+        ageInfo = patientDateNaissance;
+    } else if (patientAge) {
+        ageInfo = patientAge;
+    } else {
+        ageInfo = '[Date de naissance]';
+    }
+    
+    // Calculer le SAR (Sérum Antirabique) en fonction du poids
+    const poids = parseFloat(poidsInput) || 0;
+    let sar = poids / 5;
+    if (poids >= 75) {
+        sar = 15;
+    }
+    sar = Math.round(sar * 100) / 100;
+    
+    // Calculer les dates pour le schéma Essen 3 (J0, J3, J7, J14)
+    const dateJour0 = new Date(dateMorsure);
+    const datePlus3 = new Date(dateJour0);
+    datePlus3.setDate(dateJour0.getDate() + 3);
+    const datePlus7 = new Date(dateJour0);
+    datePlus7.setDate(dateJour0.getDate() + 7);
+    const datePlus14 = new Date(dateJour0);
+    datePlus14.setDate(dateJour0.getDate() + 14);
+
+    const dateFormattedJour0 = `${dateJour0.getFullYear()}-${String(dateJour0.getMonth() + 1).padStart(2, '0')}-${String(dateJour0.getDate()).padStart(2, '0')}`;
+    const dateFormattedPlus3 = `${datePlus3.getFullYear()}-${String(datePlus3.getMonth() + 1).padStart(2, '0')}-${String(datePlus3.getDate()).padStart(2, '0')}`;
+    const dateFormattedPlus7 = `${datePlus7.getFullYear()}-${String(datePlus7.getMonth() + 1).padStart(2, '0')}-${String(datePlus7.getDate()).padStart(2, '0')}`;
+    const dateFormattedPlus14 = `${datePlus14.getFullYear()}-${String(datePlus14.getMonth() + 1).padStart(2, '0')}-${String(datePlus14.getDate()).padStart(2, '0')}`;
+
+    const polyclinique = localStorage.getItem('polyclinique') || "";
+    const polycliniqueAr = localStorage.getItem('polyclinique-ar') || "";
+    const docteur = localStorage.getItem('docteur') || "";
+    const animal = "chien"; // Animal en cause (valeur par défaut)
+
+    // Vérifier le format choisi
+    const avecEntete = localStorage.getItem('certificatFormat') === 'avecEntete';
+
+    let enteteContent = '';
+    if (avecEntete) {
+        enteteContent = generateHeader();
+    } else {
+        // Espace vide pour garder la meme mise en page
+        enteteContent = '<div style="height: 155px;"></div>';
+    }
+
+    // Générer le certificat Essen Schema 3
+    const certificatContent = `
+    <!DOCTYPE html>
+    <html lang="fr">
+    <head>
+    <meta charset="UTF-8">
+    <title>Certificat Antirabique - Essen Schema 3</title>
+    <style>
+    body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        background-color: #f9f9f9;
+    }
+    .certificat {
+        background-color: white;
+        border: 1px solid #ddd;
+        padding: 20px;
+        max-width: 600px;
+        margin: 0 auto;
+        margin-top: 60px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+        text-align: center;
+        color: #333;
+        text-decoration: underline;
+        font-size: 16px;
+    }
+    h2 {
+        text-align: center;
+        color: #555;
+        font-size: 10px;
+        margin-top: 5px;
+        margin-bottom: 15px;
+    }
+    p {
+        line-height: 1.5;
+        color: #555;
+    }
+    .small-text {
+        font-size: 12px;
+    }
+    .print-button {
+        text-align: center;
+        margin-top: 20px;
+    }
+    .print-button button {
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .print-button button:hover {
+        background-color: #0056b3;
+    }
+    @media print {
+        @page {
+            size: A5;
+            margin: 0.2cm 0.2cm 0.2cm 0.2cm;
+        }
+        body {
+            margin: 0 !important;
+            padding: 0 !important;
+            font-size: 10pt !important;
+            background-color: white;
+        }
+        .certificat {
+            padding: 2px 8px !important;
+            max-width: 100% !important;
+            border: none;
+            box-shadow: none;
+            margin-top: 0;
+        }
+        h1 {
+            font-size: 14pt !important;
+            margin: 5px 0 !important;
+            margin-top: 2cm !important;
+        }
+        h2 {
+            font-size: 12pt !important;
+            margin: 3px 0 !important;
+        }
+        p {
+            font-size: 9pt !important;
+            margin: 2px 0 !important;
+            line-height: 1.2 !important;
+        }
+        input[type="text"],
+        input[type="date"],
+        textarea {
+            border: none !important;
+            background: none !important;
+            box-shadow: none !important;
+            outline: none !important;
+            font-size: 9pt !important;
+        }
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        textarea:focus {
+            border: none !important;
+            outline: none !important;
+        }
+        .print-button {
+            display: none;
+        }
+        .docteur {
+            font-weight: bold;
+            font-size: 14pt !important;
+            margin-right: 50px;
+        }
+        /* Additional space optimization */
+        * {
+            margin-top: 0 !important;
+            margin-bottom: 2px !important;
+        }
+    }
+    </style>
+    </head>
+    <body>
+   ${enteteContent}
+
+    <div class="certificat">
+        <h1>Schéma Antirabique - Classe 03 (Essen)</h1>
+        <h2>Selon l'instruction N16 du 15 Juillet 2024 relative à la conduite à tenir devant un risque rabique</h2>
+        <p>
+        NOM : <strong><input type="text" value="${patientNomPrenom}" style="width: auto;"></strong><br>
+        Date de naissance : <strong><input type="text" value="${ageInfo}" style="width: auto;"></strong><br>
+        Animal en cause : <strong><input type="text" value="${animal}" style="width: auto;"></strong><br>
+        Poids : <strong><input type="text" value="${poidsInput} kg" style="width: auto;"></strong><br>
+        SAR : <strong><input type="text" value="${sar} cc" style="width: auto;"></strong><br>
+		<br>
+         Classe 03, schéma choisi : vaccin cellulaire / schéma de Essen / avec SAR
+        <br>
+        </p>
+        <p>
+         <br>
+         Jour 0 : <input type="date" id="dateJour0" value="${dateFormattedJour0}" readonly> ( dans le deltoïde )<br>
+         Jour 3 : <input type="date" id="datePlus3" value="${dateFormattedPlus3}" readonly> <br>
+         Jour 7 : <input type="date" id="datePlus7" value="${dateFormattedPlus7}" readonly> <br>
+         Jour 14 : <input type="date" id="datePlus14" value="${dateFormattedPlus14}" readonly> <br>
+         <br><br>
+        Pour les immunodéprimées si sérologie de contrôle après 02 a 04 semaines de vaccin < 0.5 ui/ml (ou s’il n'est pas faisable) ajouter une autre dose de vaccin.<br>
+		
+		<br><br>
+		<br><br>
+        <span class="small-text">en cas d'âge <02 ans Face antérolatéral externe de la cuisse droite et gauche</span><br>
+        </p>
+        <p style="text-align: right; margin-top: 30px;">
+        Medecin traitant <br>
+        <span class="docteur" style="font-weight: bold;">Dr ${docteur}</span>&nbsp&nbsp&nbsp&nbsp&nbsp;
+        </p>
+    </div>
+
+    <div class="print-button">
+        <button id="printButton">Imprimer le schéma</button>
+    </div>
+
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const polycliniqueInput = document.getElementById('polyclinique');
+        if (polycliniqueInput) {
+            polycliniqueInput.addEventListener('input', function () {
+                localStorage.setItem('polyclinique', this.value);
+            });
+        }
+
+        const polycliniqueArInput = document.getElementById('polyclinique-ar');
+        if (polycliniqueArInput) {
+            polycliniqueArInput.addEventListener('input', function () {
+                localStorage.setItem('polyclinique-ar', this.value);
+            });
+        }
+
+        document.getElementById('printButton').addEventListener('click', function () {
+            window.print();
+        });
+    });
+    </script>
+    </body>
+    </html>
+    `;
+
+    var newWindow = window.open("", "_blank");
+    if (newWindow) {
+        newWindow.document.write(certificatContent);
+        newWindow.document.close();
+    } else {
+        console.log("Popup bloquée par le navigateur.");
+    }
+}
+
+function vaccint3(dateMorsure, poidsInput) {
+    // Récupérer les informations du patient depuis le formulaire
+    const patientNomPrenom = document.getElementById('patientNomPrenom').value || '';
+    const patientAge = document.getElementById('patientAge').value || '';
+    const patientDateNaissance = document.getElementById('patientDateNaissance').value || '';
+    
+    // Utiliser la date de naissance si disponible, sinon l'âge
+    let ageInfo = '';
+    if (patientDateNaissance) {
+        ageInfo = patientDateNaissance;
+    } else if (patientAge) {
+        ageInfo = patientAge;
+    } else {
+        ageInfo = '[Date de naissance]';
+    }
+    
+    // Calculer le SAR (Sérum Antirabique) en fonction du poids
+    const poids = parseFloat(poidsInput) || 0;
+    let sar = poids / 5;
+    if (poids >= 75) {
+        sar = 15;
+    }
+    sar = Math.round(sar * 100) / 100;
+    
+    // Calculer les dates pour le schéma Tissulaire avec SAR (J0, J3, J7, J14, J28, J90)
+    const dateJour0 = new Date(dateMorsure);
+    const dateJour3 = new Date(dateJour0);
+    dateJour3.setDate(dateJour0.getDate() + 3);
+    const dateJour7 = new Date(dateJour0);
+    dateJour7.setDate(dateJour0.getDate() + 7);
+    const dateJour14 = new Date(dateJour0);
+    dateJour14.setDate(dateJour0.getDate() + 14);
+    const dateJour28 = new Date(dateJour0);
+    dateJour28.setDate(dateJour0.getDate() + 28);
+    const dateJour90 = new Date(dateJour0);
+    dateJour90.setDate(dateJour0.getDate() + 90);
+
+    // Fonction pour formater la date
+    const formatDate = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+
+    const dateFormattedJour0 = formatDate(dateJour0);
+    const dateFormattedJour3 = formatDate(dateJour3);
+    const dateFormattedJour7 = formatDate(dateJour7);
+    const dateFormattedJour14 = formatDate(dateJour14);
+    const dateFormattedJour28 = formatDate(dateJour28);
+    const dateFormattedJour90 = formatDate(dateJour90);
+
+    const polyclinique = localStorage.getItem('polyclinique') || "";
+    const polycliniqueAr = localStorage.getItem('polyclinique-ar') || "";
+    const docteur = localStorage.getItem('docteur') || "";
+    const animal = "chien"; // Animal en cause (valeur par défaut)
+
+    // Vérifier le format choisi
+    const avecEntete = localStorage.getItem('certificatFormat') === 'avecEntete';
+
+    let enteteContent = '';
+    if (avecEntete) {
+        enteteContent = generateHeader();
+    } else {
+        // Espace vide pour garder la meme mise en page
+        enteteContent = '<div style="height: 155px;"></div>';
+    }
+
+    // Générer le certificat Vaccin T Schema 3
+    const certificatContent = `
+    <!DOCTYPE html>
+    <html lang="fr">
+    <head>
+    <meta charset="UTF-8">
+    <title>Certificat Antirabique - Vaccin T Schema 3 (Tissulaire avec SAR)</title>
+    <style>
+    body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        background-color: #f9f9f9;
+    }
+    .certificat {
+        background-color: white;
+        border: 1px solid #ddd;
+        padding: 20px;
+        max-width: 600px;
+        margin: 0 auto;
+        margin-top: 60px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+        text-align: center;
+        color: #333;
+        text-decoration: underline;
+        font-size: 16px;
+    }
+    h2 {
+        text-align: center;
+        color: #555;
+        font-size: 10px;
+        margin-top: 5px;
+        margin-bottom: 15px;
+    }
+    p {
+        line-height: 1.5;
+        color: #555;
+    }
+    .small-text {
+        font-size: 12px;
+    }
+    .print-button {
+        text-align: center;
+        margin-top: 20px;
+    }
+    .print-button button {
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .print-button button:hover {
+        background-color: #0056b3;
+    }
+    @media print {
+        @page {
+            size: A5;
+            margin: 0.2cm 0.2cm 0.2cm 0.2cm;
+        }
+        body {
+            margin: 0 !important;
+            padding: 0 !important;
+            font-size: 10pt !important;
+            background-color: white;
+        }
+        .certificat {
+            padding: 2px 8px !important;
+            max-width: 100% !important;
+            border: none;
+            box-shadow: none;
+            margin-top: 0;
+        }
+        h1 {
+            font-size: 14pt !important;
+            margin: 5px 0 !important;
+            margin-top: 2cm !important;
+        }
+        h2 {
+            font-size: 12pt !important;
+            margin: 3px 0 !important;
+        }
+        p {
+            font-size: 9pt !important;
+            margin: 2px 0 !important;
+            line-height: 1.2 !important;
+        }
+        input[type="text"],
+        input[type="date"],
+        textarea {
+            border: none !important;
+            background: none !important;
+            box-shadow: none !important;
+            outline: none !important;
+            font-size: 9pt !important;
+        }
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        textarea:focus {
+            border: none !important;
+            outline: none !important;
+        }
+        .print-button {
+            display: none;
+        }
+        .docteur {
+            font-weight: bold;
+            font-size: 14pt !important;
+            margin-right: 50px;
+        }
+        /* Additional space optimization */
+        * {
+            margin-top: 0 !important;
+            margin-bottom: 2px !important;
+        }
+    }
+    </style>
+    </head>
+    <body>
+   ${enteteContent}
+
+    <div class="certificat">
+        <h1>Schéma Antirabique - Classe 03 (Vaccin T Schema 3)</h1>
+        <h2>Selon l'instruction N16 du 15 Juillet 2024 relative à la conduite à tenir devant un risque rabique</h2>
+        <p>
+        NOM : <strong><input type="text" value="${patientNomPrenom}" style="width: auto;"></strong><br>
+        Date de naissance : <strong><input type="text" value="${ageInfo}" style="width: auto;"></strong><br>
+        Animal en cause : <strong><input type="text" value="${animal}" style="width: auto;"></strong><br>
+        Poids : <strong><input type="text" value="${poidsInput} kg" style="width: auto;"></strong><br>
+        SAR : <strong><input type="text" value="${sar} UI" style="width: auto;"></strong><br>
+        </p>
+        <p>
+         <br>
+         Vaccin Tissulaire avec SAR :<br><br>
+         Jour 0 : <input type="date" id="dateJour0" value="${dateFormattedJour0}" readonly> (Vaccin T en IM + SAR en IM)<br>
+         Jour 3 : <input type="date" id="dateJour3" value="${dateFormattedJour3}" readonly> (Vaccin T en IM)<br>
+         Jour 7 : <input type="date" id="dateJour7" value="${dateFormattedJour7}" readonly> (Vaccin T en IM)<br>
+         Jour 14 : <input type="date" id="dateJour14" value="${dateFormattedJour14}" readonly> (Vaccin T en IM)<br>
+         Jour 28 : <input type="date" id="dateJour28" value="${dateFormattedJour28}" readonly> (Vaccin T en IM)<br>
+         Jour 90 : <input type="date" id="dateJour90" value="${dateFormattedJour90}" readonly> (Vaccin T en IM)<br>
+         <br><br>
+        NB: Vaccin T = 01 dose=0,5mI
+        </p>
+        <p style="text-align: right; margin-top: 30px;">
+        Medecin traitant <br>
+        <span class="docteur" style="font-weight: bold;">Dr ${docteur}</span>&nbsp&nbsp&nbsp&nbsp;
+        </p>
+    </div>
+
+    <div class="print-button">
+        <button id="printButton">Imprimer le schéma</button>
+    </div>
+    
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const polycliniqueInput = document.getElementById('polyclinique');
+        if (polycliniqueInput) {
+            polycliniqueInput.addEventListener('input', function () {
+                localStorage.setItem('polyclinique', this.value);
+            });
+        }
+
+        const polycliniqueArInput = document.getElementById('polyclinique-ar');
+        if (polycliniqueArInput) {
+            polycliniqueArInput.addEventListener('input', function () {
+                localStorage.setItem('polyclinique-ar', this.value);
+            });
+        }
+
+        document.getElementById('printButton').addEventListener('click', function () {
+            window.print();
+        });
+    });
+    </script>
+    </body>
+    </html>
+    `;
+
+    var newWindow = window.open("", "_blank");
+    if (newWindow) {
+        newWindow.document.write(certificatContent);
+        newWindow.document.close();
+    } else {
+        console.log("Popup bloquée par le navigateur.");
+    }
+}
+
+function risqueHemorragique3(dateMorsure, poidsInput) {
+    // Récupérer les informations du patient depuis le formulaire
+    const patientNomPrenom = document.getElementById('patientNomPrenom').value || '';
+    const patientAge = document.getElementById('patientAge').value || '';
+    const patientDateNaissance = document.getElementById('patientDateNaissance').value || '';
+    
+    // Utiliser la date de naissance si disponible, sinon l'âge
+    let ageInfo = '';
+    if (patientDateNaissance) {
+        ageInfo = patientDateNaissance;
+    } else if (patientAge) {
+        ageInfo = patientAge;
+    } else {
+        ageInfo = '[Date de naissance]';
+    }
+    
+    // Calculer le SAR (Sérum Antirabique) en fonction du poids
+    const poids = parseFloat(poidsInput) || 0;
+    let sar = poids / 5;
+    if (poids >= 75) {
+        sar = 15;
+    }
+    sar = Math.round(sar * 100) / 100;
+    
+    // Calculer les dates pour le schéma Risque Hémorragique (J0, J3, J7)
+    const dateJour0 = new Date(dateMorsure);
+    const dateJour3 = new Date(dateJour0);
+    dateJour3.setDate(dateJour0.getDate() + 3);
+    const dateJour7 = new Date(dateJour0);
+    dateJour7.setDate(dateJour0.getDate() + 7);
+
+
+    // Fonction pour formater la date
+    const formatDate = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+
+    const dateFormattedJour0 = formatDate(dateJour0);
+    const dateFormattedJour3 = formatDate(dateJour3);
+    const dateFormattedJour7 = formatDate(dateJour7);
+  
+
+    const polyclinique = localStorage.getItem('polyclinique') || "";
+    const polycliniqueAr = localStorage.getItem('polyclinique-ar') || "";
+    const docteur = localStorage.getItem('docteur') || "";
+    const animal = "chien"; // Animal en cause (valeur par défaut)
+
+    // Vérifier le format choisi
+    const avecEntete = localStorage.getItem('certificatFormat') === 'avecEntete';
+
+    let enteteContent = '';
+    if (avecEntete) {
+        enteteContent = generateHeader();
+    } else {
+        // Espace vide pour garder la meme mise en page
+        enteteContent = '<div style="height: 155px;"></div>';
+    }
+
+    // Générer le certificat Risque Hémorragique 3
+    const certificatContent = `
+    <!DOCTYPE html>
+    <html lang="fr">
+    <head>
+    <meta charset="UTF-8">
+    <title>Certificat Antirabique - Risque Hémorragique 3</title>
+    <style>
+    body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        background-color: #f9f9f9;
+    }
+    .certificat {
+        background-color: white;
+        border: 1px solid #ddd;
+        padding: 20px;
+        max-width: 600px;
+        margin: 0 auto;
+        margin-top: 60px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+        text-align: center;
+        color: #333;
+        text-decoration: underline;
+        font-size: 16px;
+    }
+    h2 {
+        text-align: center;
+        color: #555;
+        font-size: 10px;
+        margin-top: 5px;
+        margin-bottom: 15px;
+    }
+    p {
+        line-height: 1.5;
+        color: #555;
+    }
+    .small-text {
+        font-size: 12px;
+    }
+    .print-button {
+        text-align: center;
+        margin-top: 20px;
+    }
+    .print-button button {
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .print-button button:hover {
+        background-color: #0056b3;
+    }
+    @media print {
+        @page {
+            size: A5;
+            margin: 0.2cm 0.2cm 0.2cm 0.2cm;
+        }
+        body {
+            margin: 0 !important;
+            padding: 0 !important;
+            font-size: 10pt !important;
+            background-color: white;
+        }
+        .certificat {
+            padding: 2px 8px !important;
+            max-width: 100% !important;
+            border: none;
+            box-shadow: none;
+            margin-top: 0;
+        }
+        h1 {
+            font-size: 14pt !important;
+            margin: 5px 0 !important;
+            margin-top: 2cm !important;
+        }
+        h2 {
+            font-size: 12pt !important;
+            margin: 3px 0 !important;
+        }
+        p {
+            font-size: 9pt !important;
+            margin: 2px 0 !important;
+            line-height: 1.2 !important;
+        }
+        input[type="text"],
+        input[type="date"],
+        textarea {
+            border: none !important;
+            background: none !important;
+            box-shadow: none !important;
+            outline: none !important;
+            font-size: 9pt !important;
+        }
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        textarea:focus {
+            border: none !important;
+            outline: none !important;
+        }
+        .print-button {
+            display: none;
+        }
+        .docteur {
+            font-weight: bold;
+            font-size: 14pt !important;
+            margin-right: 50px;
+        }
+        /* Additional space optimization */
+        * {
+            margin-top: 0 !important;
+            margin-bottom: 2px !important;
+        }
+    }
+    </style>
+    </head>
+    <body>
+   ${enteteContent}
+
+    <div class="certificat">
+        <h1>Schéma Antirabique - Risque Hémorragique/Qte Limitées (Voie Intradermique)</h1>
+        <h2>Selon l'instruction N16 du 15 Juillet 2024 relative à la conduite à tenir devant un risque rabique</h2>
+        <p>
+        NOM : <strong><input type="text" value="${patientNomPrenom}" style="width: auto;"></strong><br>
+        Date de naissance : <strong><input type="text" value="${ageInfo}" style="width: auto;"></strong><br>
+        Animal en cause : <strong><input type="text" value="${animal}" style="width: auto;"></strong><br>
+        Poids : <strong><input type="text" value="${poidsInput} kg" style="width: auto;"></strong><br>
+        SAR : <strong><input type="text" value="${sar} cc" style="width: auto;"></strong><br>
+        </p>
+        <p>
+         <br>
+         <span class="small-text">Schéma adapté pour patient à  risque hémorragique ou quantités limitées</span>
+		<br>
+        </p>
+        <p>
+         <strong>Personne sans antécédent de vaccination:</strong><br>
+         Un total de six doses : 2 doses en deux [2] sites différents<br><br>
+         Jour 0 : <input type="date" id="dateJour0" value="${dateFormattedJour0}" readonly> ( 2 doses en ID + SAR )<br>
+         Jour 3 : <input type="date" id="dateJour3" value="${dateFormattedJour3}" readonly> ( 2 doses en ID )<br>
+         Jour 7 : <input type="date" id="dateJour7" value="${dateFormattedJour7}" readonly> ( 2 doses en ID ))<br>
+        
+         <br><br>
+       NB: 01 dose =0.1ml
+        </p>
+        <p style="text-align: right; margin-top: 30px;">
+        Medecin traitant <br>
+        <span class="docteur" style="font-weight: bold;">Dr ${docteur}</span>&nbsp&nbsp&nbsp&nbsp;
+        </p>
+    </div>
+
+    <div class="print-button">
+        <button id="printButton">Imprimer le schéma</button>
+    </div>
+   
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const polycliniqueInput = document.getElementById('polyclinique');
+        if (polycliniqueInput) {
+            polycliniqueInput.addEventListener('input', function () {
+                localStorage.setItem('polyclinique', this.value);
+            });
+        }
+
+        const polycliniqueArInput = document.getElementById('polyclinique-ar');
+        if (polycliniqueArInput) {
+            polycliniqueArInput.addEventListener('input', function () {
+                localStorage.setItem('polyclinique-ar', this.value);
+            });
+        }
+
+        document.getElementById('printButton').addEventListener('click', function () {
+            window.print();
+        });
+    });
+    </script>
+    </body>
+    </html>
+    `;
+
+    var newWindow = window.open("", "_blank");
+    if (newWindow) {
+        newWindow.document.write(certificatContent);
+        newWindow.document.close();
+    } else {
+        console.log("Popup bloquée par le navigateur.");
+    }
+}
+
+function prophylaxiePreExpositionSchema1Classe3(dateMorsure, poidsInput) {
+    // Récupérer les informations du patient depuis le formulaire
+    const patientNomPrenom = document.getElementById('patientNomPrenom').value || '';
+    const patientAge = document.getElementById('patientAge').value || '';
+    const patientDateNaissance = document.getElementById('patientDateNaissance').value || '';
+    
+    // Utiliser la date de naissance si disponible, sinon l'âge
+    let ageInfo = '';
+    if (patientDateNaissance) {
+        ageInfo = patientDateNaissance;
+    } else if (patientAge) {
+        ageInfo = patientAge;
+    } else {
+        ageInfo = '[Date de naissance]';
+    }
+    
+    // Calculer le SAR (Sérum Antirabique) en fonction du poids
+    const poids = parseFloat(poidsInput) || 0;
+    let sar = poids / 5;
+    if (poids >= 75) {
+        sar = 15;
+    }
+    sar = Math.round(sar * 100) / 100;
+    
+    // Calculer les dates pour le schéma ATCD Vaccinaux Schéma 1 (J0, J3, J7, J14)
+    const dateJour0 = new Date(dateMorsure);
+    const datePlus3 = new Date(dateJour0);
+    datePlus3.setDate(dateJour0.getDate() + 3);
+    const datePlus7 = new Date(dateJour0);
+    datePlus7.setDate(dateJour0.getDate() + 7);
+    const datePlus14 = new Date(dateJour0);
+    datePlus14.setDate(dateJour0.getDate() + 14);
+
+    const dateFormattedJour0 = `${dateJour0.getFullYear()}-${String(dateJour0.getMonth() + 1).padStart(2, '0')}-${String(dateJour0.getDate()).padStart(2, '0')}`;
+    const dateFormattedPlus3 = `${datePlus3.getFullYear()}-${String(datePlus3.getMonth() + 1).padStart(2, '0')}-${String(datePlus3.getDate()).padStart(2, '0')}`;
+    const dateFormattedPlus7 = `${datePlus7.getFullYear()}-${String(datePlus7.getMonth() + 1).padStart(2, '0')}-${String(datePlus7.getDate()).padStart(2, '0')}`;
+    const dateFormattedPlus14 = `${datePlus14.getFullYear()}-${String(datePlus14.getMonth() + 1).padStart(2, '0')}-${String(datePlus14.getDate()).padStart(2, '0')}`;
+
+    const polyclinique = localStorage.getItem('polyclinique') || "";
+    const polycliniqueAr = localStorage.getItem('polyclinique-ar') || "";
+    const docteur = localStorage.getItem('docteur') || "";
+    const animal = "chien"; // Animal en cause (valeur par défaut)
+
+    // Vérifier le format choisi
+    const avecEntete = localStorage.getItem('certificatFormat') === 'avecEntete';
+
+    let enteteContent = '';
+    if (avecEntete) {
+        enteteContent = generateHeader();
+    } else {
+        // Espace vide pour garder la meme mise en page
+        enteteContent = '<div style="height: 155px;"></div>';
+    }
+
+    // Générer le certificat ATCD Vaccinaux Schéma 1
+    const certificatContent = `
+    <!DOCTYPE html>
+    <html lang="fr">
+    <head>
+    <meta charset="UTF-8">
+    <title>Certificat Antirabique - ATCD Vaccinaux Schéma 1 (Classe 3)</title>
+    <style>
+    body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        background-color: #f9f9f9;
+    }
+    .certificat {
+        background-color: white;
+        border: 1px solid #ddd;
+        padding: 20px;
+        max-width: 600px;
+        margin: 0 auto;
+        margin-top: 60px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+        text-align: center;
+        color: #333;
+        text-decoration: underline;
+        font-size: 16px;
+    }
+    h2 {
+        text-align: center;
+        color: #555;
+        font-size: 10px;
+        margin-top: 5px;
+        margin-bottom: 15px;
+    }
+    p {
+        line-height: 1.5;
+        color: #555;
+    }
+    .small-text {
+        font-size: 12px;
+    }
+    .print-button {
+        text-align: center;
+        margin-top: 20px;
+    }
+    .print-button button {
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .print-button button:hover {
+        background-color: #0056b3;
+    }
+    @media print {
+        @page {
+            size: A5;
+            margin: 0.2cm 0.2cm 0.2cm 0.2cm;
+        }
+        body {
+            margin: 0 !important;
+            padding: 0 !important;
+            font-size: 10pt !important;
+            background-color: white;
+        }
+        .certificat {
+            padding: 2px 8px !important;
+            max-width: 100% !important;
+            border: none;
+            box-shadow: none;
+            margin-top: 0;
+        }
+        h1 {
+            font-size: 14pt !important;
+            margin: 5px 0 !important;
+            margin-top: 2cm !important;
+        }
+        h2 {
+            font-size: 12pt !important;
+            margin: 3px 0 !important;
+        }
+        p {
+            font-size: 9pt !important;
+            margin: 2px 0 !important;
+            line-height: 1.2 !important;
+        }
+        input[type="text"],
+        input[type="date"],
+        textarea {
+            border: none !important;
+            background: none !important;
+            box-shadow: none !important;
+            outline: none !important;
+            font-size: 9pt !important;
+        }
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        textarea:focus {
+            border: none !important;
+            outline: none !important;
+        }
+        .print-button {
+            display: none;
+        }
+        .docteur {
+            font-weight: bold;
+            font-size: 14pt !important;
+            margin-right: 50px;
+        }
+        /* Additional space optimization */
+        * {
+            margin-top: 0 !important;
+            margin-bottom: 2px !important;
+        }
+    }
+    </style>
+    </head>
+    <body>
+   ${enteteContent}
+
+    <div class="certificat">
+        <h1>Schéma Antirabique -  Avec ATCD Vaccinaux(Schéma 1</h1>
+        <h2>Selon l'instruction N16 du 15 Juillet 2024 relative à la conduite à tenir devant un risque rabique</h2>
+        <p>
+        NOM : <strong><input type="text" value="${patientNomPrenom}" style="width: auto;"></strong><br>
+        Date de naissance : <strong><input type="text" value="${ageInfo}" style="width: auto;"></strong><br>
+        Animal en cause : <strong><input type="text" value="${animal}" style="width: auto;"></strong><br>
+        Poids : <strong><input type="text" value="${poidsInput} kg" style="width: auto;"></strong><br>
+		<br>
+       Classe 03, schéma choisi : Avec ATCD Vaccinaux (Schéma 1)<br>
+       <br>
+        </p>
+        <p>
+         <strong style="font-size: 14px;">Personne ayant reçu une prophylaxie Pré-exPosition, ou (>= 02 doses):</strong><br>
+         <br><br>
+         Schéma 1 : Un total de deux (2) doses<br><br>
+         Jour 0 : <input type="date" id="dateJour0" value="${dateFormattedJour0}" readonly> (une (1) dose ID en un seul site)<br>
+         Jour 3 : <input type="date" id="datePlus3" value="${dateFormattedPlus3}" readonly> (une (1) dose ID en un seul site)<br>
+        
+         <br><br>
+        NB:01 dose=0,1mI
+        </p>
+        <p style="text-align: right; margin-top: 30px;">
+        Medecin traitant <br>
+        <span class="docteur" style="font-weight: bold;">Dr ${docteur}</span>&nbsp&nbsp&nbsp&nbsp&nbsp;
+        </p>
+    </div>
+
+    <div class="print-button">
+        <button id="printButton">Imprimer le schéma</button>
+    </div>
+    
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const polycliniqueInput = document.getElementById('polyclinique');
+        if (polycliniqueInput) {
+            polycliniqueInput.addEventListener('input', function () {
+                localStorage.setItem('polyclinique', this.value);
+            });
+        }
+
+        const polycliniqueArInput = document.getElementById('polyclinique-ar');
+        if (polycliniqueArInput) {
+            polycliniqueArInput.addEventListener('input', function () {
+                localStorage.setItem('polyclinique-ar', this.value);
+            });
+        }
+
+        document.getElementById('printButton').addEventListener('click', function () {
+            window.print();
+        });
+    });
+    </script>
+    </body>
+    </html>
+    `;
+
+    var newWindow = window.open("", "_blank");
+    if (newWindow) {
+        newWindow.document.write(certificatContent);
+        newWindow.document.close();
+    } else {
+        console.log("Popup bloquée par le navigateur.");
+    }
+}
+
+function prophylaxiePreExpositionSchema2Classe3(dateMorsure, poidsInput) {
+    // Récupérer les informations du patient depuis le formulaire
+    const patientNomPrenom = document.getElementById('patientNomPrenom').value || '';
+    const patientAge = document.getElementById('patientAge').value || '';
+    const patientDateNaissance = document.getElementById('patientDateNaissance').value || '';
+    
+    // Utiliser la date de naissance si disponible, sinon l'âge
+    let ageInfo = '';
+    if (patientDateNaissance) {
+        ageInfo = patientDateNaissance;
+    } else if (patientAge) {
+        ageInfo = patientAge;
+    } else {
+        ageInfo = '[Date de naissance]';
+    }
+    
+    // Calculer le SAR (Sérum Antirabique) en fonction du poids
+    const poids = parseFloat(poidsInput) || 0;
+    let sar = poids / 5;
+    if (poids >= 75) {
+        sar = 15;
+    }
+    sar = Math.round(sar * 100) / 100;
+    
+    // Calculer les dates pour le schéma ATCD Vaccinaux Schéma 2 (J0 uniquement)
+    const dateJour0 = new Date(dateMorsure);
+
+    const dateFormattedJour0 = `${dateJour0.getFullYear()}-${String(dateJour0.getMonth() + 1).padStart(2, '0')}-${String(dateJour0.getDate()).padStart(2, '0')}`;
+
+    const polyclinique = localStorage.getItem('polyclinique') || "";
+    const polycliniqueAr = localStorage.getItem('polyclinique-ar') || "";
+    const docteur = localStorage.getItem('docteur') || "";
+    const animal = "chien"; // Animal en cause (valeur par défaut)
+
+    // Vérifier le format choisi
+    const avecEntete = localStorage.getItem('certificatFormat') === 'avecEntete';
+
+    let enteteContent = '';
+    if (avecEntete) {
+        enteteContent = generateHeader();
+    } else {
+        // Espace vide pour garder la meme mise en page
+        enteteContent = '<div style="height: 155px;"></div>';
+    }
+
+    // Générer le certificat ATCD Vaccinaux Schéma 2
+    const certificatContent = `
+    <!DOCTYPE html>
+    <html lang="fr">
+    <head>
+    <meta charset="UTF-8">
+    <title>Certificat Antirabique - ATCD Vaccinaux Schéma 2 (Classe 3)</title>
+    <style>
+    body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        background-color: #f9f9f9;
+    }
+    .certificat {
+        background-color: white;
+        border: 1px solid #ddd;
+        padding: 20px;
+        max-width: 600px;
+        margin: 0 auto;
+        margin-top: 60px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+        text-align: center;
+        color: #333;
+        text-decoration: underline;
+        font-size: 16px;
+    }
+    h2 {
+        text-align: center;
+        color: #555;
+        font-size: 10px;
+        margin-top: 5px;
+        margin-bottom: 15px;
+    }
+    p {
+        line-height: 1.5;
+        color: #555;
+    }
+    .small-text {
+        font-size: 12px;
+    }
+    .print-button {
+        text-align: center;
+        margin-top: 20px;
+    }
+    .print-button button {
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .print-button button:hover {
+        background-color: #0056b3;
+    }
+    @media print {
+        @page {
+            size: A5;
+            margin: 0.2cm 0.2cm 0.2cm 0.2cm;
+        }
+        body {
+            margin: 0 !important;
+            padding: 0 !important;
+            font-size: 10pt !important;
+            background-color: white;
+        }
+        .certificat {
+            padding: 2px 8px !important;
+            max-width: 100% !important;
+            border: none;
+            box-shadow: none;
+            margin-top: 0;
+        }
+        h1 {
+            font-size: 14pt !important;
+            margin: 5px 0 !important;
+            margin-top: 2cm !important;
+        }
+        h2 {
+            font-size: 12pt !important;
+            margin: 3px 0 !important;
+        }
+        p {
+            font-size: 9pt !important;
+            margin: 2px 0 !important;
+            line-height: 1.2 !important;
+        }
+        input[type="text"],
+        input[type="date"],
+        textarea {
+            border: none !important;
+            background: none !important;
+            box-shadow: none !important;
+            outline: none !important;
+            font-size: 9pt !important;
+        }
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        textarea:focus {
+            border: none !important;
+            outline: none !important;
+        }
+        .print-button {
+            display: none;
+        }
+        .docteur {
+            font-weight: bold;
+            font-size: 14pt !important;
+            margin-right: 50px;
+        }
+        /* Additional space optimization */
+        * {
+            margin-top: 0 !important;
+            margin-bottom: 2px !important;
+        }
+    }
+    </style>
+    </head>
+    <body>
+   ${enteteContent}
+
+    <div class="certificat">
+        <h1>Schéma Antirabique - ATCD Vaccinaux Schéma 2 </h1>
+        <h2>Selon l'instruction N16 du 15 Juillet 2024 relative à la conduite à tenir devant un risque rabique</h2>
+        <p>
+        NOM : <strong><input type="text" value="${patientNomPrenom}" style="width: auto;"></strong><br>
+        Date de naissance : <strong><input type="text" value="${ageInfo}" style="width: auto;"></strong><br>
+        Animal en cause : <strong><input type="text" value="${animal}" style="width: auto;"></strong><br>
+        Poids : <strong><input type="text" value="${poidsInput} kg" style="width: auto;"></strong><br>
+        </p>
+        <p>
+         <strong>Personne ayant reçu une prophylaxie Pré-exPosition, ou (≥ 02 doses):</strong><br>
+         Schéma 2 : Un total de quatre (4) doses<br><br>
+         Jour 0 : <input type="date" id="dateJour0" value="${dateFormattedJour0}" readonly> (une dose en ID en quatre (4) sites différents)<br>
+         <br><br>
+        NB: 01 dose=0,1mI
+        </p>
+        <p style="text-align: right; margin-top: 30px;">
+        Medecin traitant <br>
+        <span class="docteur" style="font-weight: bold;">Dr ${docteur}</span>&nbsp&nbsp&nbsp&nbsp;
+        </p>
+    </div>
+
+    <div class="print-button">
+        <button id="printButton">Imprimer le schéma</button>
+    </div>
+    
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const polycliniqueInput = document.getElementById('polyclinique');
+        if (polycliniqueInput) {
+            polycliniqueInput.addEventListener('input', function () {
+                localStorage.setItem('polyclinique', this.value);
+            });
+        }
+
+        const polycliniqueArInput = document.getElementById('polyclinique-ar');
+        if (polycliniqueArInput) {
+            polycliniqueArInput.addEventListener('input', function () {
+                localStorage.setItem('polyclinique-ar', this.value);
+            });
+        }
+
+        document.getElementById('printButton').addEventListener('click', function () {
+            window.print();
+        });
+    });
+    </script>
+    </body>
+    </html>
+    `;
+
+    var newWindow = window.open("", "_blank");
+    if (newWindow) {
+        newWindow.document.write(certificatContent);
+        newWindow.document.close();
+    } else {
+        console.log("Popup bloquée par le navigateur.");
+    }
+}
+
+function genererCertificatProphylaxieImmunocompetent(dateDebut) {
+    // Récupérer les informations du patient depuis le formulaire
+    const patientNomPrenom = document.getElementById('patientNomPrenom').value || '';
+    const patientAge = document.getElementById('patientAge').value || '';
+    const patientDateNaissance = document.getElementById('patientDateNaissance').value || '';
+    
+    // Utiliser la date de naissance si disponible, sinon l'âge
+    let ageInfo = '';
+    if (patientDateNaissance) {
+        ageInfo = patientDateNaissance;
+    } else if (patientAge) {
+        ageInfo = patientAge;
+    } else {
+        ageInfo = '[Date de naissance]';
+    }
+    
+    // Calculer les dates pour la prophylaxie pré-exposition immunocompétent
+    const dateJour0 = new Date(dateDebut);
+    const datePlus7 = new Date(dateJour0);
+    datePlus7.setDate(dateJour0.getDate() + 7);
+    
+    // Ajouter 12 mois (365 jours) pour le rappel
+    const datePlus12Mois = new Date(dateJour0);
+    datePlus12Mois.setFullYear(dateJour0.getFullYear() + 1);
+
+    const dateFormattedJour0 = `${dateJour0.getFullYear()}-${String(dateJour0.getMonth() + 1).padStart(2, '0')}-${String(dateJour0.getDate()).padStart(2, '0')}`;
+    const dateFormattedPlus7 = `${datePlus7.getFullYear()}-${String(datePlus7.getMonth() + 1).padStart(2, '0')}-${String(datePlus7.getDate()).padStart(2, '0')}`;
+    const dateFormattedPlus12Mois = `${datePlus12Mois.getFullYear()}-${String(datePlus12Mois.getMonth() + 1).padStart(2, '0')}-${String(datePlus12Mois.getDate()).padStart(2, '0')}`;
+
+    const polyclinique = localStorage.getItem('polyclinique') || "";
+    const polycliniqueAr = localStorage.getItem('polyclinique-ar') || "";
+    const docteur = localStorage.getItem('docteur') || "";
+
+    // Vérifier le format choisi
+    const avecEntete = localStorage.getItem('certificatFormat') === 'avecEntete';
+
+    let enteteContent = '';
+    if (avecEntete) {
+        enteteContent = generateHeader();
+    } else {
+        // Espace vide pour garder la meme mise en page
+        enteteContent = '<div style="height: 155px;"></div>';
+    }
+
+    // Générer le certificat de prophylaxie pré-exposition immunocompétent
+    const certificatContent = `
+    <!DOCTYPE html>
+    <html lang="fr">
+    <head>
+    <meta charset="UTF-8">
+    <title>Prophylaxie Pré-exposition - Patient Immunocompétent</title>
+    <style>
+    body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        background-color: #f9f9f9;
+    }
+    .certificat {
+        background-color: white;
+        border: 1px solid #ddd;
+        padding: 20px;
+        max-width: 600px;
+        margin: 0 auto;
+        margin-top: 60px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+        text-align: center;
+        color: #333;
+        text-decoration: underline;
+        font-size: 16px;
+    }
+    h2 {
+        text-align: center;
+        color: #555;
+        font-size: 10px;
+        margin-top: 5px;
+        margin-bottom: 15px;
+    }
+    p {
+        line-height: 1.5;
+        color: #555;
+    }
+    .print-button {
+        text-align: center;
+        margin-top: 20px;
+    }
+    .print-button button {
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .print-button button:hover {
+        background-color: #0056b3;
+    }
+    @media print {
+        @page {
+            size: A5;
+            margin: 0.2cm 0.2cm 0.2cm 0.2cm;
+        }
+        body {
+            margin: 0 !important;
+            padding: 0 !important;
+            font-size: 10pt !important;
+            background-color: white;
+        }
+        .certificat {
+            padding: 2px 8px !important;
+            max-width: 100% !important;
+            border: none;
+            box-shadow: none;
+            margin-top: 0;
+        }
+        h1 {
+            font-size: 14pt !important;
+            margin: 5px 0 !important;
+            margin-top: 2cm !important;
+        }
+        h2 {
+            font-size: 12pt !important;
+            margin: 3px 0 !important;
+        }
+        p {
+            font-size: 9pt !important;
+            margin: 2px 0 !important;
+            line-height: 1.2 !important;
+        }
+        input[type="text"],
+        input[type="date"],
+        textarea {
+            border: none !important;
+            background: none !important;
+            box-shadow: none !important;
+            outline: none !important;
+            font-size: 9pt !important;
+        }
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        textarea:focus {
+            border: none !important;
+            outline: none !important;
+        }
+        .print-button {
+            display: none;
+        }
+        .docteur {
+            font-weight: bold;
+            font-size: 14pt !important;
+            margin-right: 50px;
+        }
+        /* Additional space optimization */
+        * {
+            margin-top: 0 !important;
+            margin-bottom: 2px !important;
+        }
+    }
+    </style>
+    </head>
+    <body>
+   ${enteteContent}
+
+    <div class="certificat">
+        <h1>Prophylaxie Pré-exposition - Patient Immunocompétent</h1>
+        <h2>Selon l'instruction N16 du 15 Juillet 2024 relative à la conduite à tenir devant un risque rabique</h2>
+        <p>
+        NOM : <strong><input type="text" value="${patientNomPrenom}" style="width: auto;"></strong><br>
+        Date de naissance : <strong><input type="text" value="${ageInfo}" style="width: auto;"></strong><br>
+        </p>
+        <p>
+         <br>
+         Un total de trois (3) doses :<br><br>
+         Jour 0 : <input type="date" id="dateJour0" value="${dateFormattedJour0}" readonly> (dans le deltoïde)<br>
+         Jour 7 : <input type="date" id="datePlus7" value="${dateFormattedPlus7}" readonly> <br>
+		 Après 12 mois : <input type="date" id="datePlus12Mois" value="${dateFormattedPlus12Mois}" readonly> <br>
+        NB: 01 dose=0,1mI
+        </p>
+        <p style="text-align: right; margin-top: 30px;">
+        Medecin traitant <br>
+        <span class="docteur" style="font-weight: bold;">Dr ${docteur}</span>&nbsp&nbsp&nbsp&nbsp&nbsp;
+        </p>
+    </div>
+
+    <div class="print-button">
+        <button id="printButton">Imprimer le schéma</button>
+    </div>
+    
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const polycliniqueInput = document.getElementById('polyclinique');
+        if (polycliniqueInput) {
+            polycliniqueInput.addEventListener('input', function () {
+                localStorage.setItem('polyclinique', this.value);
+            });
+        }
+
+        const polycliniqueArInput = document.getElementById('polyclinique-ar');
+        if (polycliniqueArInput) {
+            polycliniqueArInput.addEventListener('input', function () {
+                localStorage.setItem('polyclinique-ar', this.value);
+            });
+        }
+
+        document.getElementById('printButton').addEventListener('click', function () {
+            window.print();
+        });
+    });
+    </script>
+    </body>
+    </html>
+    `;
+
+    var newWindow = window.open("", "_blank");
+    if (newWindow) {
+        newWindow.document.write(certificatContent);
+        newWindow.document.close();
+    } else {
+        console.log("Popup bloquée par le navigateur.");
+    }
+}
+
+function demanderDateImmunoDeprime() {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    const todayFormatted = `${year}-${month}-${day}`;
+
+    const modalContent = `
+        <div style="background: white; padding: 20px; border-radius: 5px; text-align: center;">
+            <h3>Prophylaxie Pré-exposition - Patient Immunodéprimé</h3>
+            <p>Date de début de la prophylaxie :</p>
+            <input type="date" id="dateDebut" value="${todayFormatted}" style="padding: 8px; margin: 10px 0;">
+            <div>
+                <button id="confirmDate" style="padding: 8px 16px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">Confirmer</button>
+            </div>
+        </div>`;
+
+    const modal = document.createElement('div');
+    modal.style.position = 'fixed';
+    modal.style.top = '0';
+    modal.style.left = '0';
+    modal.style.width = '100%';
+    modal.style.height = '100%';
+    modal.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+    modal.style.display = 'flex';
+    modal.style.justifyContent = 'center';
+    modal.style.alignItems = 'center';
+    modal.style.zIndex = '1000';
+    modal.innerHTML = modalContent;
+
+    document.body.appendChild(modal);
+
+    modal.querySelector('#confirmDate').addEventListener('click', function () {
+        const dateDebut = modal.querySelector('#dateDebut').value;
+
+        if (!dateDebut) {
+            alert("Veuillez sélectionner une date.");
+            return;
+        }
+
+        document.body.removeChild(modal);
+        // Appeler la fonction pour générer le certificat de prophylaxie pré-exposition pour immunodéprimé
+        genererCertificatProphylaxieImmunoDeprime(dateDebut);
+    });
+
+    modal.addEventListener('click', function (e) {
+        if (e.target === modal) {
+            document.body.removeChild(modal);
+        }
+    });
+}
+
+function prophylaxiePreExpositionSchema3(dateMorsure) {
+    // Récupérer les informations du patient depuis le formulaire
+    const patientNomPrenom = document.getElementById('patientNomPrenom').value || '';
+    const patientAge = document.getElementById('patientAge').value || '';
+    const patientDateNaissance = document.getElementById('patientDateNaissance').value || '';
+    
+    // Utiliser la date de naissance si disponible, sinon l'âge
+    let ageInfo = '';
+    if (patientDateNaissance) {
+        ageInfo = patientDateNaissance;
+    } else if (patientAge) {
+        ageInfo = patientAge;
+    } else {
+        ageInfo = '[Date de naissance]';
+    }
+    
+    // Calculer les dates pour le schéma Prophylaxie Pré-exposition Schema 3
+    const dateJour0 = new Date(dateMorsure);
+    const datePlus7 = new Date(dateJour0);
+    datePlus7.setDate(dateJour0.getDate() + 7);
+    const datePlus21 = new Date(dateJour0);
+    datePlus21.setDate(dateJour0.getDate() + 21);
+    const datePlus90 = new Date(dateJour0);
+    datePlus90.setDate(dateJour0.getDate() + 90);
+
+    const dateFormattedJour0 = `${dateJour0.getFullYear()}-${String(dateJour0.getMonth() + 1).padStart(2, '0')}-${String(dateJour0.getDate()).padStart(2, '0')}`;
+    const dateFormattedPlus7 = `${datePlus7.getFullYear()}-${String(datePlus7.getMonth() + 1).padStart(2, '0')}-${String(datePlus7.getDate()).padStart(2, '0')}`;
+    const dateFormattedPlus21 = `${datePlus21.getFullYear()}-${String(datePlus21.getMonth() + 1).padStart(2, '0')}-${String(datePlus21.getDate()).padStart(2, '0')}`;
+    const dateFormattedPlus90 = `${datePlus90.getFullYear()}-${String(datePlus90.getMonth() + 1).padStart(2, '0')}-${String(datePlus90.getDate()).padStart(2, '0')}`;
+
+    const polyclinique = localStorage.getItem('polyclinique') || "";
+    const polycliniqueAr = localStorage.getItem('polyclinique-ar') || "";
+    const docteur = localStorage.getItem('docteur') || "";
+
+    // Vérifier le format choisi
+    const avecEntete = localStorage.getItem('certificatFormat') === 'avecEntete';
+
+    let enteteContent = '';
+    if (avecEntete) {
+        enteteContent = generateHeader();
+    } else {
+        // Espace vide pour garder la meme mise en page
+        enteteContent = '<div style="height: 155px;"></div>';
+    }
+
+    // Générer le certificat Prophylaxie Pré-exposition Schema 3
+    const certificatContent = `
+    <!DOCTYPE html>
+    <html lang="fr">
+    <head>
+    <meta charset="UTF-8">
+    <title>Prophylaxie pré-exposition (avec risque hemoragique </title>
+    <style>
+    body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        background-color: #f9f9f9;
+    }
+    .certificat {
+        background-color: white;
+        border: 1px solid #ddd;
+        padding: 20px;
+        max-width: 600px;
+        margin: 0 auto;
+        margin-top: 60px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+        text-align: center;
+        color: #333;
+        text-decoration: underline;
+        font-size: 16px;
+    }
+    h2 {
+        text-align: center;
+        color: #555;
+        font-size: 10px;
+        margin-top: 5px;
+        margin-bottom: 15px;
+    }
+    p {
+        line-height: 1.5;
+        color: #555;
+    }
+    .print-button {
+        text-align: center;
+        margin-top: 20px;
+    }
+    .print-button button {
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .print-button button:hover {
+        background-color: #0056b3;
+    }
+    @media print {
+        @page {
+            size: A5;
+            margin: 0.2cm 0.2cm 0.2cm 0.2cm;
+        }
+        body {
+            margin: 0 !important;
+            padding: 0 !important;
+            font-size: 10pt !important;
+            background-color: white;
+        }
+        .certificat {
+            padding: 2px 8px !important;
+            max-width: 100% !important;
+            border: none;
+            box-shadow: none;
+            margin-top: 0;
+        }
+        h1 {
+            font-size: 14pt !important;
+            margin: 5px 0 !important;
+            margin-top: 2cm !important;
+        }
+        h2 {
+            font-size: 12pt !important;
+            margin: 3px 0 !important;
+        }
+        p {
+            font-size: 9pt !important;
+            margin: 2px 0 !important;
+            line-height: 1.2 !important;
+        }
+        input[type="text"],
+        input[type="date"],
+        textarea {
+            border: none !important;
+            background: none !important;
+            box-shadow: none !important;
+            outline: none !important;
+            font-size: 9pt !important;
+        }
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        textarea:focus {
+            border: none !important;
+            outline: none !important;
+        }
+        .print-button {
+            display: none;
+        }
+        .docteur {
+            font-weight: bold;
+            font-size: 14pt !important;
+            margin-right: 50px;
+        }
+        /* Additional space optimization */
+        * {
+            margin-top: 0 !important;
+            margin-bottom: 2px !important;
+        }
+    }
+    </style>
+    </head>
+    <body>
+   ${enteteContent}
+
+    <div class="certificat">
+        <h1>Prophylaxie Pré-exposition (Avec Risque Hémorragique)</h1>
+        <h2>Selon l'instruction N16 du 15 Juillet 2024 relative à la conduite à tenir devant un risque rabique</h2>
+        <p>
+        NOM : <strong><input type="text" value="${patientNomPrenom}" style="width: auto;"></strong><br>
+        Date de naissance : <strong><input type="text" value="${ageInfo}" style="width: auto;"></strong><br>
+        </p>
+        <p>
+         <br>
+         Un total de quatre (4) doses :<br><br>
+         Jour 0 : <input type="date" id="dateJour0" value="${dateFormattedJour0}" readonly>  (deux [2] doses en ID en deux (2) sites différents)<br>
+         Jour 7 : <input type="date" id="datePlus7" value="${dateFormattedPlus7}" readonly>  (deux [2] doses en ID en deux (2) sites différents)<br>
+        
+         <br><br>
+        NB: 01 dose=0,1mI
+        </p>
+        <p style="text-align: right; margin-top: 30px;">
+        Medecin traitant <br>
+        <span class="docteur" style="font-weight: bold;">Dr ${docteur}</span>&nbsp&nbsp&nbsp&nbsp&nbsp;
+        </p>
+    </div>
+
+    <div class="print-button">
+        <button id="printButton">Imprimer le schéma</button>
+    </div>
+    
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const polycliniqueInput = document.getElementById('polyclinique');
+        if (polycliniqueInput) {
+            polycliniqueInput.addEventListener('input', function () {
+                localStorage.setItem('polyclinique', this.value);
+            });
+        }
+
+        const polycliniqueArInput = document.getElementById('polyclinique-ar');
+        if (polycliniqueArInput) {
+            polycliniqueArInput.addEventListener('input', function () {
+                localStorage.setItem('polyclinique-ar', this.value);
+            });
+        }
+
+        document.getElementById('printButton').addEventListener('click', function () {
+            window.print();
+        });
+    });
+    </script>
+    </body>
+    </html>
+    `;
+
+    var newWindow = window.open("", "_blank");
+    if (newWindow) {
+        newWindow.document.write(certificatContent);
+        newWindow.document.close();
+    } else {
+        console.log("Popup bloquée par le navigateur.");
+    }
+}
+
+// Fonction pour générer le certificat de prophylaxie pré-exposition pour patients immunodéprimés
+function genererCertificatProphylaxieImmunoDeprime(dateDebut) {
+    // Get patient information from the form fields
+    const patientNomPrenom = document.getElementById('patientNomPrenom').value || '';
+    const patientAge = document.getElementById('patientAge').value || '';
+    const patientDateNaissance = document.getElementById('patientDateNaissance').value || '';
+    
+    // Extraire nom et prénom
+    const nomPrenomArray = patientNomPrenom.split(' ');
+    const nom = nomPrenomArray[nomPrenomArray.length - 1] || '';
+    const prenom = nomPrenomArray.slice(0, -1).join(' ') || '';
+    
+    // Utiliser la date de naissance si disponible, sinon l'âge
+    let ageInfo = '';
+    if (patientDateNaissance) {
+        ageInfo = patientDateNaissance;
+    } else if (patientAge) {
+        ageInfo = patientAge;
+    } else {
+        ageInfo = '[Date de naissance]';
+    }
+
+    const dateJour0 = new Date(dateDebut);
+    const datePlus3 = new Date(dateJour0);
+    datePlus3.setDate(dateJour0.getDate() + 3);
+
+    const datePlus28 = new Date(dateJour0);
+    datePlus28.setDate(dateJour0.getDate() + 28);
+
+    // Ajouter 12 mois (365 jours) pour le rappel
+    const datePlus12Mois = new Date(dateJour0);
+    datePlus12Mois.setFullYear(dateJour0.getFullYear() + 1);
+
+    const dateFormattedJour0 = `${dateJour0.getFullYear()}-${String(dateJour0.getMonth() + 1).padStart(2, '0')}-${String(dateJour0.getDate()).padStart(2, '0')}`;
+    const dateFormattedPlus3 = `${datePlus3.getFullYear()}-${String(datePlus3.getMonth() + 1).padStart(2, '0')}-${String(datePlus3.getDate()).padStart(2, '0')}`;
+    const dateFormattedPlus28 = `${datePlus28.getFullYear()}-${String(datePlus28.getMonth() + 1).padStart(2, '0')}-${String(datePlus28.getDate()).padStart(2, '0')}`;
+    const dateFormattedPlus12Mois = `${datePlus12Mois.getFullYear()}-${String(datePlus12Mois.getMonth() + 1).padStart(2, '0')}-${String(datePlus12Mois.getDate()).padStart(2, '0')}`;
+
+    const polyclinique = localStorage.getItem('polyclinique') || "";
+    const polycliniqueAr = localStorage.getItem('polyclinique-ar') || "";
+    const docteur = localStorage.getItem('docteur') || "";
+
+    const avecEntete = localStorage.getItem('certificatFormat') === 'avecEntete';
+    let enteteContent = '';
+    if (avecEntete) {
+        enteteContent = generateHeader();
+    } else {
+        enteteContent = '<div style="height: 155px;"></div>';
+    }
+
+    const certificatContent = `
+    <!DOCTYPE html>
+    <html lang="fr">
+    <head>
+    <meta charset="UTF-8">
+    <title>Prophylaxie pré-exposition - Patient Immunodéprimé</title>
+    <style>
+    body {
+        font-family: Arial, sans-serif;
+        padding: 14px;
+        background-color: #f9f9f9;
+    }
+    .certificat {
+        background-color: white;
+        border: 1px solid #ddd;
+        padding: 16px;
+        max-width: 600px;
+        margin: 0 auto;
+        margin-top: 60px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+        text-align: center;
+        color: #333;
+        text-decoration: underline;
+        font-size: 14px;
+    }
+    h2 {
+        text-align: center;
+        color: #555;
+        font-size: 10px;
+        margin-top: 5px;
+        margin-bottom: 15px;
+    }
+    p {
+        line-height: 1.5;
+        color: #555;
+    }
+    .small-text {
+        font-size: 12px;
+    }
+    .print-button {
+        text-align: center;
+        margin-top: 20px;
+    }
+    .print-button button {
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .print-button button:hover {
+        background-color: #0056b3;
+    }
+    @media print {
+        @page {
+            size: A5;
+            margin: 0.2cm 0.2cm 0.2cm 0.2cm;
+        }
+        body {
+            margin: 0 !important;
+            padding: 0 !important;
+            font-size: 10pt !important;
+            background-color: white;
+        }
+        .certificat {
+            padding: 2px 8px !important;
+            max-width: 100% !important;
+            border: none;
+            box-shadow: none;
+            margin-top: 0;
+        }
+        h1 {
+            font-size: 14pt !important;
+            margin: 5px 0 !important;
+            margin-top: 2cm !important;
+        }
+        h2 {
+            font-size: 12pt !important;
+            margin: 3px 0 !important;
+        }
+        p {
+            font-size: 9pt !important;
+            margin: 2px 0 !important;
+            line-height: 1.2 !important;
+        }
+        input[type="text"],
+        input[type="date"],
+        textarea {
+            border: none !important;
+            background: none !important;
+            box-shadow: none !important;
+            outline: none !important;
+            font-size: 9pt !important;
+        }
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        textarea:focus {
+            border: none !important;
+            outline: none !important;
+        }
+        .print-button {
+            display: none;
+        }
+        .docteur {
+            font-weight: bold;
+            font-size: 14pt !important;
+            margin-right: 50px;
+        }
+        /* Additional space optimization */
+        * {
+            margin-top: 0 !important;
+            margin-bottom: 2px !important;
+        }
+    }
+    </style>
+    </head>
+    <body>
+   ${enteteContent}
+
+    <div class="certificat">
+        <h1>Prophylaxie pré-exposition (Immunodéprimé)</h1>
+        <h2>Selon l'instruction N16 du 15 Juillet 2024 relative à la conduite à tenir devant un risque rabique</h2>
+        <p>
+        NOM : <strong><input type="text" value="${nom} ${prenom}" style="width: auto;"></strong><br>
+        Date de naissance : <strong><input type="text" value="${ageInfo}" style="width: auto;"></strong><br>
+        </p>
+        <p>
+         <strong style="font-size: 14px;">Patient Immunodéprimé - Prophylaxie pré-exposition :</strong><br>
+         Un total de quatre (4) doses :<br><br>
+         Jour 0 : <input type="date" id="dateJour0" value="${dateFormattedJour0}" readonly> (dans le deltoïde)<br>
+         Jour 3 : <input type="date" id="datePlus3" value="${dateFormattedPlus3}" readonly> <br>
+         Jour 28 : <input type="date" id="datePlus28" value="${dateFormattedPlus28}" readonly> <br>
+         Après 12 mois : <input type="date" id="datePlus12Mois" value="${dateFormattedPlus12Mois}" readonly> <br>
+         <br><br>
+         
+        </p>
+        <p style="text-align: right; margin-top: 30px;">
+        Medecin traitant <br>
+        <span class="docteur" style="font-weight: bold;">Dr ${docteur}</span>&nbsp&nbsp&nbsp&nbsp&nbsp;
+        </p>
+    </div>
+
+    <div class="print-button">
+        <button id="printButton">Imprimer le schéma</button>
+    </div>
+ 
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const polycliniqueInput = document.getElementById('polyclinique');
+        if (polycliniqueInput) {
+            polycliniqueInput.addEventListener('input', function () {
+                localStorage.setItem('polyclinique', this.value);
+            });
+        }
+
+        const polycliniqueArInput = document.getElementById('polyclinique-ar');
+        if (polycliniqueArInput) {
+            polycliniqueArInput.addEventListener('input', function () {
+                localStorage.setItem('polyclinique-ar', this.value);
+            });
+        }
+
+        document.getElementById('printButton').addEventListener('click', function () {
+            window.print();
+        });
+    });
+    </script>
+    </body>
+    </html>
+    `;
+
+    var newWindow = window.open("", "_blank");
+    if (newWindow) {
+        newWindow.document.write(certificatContent);
+        newWindow.document.close();
+    } else {
+        console.log("Popup bloquée par le navigateur.");
+    }
+}
+
+function Tissulairesanssar(dateMorsure, poidsInput) {
+    // Récupérer les informations du patient depuis le formulaire
+    const patientNomPrenom = document.getElementById('patientNomPrenom').value || '';
+    const patientAge = document.getElementById('patientAge').value || '';
+    const patientDateNaissance = document.getElementById('patientDateNaissance').value || '';
+    
+    // Utiliser la date de naissance si disponible, sinon l'âge
+    let ageInfo = '';
+    if (patientDateNaissance) {
+        ageInfo = patientDateNaissance;
+    } else if (patientAge) {
+        ageInfo = patientAge;
+    } else {
+        ageInfo = '[Date de naissance]';
+    }
+    
+    // Calculer les dates pour le schéma Tissulaire sans SAR
+    const dateJour0 = new Date(dateMorsure);
+    const dateJour1 = new Date(dateJour0);
+    dateJour1.setDate(dateJour0.getDate() + 1);
+    const dateJour2 = new Date(dateJour0);
+    dateJour2.setDate(dateJour0.getDate() + 2);
+    const dateJour3 = new Date(dateJour0);
+    dateJour3.setDate(dateJour0.getDate() + 3);
+    const dateJour4 = new Date(dateJour0);
+    dateJour4.setDate(dateJour0.getDate() + 4);
+    const dateJour5 = new Date(dateJour0);
+    dateJour5.setDate(dateJour0.getDate() + 5);
+    const dateJour6 = new Date(dateJour0);
+    dateJour6.setDate(dateJour0.getDate() + 6);
+    const dateJour10 = new Date(dateJour0);
+    dateJour10.setDate(dateJour0.getDate() + 10);
+    const dateJour14 = new Date(dateJour0);
+    dateJour14.setDate(dateJour0.getDate() + 14);
+    const dateJour29 = new Date(dateJour0);
+    dateJour29.setDate(dateJour0.getDate() + 29);
+    const dateJour90 = new Date(dateJour0);
+    dateJour90.setDate(dateJour0.getDate() + 90);
+
+    // Fonction pour formater la date
+    const formatDate = (date) => `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+
+    const polyclinique = localStorage.getItem('polyclinique') || "";
+    const polycliniqueAr = localStorage.getItem('polyclinique-ar') || "";
+    const docteur = localStorage.getItem('docteur') || "";
+    const animal = "chien"; // Animal en cause (valeur par défaut)
+
+    // Vérifier le format choisi
+    const avecEntete = localStorage.getItem('certificatFormat') === 'avecEntete';
+
+    let enteteContent = '';
+    if (avecEntete) {
+        enteteContent = generateHeader();
+    } else {
+        // Espace vide pour garder la meme mise en page
+        enteteContent = '<div style="height: 155px;"></div>';
+    }
+
+    // Générer le certificat Tissulaire sans SAR
+    const certificatContent = `
+    <!DOCTYPE html>
+    <html lang="fr">
+    <head>
+    <meta charset="UTF-8">
+    <title>Certificat Antirabique - Tissulaire sans SAR</title>
+    <style>
+    body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+        background-color: #f9f9f9;
+    }
+    .certificat {
+        background-color: white;
+        border: 1px solid #ddd;
+        padding: 20px;
+        max-width: 600px;
+        margin: 0 auto;
+        margin-top: 60px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    h1 {
+        text-align: center;
+        color: #333;
+        text-decoration: underline;
+        font-size: 15px;
+        margin-top: 5px;
+    }
+    p {
+        line-height: 1.4;
+        color: #555;
+    }
+    .print-button {
+        text-align: center;
+        margin-top: 20px;
+    }
+    .print-button button {
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .print-button button:hover {
+        background-color: #0056b3;
+    }
+    @media print {
+        @page {
+            size: A5;
+            margin: 0.2cm 0.2cm 0.2cm 0.2cm;
+        }
+        body {
+            margin: 0 !important;
+            padding: 0 !important;
+            font-size: 10pt !important;
+            background-color: white;
+        }
+        .certificat {
+            padding: 2px 8px !important;
+            max-width: 100% !important;
+            border: none;
+            box-shadow: none;
+            margin-top: 0;
+        }
+        h1 {
+            font-size: 14pt !important;
+            margin: 5px 0 !important;
+            margin-top: 2cm !important;
+        }
+        p {
+            font-size: 9pt !important;
+            margin: 2px 0 !important;
+            line-height: 1.2 !important;
+        }
+        input[type="text"],
+        input[type="date"],
+        textarea {
+            border: none !important;
+            background: none !important;
+            box-shadow: none !important;
+            outline: none !important;
+            font-size: 9pt !important;
+        }
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        textarea:focus {
+            border: none !important;
+            outline: none !important;
+        }
+        .print-button {
+            display: none;
+        }
+        .docteur {
+            font-weight: bold;
+            font-size: 14pt !important;
+            margin-right: 50px;
+        }
+        /* Additional space optimization */
+        * {
+            margin-top: 0 !important;
+            margin-bottom: 2px !important;
+        }
+    }
+    </style>
+    </head>
+    <body>
+   ${enteteContent}
+
+    <div class="certificat">
+        <h1>Schéma Antirabique - Tissulaire sans SAR</h1>
+        <p>
+        Nom et Prenom : <strong><input type="text" value="${patientNomPrenom}" style="width: auto;"></strong><br>
+        Date de naissance : <strong><input type="text" value="${ageInfo}" style="width: auto;"></strong><br>
+        Animal en cause : <strong><input type="text" value="${animal}" style="width: auto;"></strong><br>
+        Classe 02, schéma choisi : vaccin tissulaire / sans SAR<br>
+
+        Jour 0 : <input type="date" id="dateJour0" value="${formatDate(dateJour0)}" readonly>( dans les 07 premiers jours les injections sous-cutanée péri ombilicale)<br>
+        Jour 1 : <input type="date" id="dateJour1" value="${formatDate(dateJour1)}" readonly><br>
+        Jour 2 : <input type="date" id="dateJour2" value="${formatDate(dateJour2)}" readonly><br>
+        Jour 3 : <input type="date" id="dateJour3" value="${formatDate(dateJour3)}" readonly><br>
+        Jour 4 : <input type="date" id="dateJour4" value="${formatDate(dateJour4)}" readonly><br>
+        Jour 5 : <input type="date" id="dateJour5" value="${formatDate(dateJour5)}" readonly><br>
+        Jour 6 : <input type="date" id="dateJour6" value="${formatDate(dateJour6)}" readonly><br>
+        =================== les rappels en ID dans les deux bras ==================<br>
+        Jour 10 : <input type="date" id="dateJour10" value="${formatDate(dateJour10)}" readonly><br>
+        Jour 14 : <input type="date" id="dateJour14" value="${formatDate(dateJour14)}" readonly><br>
+        Jour 29 : <input type="date" id="dateJour29" value="${formatDate(dateJour29)}" readonly><br>
+        Jour 90 : <input type="date" id="dateJour90" value="${formatDate(dateJour90)}" readonly><br>
+        <br>
+        en cas d'âge <5ans la dose sera 1/2 amp (01 ml)<br>
+        </p>
+        <p style="text-align: right; margin-top: 15px;">
+        Medecin traitant <br>
+        <span class="docteur" style="font-weight: bold;">Dr ${docteur}</span>&nbsp&nbsp&nbsp&nbsp&nbsp;
+        </p>
+    </div>
+
+    <div class="print-button">
+        <button id="printButton">Imprimer le schéma</button>
+    </div>
+   
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const polycliniqueInput = document.getElementById('polyclinique');
+        if (polycliniqueInput) {
+            polycliniqueInput.addEventListener('input', function () {
+                localStorage.setItem('polyclinique', this.value);
+            });
+        }
+
+        const polycliniqueArInput = document.getElementById('polyclinique-ar');
+        if (polycliniqueArInput) {
+            polycliniqueArInput.addEventListener('input', function () {
+                localStorage.setItem('polyclinique-ar', this.value);
+            });
+        }
+
+        document.getElementById('printButton').addEventListener('click', function () {
+            window.print();
+        });
+    });
+    </script>
+    </body>
+    </html>
+    `;
+
+    var newWindow = window.open("", "_blank");
+    if (newWindow) {
+        newWindow.document.write(certificatContent);
+        newWindow.document.close();
     } else {
         console.log("Popup bloquée par le navigateur.");
     }
