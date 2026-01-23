@@ -53,6 +53,10 @@
       "src": "score/**/*.html",
       "use": "@vercel/static"
     },
+	 {
+      "src": "score/**/*.png",
+      "use": "@vercel/static"
+    },
     {
       "src": "templates/*.pdf",
       "use": "@vercel/static"
