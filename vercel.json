@@ -42,6 +42,18 @@
       "use": "@vercel/static"
     },
     {
+      "src": "score/**/*.js",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "score/**/*.css",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "score/**/*.html",
+      "use": "@vercel/static"
+    },
+    {
       "src": "templates/*.pdf",
       "use": "@vercel/static"
     }
@@ -58,6 +70,10 @@
     {
       "src": "/ordonnance/(.*)",
       "dest": "/ordonnance/$1"
+    },
+    {
+      "src": "/score/(.*)",
+      "dest": "/score/$1"
     },
     {
       "src": "/api/lister_dece",
