@@ -18,6 +18,30 @@
       "use": "@vercel/static"
     },
     {
+      "src": "dece/**/*.js",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "dece/**/*.css",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "dece/**/*.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "ordonnance/**/*.js",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "ordonnance/**/*.css",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "ordonnance/**/*.html",
+      "use": "@vercel/static"
+    },
+    {
       "src": "templates/*.pdf",
       "use": "@vercel/static"
     }
@@ -28,7 +52,35 @@
       "dest": "/styles/$1"
     },
     {
-      "src": "/(.*)",
+      "src": "/dece/(.*)",
+      "dest": "/dece/$1"
+    },
+    {
+      "src": "/ordonnance/(.*)",
+      "dest": "/ordonnance/$1"
+    },
+    {
+      "src": "/api/lister_dece",
+      "dest": "/api/lister_dece.js"
+    },
+    {
+      "src": "/api/supprimer_dece",
+      "dest": "/api/supprimer_dece.js"
+    },
+    {
+      "src": "/api/ajouter_dece",
+      "dest": "/api/ajouter_dece.js"
+    },
+    {
+      "src": "/api/modifier_dece",
+      "dest": "/api/modifier_dece.js"
+    },
+    {
+      "src": "/api/recuperer_donnees",
+      "dest": "/api/recuperer_donnees.js"
+    },
+    {
+      "src": "(.*)",
       "dest": "/$1.html"
     }
   ]

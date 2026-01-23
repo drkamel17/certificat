@@ -112,6 +112,19 @@ class VaccinationApp {
             console.log("🚀 Initialisation de l'application...");
             this.setupEventListeners();
             this.setupTabs();
+            const consultationDate = document.getElementById('consultationDate');
+            if (consultationDate && !consultationDate.value) {
+                const today = new Date();
+                const day = String(today.getDate()).padStart(2, '0');
+                const month = String(today.getMonth() + 1).padStart(2, '0');
+                const year = today.getFullYear();
+                consultationDate.value = `${day}/${month}/${year}`;
+            }
+
+            // Charger les données depuis l'API locale si l'extension est disponible
+            this.loadFromLocalAPI();
+
+            // Charger les données sauvegardées localement
             this.loadStoredData();
             this.forceUpdateAllStatuses();
             this.showMessage("🎯 Application Web - Interface optimisée chargée\n\n📝 Saisissez les informations de l'enfant pour commencer");
@@ -231,7 +244,21 @@ class VaccinationApp {
         const ageDisplay = document.getElementById('patientAgeDisplay');
 
         if (dateInput.value) {
-            const birthDate = new Date(dateInput.value);
+            // Convert dd/mm/yyyy format to yyyy-mm-dd format for proper date parsing
+            let birthDate;
+            if (dateInput.value.includes('/')) {
+                const parts = dateInput.value.split('/');
+                if (parts.length === 3) {
+                    // Assuming dd/mm/yyyy format, convert to yyyy-mm-dd
+                    const dateStr = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                    birthDate = new Date(dateStr);
+                } else {
+                    birthDate = new Date(dateInput.value);
+                }
+            } else {
+                birthDate = new Date(dateInput.value);
+            }
+            
             const currentDate = new Date();
             const ageDays = Math.floor((currentDate - birthDate) / (1000 * 60 * 60 * 24));
 
@@ -255,24 +282,25 @@ class VaccinationApp {
             ageDisplay.style.display = 'none';
         }
 
+        // Mettre à jour les données avant de valider les vaccins
         this.collectData();
+        this.revalidateAllVaccines();
         this.updateQuickSummary();
         this.updateVaccinationStatus();
     }
 
     onConditionChange() {
-        this.data.conditions.poidsInf2000 = document.getElementById('lowWeight').checked;
-        this.data.conditions.mereHbsPositif = document.getElementById('hbPositiveMother').checked;
-        this.revalidateAllVaccines();
+        // Mettre à jour les données avant de valider les vaccins
         this.collectData();
+        this.revalidateAllVaccines();
         this.updateQuickSummary();
         this.updateVaccinationStatus();
     }
 
     onVaccineChange(input) {
         const vaccineName = this.getVaccineNameFromInput(input);
-        this.validateVaccine(vaccineName, input);
         this.collectData();
+        this.validateVaccine(vaccineName, input);
 
         // Forcer la mise à jour immédiate des statuts
         setTimeout(() => {
@@ -288,26 +316,21 @@ class VaccinationApp {
     }
 
     getVaccineNameFromInput(input) {
+        const dataVaccine = input.getAttribute('data-vaccine');
         const mapping = {
-            'vaccine-BCG': 'BCG',
-            'vaccine-HepatiteB1': 'Hépatite B 1',
-            'vaccine-DTCa1': 'DTCa-VPI-Hib-HBV 1',
-            'vaccine-DTCa2': 'DTCa-VPI-Hib-HBV 2',
-            'vaccine-DTCaRappel': 'DTCa-VPI-Hib-HBV Rappel',
-            'vaccine-VPC1': 'VPC 13 - 1',
-            'vaccine-VPC2': 'VPC 13 - 2',
-            'vaccine-VPCRappel': 'VPC 13 - Rappel',
-            'vaccine-ROR1': 'ROR 1',
-            'vaccine-ROR2': 'ROR 2'
+            'BCG': 'BCG',
+            'HepatiteB1': 'Hépatite B 1',
+            'DTCa1': 'DTCa-VPI-Hib-HBV 1',
+            'DTCa2': 'DTCa-VPI-Hib-HBV 2',
+            'DTCaRappel': 'DTCa-VPI-Hib-HBV Rappel',
+            'VPC1': 'VPC 13 - 1',
+            'VPC2': 'VPC 13 - 2',
+            'VPCRappel': 'VPC 13 - Rappel',
+            'ROR1': 'ROR 1',
+            'ROR2': 'ROR 2'
         };
-        
-        // Parcourir tous les mappings pour trouver celui qui correspond
-        for (const [key, value] of Object.entries(mapping)) {
-            if (input.classList.contains('vaccine-date') && input.getAttribute('data-vaccine') === value) {
-                return value;
-            }
-        }
-        return input.getAttribute('data-vaccine') || '';
+
+        return mapping[dataVaccine] || dataVaccine || '';
     }
 
     validateVaccine(vaccineName, input) {
@@ -335,12 +358,40 @@ class VaccinationApp {
 
     validateVaccineLogic(vaccineName, vaccineDate) {
         try {
-            const vaccineDateObj = new Date(vaccineDate);
+            // Convert dd/mm/yyyy format to yyyy-mm-dd format for proper date parsing
+            let vaccineDateObj;
+            if (vaccineDate && vaccineDate.includes('/')) {
+                const parts = vaccineDate.split('/');
+                if (parts.length === 3) {
+                    // Assuming dd/mm/yyyy format, convert to yyyy-mm-dd
+                    const dateStr = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                    vaccineDateObj = new Date(dateStr);
+                } else {
+                    vaccineDateObj = new Date(vaccineDate);
+                }
+            } else {
+                vaccineDateObj = new Date(vaccineDate);
+            }
+
             const birthDate = this.data.dateNaissance;
 
             if (!birthDate) return false;
 
-            const birthDateObj = new Date(birthDate);
+            // Convert birth date from dd/mm/yyyy format to yyyy-mm-dd format
+            let birthDateObj;
+            if (birthDate && birthDate.includes('/')) {
+                const parts = birthDate.split('/');
+                if (parts.length === 3) {
+                    // Assuming dd/mm/yyyy format, convert to yyyy-mm-dd
+                    const dateStr = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                    birthDateObj = new Date(dateStr);
+                } else {
+                    birthDateObj = new Date(birthDate);
+                }
+            } else {
+                birthDateObj = new Date(birthDate);
+            }
+
             const ageDays = Math.floor((vaccineDateObj - birthDateObj) / (1000 * 60 * 60 * 24));
 
             const config = this.vaccineConfig[vaccineName];
@@ -364,10 +415,24 @@ class VaccinationApp {
 
             // Vérifier dépendances
             if (config.dependsOn) {
-                const prevVaccineInput = this.getInputByVaccineName(config.dependsOn);
-                if (!prevVaccineInput || !prevVaccineInput.value) return false;
+                const prevVaccineDate = this.data.vaccinations[config.dependsOn];
+                if (!prevVaccineDate) return false;
 
-                const prevDateObj = new Date(prevVaccineInput.value);
+                // Convert previous vaccine date from dd/mm/yyyy format to yyyy-mm-dd format
+                let prevDateObj;
+                if (prevVaccineDate && prevVaccineDate.includes('/')) {
+                    const parts = prevVaccineDate.split('/');
+                    if (parts.length === 3) {
+                        // Assuming dd/mm/yyyy format, convert to yyyy-mm-dd
+                        const dateStr = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                        prevDateObj = new Date(dateStr);
+                    } else {
+                        prevDateObj = new Date(prevVaccineDate);
+                    }
+                } else {
+                    prevDateObj = new Date(prevVaccineDate);
+                }
+
                 const intervalDays = Math.floor((vaccineDateObj - prevDateObj) / (1000 * 60 * 60 * 24));
 
                 if (intervalDays < config.minIntervalDays) return false;
@@ -387,26 +452,29 @@ class VaccinationApp {
 
     checkHepatitisConditions(ageDays) {
         if (ageDays <= 7) return true;
-        if (this.data.conditions.poidsInf2000) return true;
-        if (this.data.conditions.mereHbsPositif && ageDays <= 30) return true;
+        // Utiliser les valeurs actuelles des cases à cocher pour assurer la synchronisation
+        const lowWeightChecked = document.getElementById('lowWeight').checked;
+        const hbPositiveMotherChecked = document.getElementById('hbPositiveMother').checked;
+        if (lowWeightChecked) return true;
+        if (hbPositiveMotherChecked && ageDays <= 30) return true;
         return false;
     }
 
     getInputByVaccineName(vaccineName) {
-        const mapping = {
-            'BCG': 'vaccine-BCG',
-            'Hépatite B 1': 'vaccine-HepatiteB1',
-            'DTCa-VPI-Hib-HBV 1': 'vaccine-DTCa1',
-            'DTCa-VPI-Hib-HBV 2': 'vaccine-DTCa2',
-            'DTCa-VPI-Hib-HBV Rappel': 'vaccine-DTCaRappel',
-            'VPC 13 - 1': 'vaccine-VPC1',
-            'VPC 13 - 2': 'vaccine-VPC2',
-            'VPC 13 - Rappel': 'vaccine-VPCRappel',
-            'ROR 1': 'vaccine-ROR1',
-            'ROR 2': 'vaccine-ROR2'
+        const reverseMapping = {
+            'BCG': 'BCG',
+            'Hépatite B 1': 'HepatiteB1',
+            'DTCa-VPI-Hib-HBV 1': 'DTCa1',
+            'DTCa-VPI-Hib-HBV 2': 'DTCa2',
+            'DTCa-VPI-Hib-HBV Rappel': 'DTCaRappel',
+            'VPC 13 - 1': 'VPC1',
+            'VPC 13 - 2': 'VPC2',
+            'VPC 13 - Rappel': 'VPCRappel',
+            'ROR 1': 'ROR1',
+            'ROR 2': 'ROR2'
         };
-        const inputId = mapping[vaccineName];
-        return inputId ? document.querySelector(`.vaccine-date[data-vaccine="${vaccineName}"]`) : null;
+        const dataVaccine = reverseMapping[vaccineName];
+        return dataVaccine ? document.querySelector(`.vaccine-date[data-vaccine="${dataVaccine}"]`) : null;
     }
 
     resetVaccineValidation(vaccineField, statusIcon) {
@@ -419,6 +487,9 @@ class VaccinationApp {
     }
 
     revalidateAllVaccines() {
+        // Mettre à jour les données avant de valider tous les vaccins
+        this.collectData();
+        
         document.querySelectorAll('.vaccine-date').forEach(input => {
             if (input.value) {
                 const vaccineName = this.getVaccineNameFromInput(input);
@@ -433,17 +504,35 @@ class VaccinationApp {
         this.data.nomEnfant = fullName.slice(1).join(' ') || '';
         this.data.dateNaissance = document.getElementById('birthDate').value;
 
-        // Réinitialiser les vaccinations
+        const conditions = {
+            poidsInf2000: document.getElementById('lowWeight').checked,
+            mereHbsPositif: document.getElementById('hbPositiveMother').checked
+        };
+
+        this.data.conditions = conditions;
+
         this.data.vaccinations = {};
 
-        // Collecter toutes les vaccinations (même vides pour avoir une vue complète)
+        const mapping = {
+            'BCG': 'BCG',
+            'HepatiteB1': 'Hépatite B 1',
+            'DTCa1': 'DTCa-VPI-Hib-HBV 1',
+            'DTCa2': 'DTCa-VPI-Hib-HBV 2',
+            'DTCaRappel': 'DTCa-VPI-Hib-HBV Rappel',
+            'VPC1': 'VPC 13 - 1',
+            'VPC2': 'VPC 13 - 2',
+            'VPCRappel': 'VPC 13 - Rappel',
+            'ROR1': 'ROR 1',
+            'ROR2': 'ROR 2'
+        };
+
         document.querySelectorAll('.vaccine-date').forEach(input => {
-            const vaccineName = input.getAttribute('data-vaccine');
-            if (vaccineName) {
-                if (input.value) {
-                    this.data.vaccinations[vaccineName] = input.value;
+            const dataVaccine = input.getAttribute('data-vaccine');
+            if (dataVaccine && input.value) {
+                const fullName = mapping[dataVaccine];
+                if (fullName) {
+                    this.data.vaccinations[fullName] = input.value;
                 }
-                // Note: on ne stocke que les dates remplies, mais on vérifie tous les champs
             }
         });
 
@@ -533,6 +622,8 @@ class VaccinationApp {
 
     saveData() {
         this.collectData();
+        
+        // Sauvegarder localement (comme avant)
         const dataStr = JSON.stringify(this.data, null, 2);
         const blob = new Blob([dataStr], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
@@ -544,6 +635,9 @@ class VaccinationApp {
 
         URL.revokeObjectURL(url);
         this.showMessage("💾 Données sauvegardées avec succès");
+        
+        // Sauvegarder aussi vers l'API locale
+        this.saveToLocalAPI();
     }
 
     loadData() {
@@ -575,19 +669,34 @@ class VaccinationApp {
         document.getElementById('lowWeight').checked = data.conditions?.poidsInf2000 || false;
         document.getElementById('hbPositiveMother').checked = data.conditions?.mereHbsPositif || false;
 
-        // Charger les vaccinations
+        const reverseMapping = {
+            'BCG': 'BCG',
+            'Hépatite B 1': 'HepatiteB1',
+            'DTCa-VPI-Hib-HBV 1': 'DTCa1',
+            'DTCa-VPI-Hib-HBV 2': 'DTCa2',
+            'DTCa-VPI-Hib-HBV Rappel': 'DTCaRappel',
+            'VPC 13 - 1': 'VPC1',
+            'VPC 13 - 2': 'VPC2',
+            'VPC 13 - Rappel': 'VPCRappel',
+            'ROR 1': 'ROR1',
+            'ROR 2': 'ROR2'
+        };
+
         Object.entries(data.vaccinations || {}).forEach(([vaccineName, date]) => {
-            const input = this.getInputByVaccineName(vaccineName);
-            if (input) {
-                input.value = date;
+            const dataVaccine = reverseMapping[vaccineName];
+            if (dataVaccine) {
+                const input = document.querySelector(`.vaccine-date[data-vaccine="${dataVaccine}"]`);
+                if (input) {
+                    input.value = date;
+                }
             }
         });
 
+        this.collectData();
         this.onDateChange();
         this.onConditionChange();
         this.revalidateAllVaccines();
 
-        // Forcer la mise à jour des statuts après chargement
         setTimeout(() => {
             this.updateQuickSummary();
             this.updateVaccinationStatus();
@@ -634,7 +743,20 @@ class VaccinationApp {
         const modal = document.getElementById('reportModal');
         const content = document.getElementById('reportContent');
 
-        const birthDate = new Date(this.data.dateNaissance);
+        // Convert birth date from dd/mm/yyyy format to yyyy-mm-dd format for proper date parsing
+        let birthDate;
+        if (this.data.dateNaissance && this.data.dateNaissance.includes('/')) {
+            const parts = this.data.dateNaissance.split('/');
+            if (parts.length === 3) {
+                // Assuming dd/mm/yyyy format, convert to yyyy-mm-dd
+                const dateStr = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                birthDate = new Date(dateStr);
+            } else {
+                birthDate = new Date(this.data.dateNaissance);
+            }
+        } else {
+            birthDate = new Date(this.data.dateNaissance);
+        }
         const currentDate = new Date();
         const ageDays = Math.floor((currentDate - birthDate) / (1000 * 60 * 60 * 24));
         const years = Math.floor(ageDays / 365);
@@ -645,7 +767,7 @@ class VaccinationApp {
             <div class="report-header">
                 <h3>👤 Informations de l'enfant</h3>
                 <p><strong>Nom:</strong> ${this.data.prenomEnfant} ${this.data.nomEnfant}</p>
-                <p><strong>Date de naissance:</strong> ${new Date(this.data.dateNaissance).toLocaleDateString('fr-FR')}</p>
+                <p><strong>Date de naissance:</strong> ${birthDate.toLocaleDateString('fr-FR')}</p>
                 <p><strong>Âge:</strong> ${years} ans, ${months} mois</p>
             </div>
 
@@ -717,7 +839,20 @@ class VaccinationApp {
         const modal = document.getElementById('schemaModal');
         const content = document.getElementById('schemaContent');
 
-        const birthDate = new Date(this.data.dateNaissance);
+        // Convert birth date from dd/mm/yyyy format to yyyy-mm-dd format for proper date parsing
+        let birthDate;
+        if (this.data.dateNaissance && this.data.dateNaissance.includes('/')) {
+            const parts = this.data.dateNaissance.split('/');
+            if (parts.length === 3) {
+                // Assuming dd/mm/yyyy format, convert to yyyy-mm-dd
+                const dateStr = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                birthDate = new Date(dateStr);
+            } else {
+                birthDate = new Date(this.data.dateNaissance);
+            }
+        } else {
+            birthDate = new Date(this.data.dateNaissance);
+        }
         const currentDate = new Date();
         const ageDays = Math.floor((currentDate - birthDate) / (1000 * 60 * 60 * 24));
         const years = Math.floor(ageDays / 365);
@@ -788,7 +923,20 @@ class VaccinationApp {
                 // Âge actuel lors de la vaccination
                 let currentAgeText = '-';
                 if (currentVaccination) {
-                    const vaccineDate = new Date(currentVaccination);
+                    // Convert dd/mm/yyyy format to yyyy-mm-dd format for proper date parsing
+                    let vaccineDate;
+                    if (currentVaccination && currentVaccination.includes('/')) {
+                        const parts = currentVaccination.split('/');
+                        if (parts.length === 3) {
+                            // Assuming dd/mm/yyyy format, convert to yyyy-mm-dd
+                            const dateStr = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                            vaccineDate = new Date(dateStr);
+                        } else {
+                            vaccineDate = new Date(currentVaccination);
+                        }
+                    } else {
+                        vaccineDate = new Date(currentVaccination);
+                    }
                     const ageDaysAtVaccine = Math.floor((vaccineDate - birthDate) / (1000 * 60 * 60 * 24));
                     const yearsAtVaccine = Math.floor(ageDaysAtVaccine / 365);
                     const monthsAtVaccine = Math.floor((ageDaysAtVaccine % 365) / 30);
@@ -876,12 +1024,25 @@ class VaccinationApp {
 
             if (prevVaccineDate) {
                 // Vaccin précédent fait - utiliser sa date réelle
-                const prevDate = new Date(prevVaccineDate);
+                // Convert dd/mm/yyyy format to yyyy-mm-dd format for proper date parsing
+                let prevDate;
+                if (prevVaccineDate && prevVaccineDate.includes('/')) {
+                    const parts = prevVaccineDate.split('/');
+                    if (parts.length === 3) {
+                        // Assuming dd/mm/yyyy format, convert to yyyy-mm-dd
+                        const dateStr = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                        prevDate = new Date(dateStr);
+                    } else {
+                        prevDate = new Date(prevVaccineDate);
+                    }
+                } else {
+                    prevDate = new Date(prevVaccineDate);
+                }
                 const minIntervalDate = new Date(prevDate.getTime() + (config.minIntervalDays * 24 * 60 * 60 * 1000));
                 return minIntervalDate > minAgeDate ? minIntervalDate : minAgeDate;
             } else if (proposedDates[config.dependsOn]) {
                 // Vaccin précédent pas fait mais date proposée disponible
-                const prevProposedDate = new Date(proposedDates[config.dependsOn]);
+                const prevProposedDate = proposedDates[config.dependsOn];
                 const minIntervalDate = new Date(prevProposedDate.getTime() + (config.minIntervalDays * 24 * 60 * 60 * 1000));
                 return minIntervalDate > minAgeDate ? minIntervalDate : minAgeDate;
             } else {
@@ -932,7 +1093,20 @@ class VaccinationApp {
     }
 
     generateExportHTML() {
-        const birthDate = new Date(this.data.dateNaissance);
+        // Convert birth date from dd/mm/yyyy format to yyyy-mm-dd format for proper date parsing
+        let birthDate;
+        if (this.data.dateNaissance && this.data.dateNaissance.includes('/')) {
+            const parts = this.data.dateNaissance.split('/');
+            if (parts.length === 3) {
+                // Assuming dd/mm/yyyy format, convert to yyyy-mm-dd
+                const dateStr = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                birthDate = new Date(dateStr);
+            } else {
+                birthDate = new Date(this.data.dateNaissance);
+            }
+        } else {
+            birthDate = new Date(this.data.dateNaissance);
+        }
         const currentDate = new Date();
         const ageDays = Math.floor((currentDate - birthDate) / (1000 * 60 * 60 * 24));
         const years = Math.floor(ageDays / 365);
@@ -1248,7 +1422,20 @@ class VaccinationApp {
     }
 
     createPrintContent(doc, body) {
-        const birthDate = new Date(this.data.dateNaissance);
+        // Convert birth date from dd/mm/yyyy format to yyyy-mm-dd format for proper date parsing
+        let birthDate;
+        if (this.data.dateNaissance && this.data.dateNaissance.includes('/')) {
+            const parts = this.data.dateNaissance.split('/');
+            if (parts.length === 3) {
+                // Assuming dd/mm/yyyy format, convert to yyyy-mm-dd
+                const dateStr = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                birthDate = new Date(dateStr);
+            } else {
+                birthDate = new Date(this.data.dateNaissance);
+            }
+        } else {
+            birthDate = new Date(this.data.dateNaissance);
+        }
         const currentDate = new Date();
         const ageDays = Math.floor((currentDate - birthDate) / (1000 * 60 * 60 * 24));
         const years = Math.floor(ageDays / 365);
@@ -1372,7 +1559,20 @@ class VaccinationApp {
                 // Âge actuel lors de la vaccination
                 let currentAgeText = '-';
                 if (currentVaccination) {
-                    const vaccineDate = new Date(currentVaccination);
+                    // Convert dd/mm/yyyy format to yyyy-mm-dd format for proper date parsing
+                    let vaccineDate;
+                    if (currentVaccination && currentVaccination.includes('/')) {
+                        const parts = currentVaccination.split('/');
+                        if (parts.length === 3) {
+                            // Assuming dd/mm/yyyy format, convert to yyyy-mm-dd
+                            const dateStr = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                            vaccineDate = new Date(dateStr);
+                        } else {
+                            vaccineDate = new Date(currentVaccination);
+                        }
+                    } else {
+                        vaccineDate = new Date(currentVaccination);
+                    }
                     const ageDaysAtVaccine = Math.floor((vaccineDate - birthDate) / (1000 * 60 * 60 * 24));
                     const yearsAtVaccine = Math.floor(ageDaysAtVaccine / 365);
                     const monthsAtVaccine = Math.floor((ageDaysAtVaccine % 365) / 30);
@@ -1491,7 +1691,20 @@ class VaccinationApp {
                 // Vérifier si le vaccin est en retard
                 if (this.data.dateNaissance) {
                     const config = this.vaccineConfig[vaccineName];
-                    const birthDate = new Date(this.data.dateNaissance);
+                    // Convert birth date from dd/mm/yyyy format to yyyy-mm-dd format for proper date parsing
+                    let birthDate;
+                    if (this.data.dateNaissance && this.data.dateNaissance.includes('/')) {
+                        const parts = this.data.dateNaissance.split('/');
+                        if (parts.length === 3) {
+                            // Assuming dd/mm/yyyy format, convert to yyyy-mm-dd
+                            const dateStr = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                            birthDate = new Date(dateStr);
+                        } else {
+                            birthDate = new Date(this.data.dateNaissance);
+                        }
+                    } else {
+                        birthDate = new Date(this.data.dateNaissance);
+                    }
                     const recommendedDate = this.calculateRecommendedDate(vaccineName, config, birthDate);
 
                     if (recommendedDate <= new Date()) {
@@ -1531,7 +1744,20 @@ class VaccinationApp {
                 const date = this.data.vaccinations[vaccineName];
                 if (!date) {
                     const config = this.vaccineConfig[vaccineName];
-                    const birthDate = new Date(this.data.dateNaissance);
+                    // Convert birth date from dd/mm/yyyy format to yyyy-mm-dd format for proper date parsing
+                    let birthDate;
+                    if (this.data.dateNaissance && this.data.dateNaissance.includes('/')) {
+                        const parts = this.data.dateNaissance.split('/');
+                        if (parts.length === 3) {
+                            // Assuming dd/mm/yyyy format, convert to yyyy-mm-dd
+                            const dateStr = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                            birthDate = new Date(dateStr);
+                        } else {
+                            birthDate = new Date(this.data.dateNaissance);
+                        }
+                    } else {
+                        birthDate = new Date(this.data.dateNaissance);
+                    }
                     const recommendedDate = this.calculateRecommendedDate(vaccineName, config, birthDate);
 
                     if (recommendedDate > new Date()) {
@@ -1564,7 +1790,20 @@ class VaccinationApp {
                 vaccinsAJour++;
             } else if (!date && this.data.dateNaissance) {
                 const config = this.vaccineConfig[vaccineName];
-                const birthDate = new Date(this.data.dateNaissance);
+                // Convert birth date from dd/mm/yyyy format to yyyy-mm-dd format for proper date parsing
+                let birthDate;
+                if (this.data.dateNaissance && this.data.dateNaissance.includes('/')) {
+                    const parts = this.data.dateNaissance.split('/');
+                    if (parts.length === 3) {
+                        // Assuming dd/mm/yyyy format, convert to yyyy-mm-dd
+                        const dateStr = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                        birthDate = new Date(dateStr);
+                    } else {
+                        birthDate = new Date(this.data.dateNaissance);
+                    }
+                } else {
+                    birthDate = new Date(this.data.dateNaissance);
+                }
                 const recommendedDate = this.calculateRecommendedDate(vaccineName, config, birthDate);
 
                 if (recommendedDate <= new Date()) {
@@ -1645,6 +1884,24 @@ class VaccinationApp {
             
             messageArea.textContent = prefix + message;
         }
+    }
+
+    loadFromLocalAPI() {
+        // Cette fonction était destinée à l'intégration avec l'API locale
+        // Mais elle est maintenant déplacée dans certificat.js
+        console.log('Intégration avec l\'API locale déplacée dans certificat.js');
+    }
+
+    updateUIWithLocalData(data) {
+        // Cette fonction était destinée à l'intégration avec l'API locale
+        // Mais elle est maintenant déplacée dans certificat.js
+        console.log('Intégration avec l\'API locale déplacée dans certificat.js');
+    }
+
+    saveToLocalAPI() {
+        // Cette fonction était destinée à l'intégration avec l'API locale
+        // Mais elle est maintenant déplacée dans certificat.js
+        console.log('Intégration avec l\'API locale déplacée dans certificat.js');
     }
 }
 

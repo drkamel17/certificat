@@ -146,8 +146,14 @@ p {
     textarea::placeholder {
         color: transparent !important;
     }
-    .print-button {
+.print-button {
         display: none;
+    }
+
+    /* Masquer les contrôles d'impression et de sauvegarde */
+    .print-button div[style*="align-items: center"],
+    .print-button button {
+        display: none !important;
     }
     body {
         background-color: white;
