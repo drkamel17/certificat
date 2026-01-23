@@ -57,6 +57,10 @@
       "src": "score/**/*.png",
       "use": "@vercel/static"
     },
+	   {
+      "src": "score/**/_scripts.js.تنزيل",
+      "use": "@vercel/static"
+    },
     {
       "src": "templates/*.pdf",
       "use": "@vercel/static"
@@ -104,4 +108,5 @@
       "dest": "/$1.html"
     }
   ]
+
 }
