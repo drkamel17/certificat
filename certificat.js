@@ -4965,6 +4965,7 @@ ${enteteContent}
             if (printButton) {
                 printButton.addEventListener('click', function () {
                     newWindow.print();
+                    window.location.reload();
                 });
             }
 
@@ -6276,12 +6277,12 @@ function genererRequisition() {
 
     // Ecouteur pour le bouton requisitionApte
     document.querySelector('#requisitionApte').addEventListener('click', () => {
-        requisitionApte(); // Ouvre la modale de choix Zagreb ou Essens
+        requisitionApte(); 
     });
 
     // Ecouteur pour le bouton requisitionInapte
     document.querySelector('#requisitionInapte').addEventListener('click', () => {
-        requisitionInapte(); // Appelle la fonction Tissulairesanssar
+        requisitionInapte(); 
     });
 
     // Ajouter un écouteur de clic pour fermer la modale
@@ -6534,11 +6535,11 @@ function requisitionApte() {
     <div class="contenu-certificat" style="margin-top: 1.5cm !important;">
     <p>
       Je soussigné(e), Dr 
-      <input type="text" value="${docteur}" readonly style="width: 120px;">, 
+      <input type="text" value="${docteur}" style="width: 120px; padding: 4px; border: 1px solid #ddd; border-radius: 4px; margin: 0 5px;">, 
       certifie avoir examiné ce jour le nomee 
       <strong><input type="text" value="${patientNomPrenom}" placeholder="Nom et prénom" style="width: 180px; padding: 4px; border: 1px solid #ddd; border-radius: 4px; margin: 0 5px;"></strong>
-      né(e) le 
-      <strong><input type="text" value="${dob}" readonly style="width: 100px;"></strong>, 
+      <input type="text" value="né(e) le" placeholder="Statut" style="width: 70px; padding: 4px; border: 1px solid #ddd; border-radius: 4px; margin: 0 5px; color: #555;"> 
+      <strong><input type="text" value="${dob}" placeholder="Date de naissance" style="width: 100px; padding: 4px; border: 1px solid #ddd; border-radius: 4px; margin: 0 5px;"></strong>, 
       suite à  la réquisition numéro 
       <input type="text" placeholder="Numéro de réquisition" style="width: 240px;">
     </p>
@@ -6580,6 +6581,7 @@ function requisitionApte() {
     } else {
         console.log("Popup bloquée par le navigateur.");
     }
+    window.location.reload();
 }
 
 function requisitionInapte() {
@@ -6753,11 +6755,11 @@ function requisitionInapte() {
     <div class="contenu-certificat" style="margin-top: 1.5cm !important;">
     <p>
       Je soussigné(e), Dr 
-      <input type="text" value="${docteur}" readonly style="width: 120px;">, 
+      <input type="text" value="${docteur}" style="width: 120px; padding: 4px; border: 1px solid #ddd; border-radius: 4px; margin: 0 5px;">, 
       certifie avoir examiné ce jour le nomee 
       <strong><input type="text" value="${patientNomPrenom}" placeholder="Nom et prénom" style="width: 180px; padding: 4px; border: 1px solid #ddd; border-radius: 4px; margin: 0 5px;"></strong>
-      né(e) le 
-      <strong><input type="text" value="${dob}" readonly style="width: 100px;"></strong>, 
+      <input type="text" value="né(e) le" placeholder="Statut" style="width: 70px; padding: 4px; border: 1px solid #ddd; border-radius: 4px; margin: 0 5px; color: #555;"> 
+      <strong><input type="text" value="${dob}" placeholder="Date de naissance" style="width: 100px; padding: 4px; border: 1px solid #ddd; border-radius: 4px; margin: 0 5px;"></strong>, 
       suite à  la réquisition numéro 
       <input type="text" placeholder="Numéro de réquisition" style="width: 240px;"><br>
     
@@ -6806,6 +6808,7 @@ Le présent certificat est remis à  l'autorité compétente pour servir et valo
     } else {
         console.log("Popup bloquée par le navigateur.");
     }
+    window.location.reload();
 }
 
 
