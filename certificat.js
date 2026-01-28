@@ -291,6 +291,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Ecouteur pour le bouton de requisition
     document.getElementById('requisition').addEventListener('click', function () {
+        console.log('Bouton Requisition cliqué');
         const modal = document.createElement('div');
         modal.className = 'modal';
         // Récupérer les informations du patient à partir des champs du formulaire
@@ -311,14 +312,46 @@ document.addEventListener('DOMContentLoaded', function () {
     `;
 
         document.body.appendChild(modal);
-        // Ecouteur pour le bouton requisitionApte
-        document.querySelector('#requisitionApte').addEventListener('click', () => {
-            requisitionApte(); // Ouvre la modale de choix Zagreb ou Essens
+        console.log('Modal ajouté au DOM');
+        
+        // Utiliser la délégation d'événements sur le conteneur du modal
+        modal.addEventListener('click', function(event) {
+            // Vérifier si le clic est sur un bouton spécifique
+            if (event.target.id === 'requisitionApte') {
+                console.log('Bouton Apte cliqué (délégation)');
+                event.stopPropagation();
+                requisitionApte();
+            } else if (event.target.id === 'requisitionInapte') {
+                console.log('Bouton Inapte cliqué (délégation)');
+                event.stopPropagation();
+                requisitionInapte();
+            }
         });
-        // Ecouteur pour le bouton requisitionInapte
-        document.querySelector('#requisitionInapte').addEventListener('click', () => {
-            requisitionInapte(); // Appelle la fonction Tissulairesanssar
-        });
+        
+        // Vérification après un court délai
+        setTimeout(() => {
+            console.log('Timeout de 100ms terminé');
+            const btnApte = document.getElementById('requisitionApte');
+            const btnInapte = document.getElementById('requisitionInapte');
+            console.log('Bouton Apte trouvé:', btnApte);
+            console.log('Bouton Inapte trouvé:', btnInapte);
+            
+            // Tentative d'attachement direct aussi
+            if (btnApte) {
+                btnApte.addEventListener('click', function(e) {
+                    console.log('Bouton Apte cliqué (direct)');
+                    e.stopPropagation();
+                    requisitionApte();
+                });
+            }
+            if (btnInapte) {
+                btnInapte.addEventListener('click', function(e) {
+                    console.log('Bouton Inapte cliqué (direct)');
+                    e.stopPropagation();
+                    requisitionInapte();
+                });
+            }
+        }, 100);
 
         // Ajouter un écouteur de clic pour fermer la modale
         modal.addEventListener('click', function (event) {
@@ -6332,11 +6365,11 @@ function genererRequisition() {
 
 // Fonctions pour la requisition
 function requisitionApte() {
+    console.log('Fonction requisitionApte appelée');
     // Fermer la modale si elle existe
     const existingModal = document.querySelector('.modal');
     if (existingModal) {
         existingModal.remove();
-        window.location.reload();
     }
 
     // Get patient information from the new fields
@@ -6503,7 +6536,7 @@ function requisitionApte() {
       Je soussigné(e), Dr 
       <input type="text" value="${docteur}" readonly style="width: 120px;">, 
       certifie avoir examiné ce jour le nomee 
-      <strong><input type="text" value="${patientNomPrenom}" readonly placeholder="Nom et prénom" style="width: 180px; padding: 4px; border: 1px solid #ddd; border-radius: 4px; margin: 0 5px;"></strong>
+      <strong><input type="text" value="${patientNomPrenom}" placeholder="Nom et prénom" style="width: 180px; padding: 4px; border: 1px solid #ddd; border-radius: 4px; margin: 0 5px;"></strong>
       né(e) le 
       <strong><input type="text" value="${dob}" readonly style="width: 100px;"></strong>, 
       suite à  la réquisition numéro 
@@ -6550,11 +6583,11 @@ function requisitionApte() {
 }
 
 function requisitionInapte() {
+    console.log('Fonction requisitionInapte appelée');
     // Fermer la modale si elle existe
     const existingModal = document.querySelector('.modal');
     if (existingModal) {
         existingModal.remove();
-        window.location.reload();
     }
 
     // Get patient information from the new fields
@@ -6722,7 +6755,7 @@ function requisitionInapte() {
       Je soussigné(e), Dr 
       <input type="text" value="${docteur}" readonly style="width: 120px;">, 
       certifie avoir examiné ce jour le nomee 
-      <strong><input type="text" value="${patientNomPrenom}" readonly placeholder="Nom et prénom" style="width: 180px; padding: 4px; border: 1px solid #ddd; border-radius: 4px; margin: 0 5px;"></strong>
+      <strong><input type="text" value="${patientNomPrenom}" placeholder="Nom et prénom" style="width: 180px; padding: 4px; border: 1px solid #ddd; border-radius: 4px; margin: 0 5px;"></strong>
       né(e) le 
       <strong><input type="text" value="${dob}" readonly style="width: 100px;"></strong>, 
       suite à  la réquisition numéro 
