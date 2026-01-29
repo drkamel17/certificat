@@ -176,7 +176,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     const certificatBtn = document.getElementById('certificat');
     if (certificatBtn) {
         certificatBtn.addEventListener('click', function() {
-            genererCertificat(false);
+            window.location.href = '../certificat.html';
         });
     }
 
@@ -1028,65 +1028,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         await mettreAJourTableau();
     }
 
-    function genererCertificat(estDeces) {
-        const nom = document.getElementById('nom').value;
-        const prenom = document.getElementById('prenom').value;
-        const dateNaissance = document.getElementById('date-naissance').value;
-        const dateConsultation = document.querySelector('input[name="date-consultation"]').value;
-        
-        const docteur = localStorage.getItem('docteur') || '';
-        const polyclinique = localStorage.getItem('polyclinique') || '';
-        
-        let typeCertificat = estDeces ? 'CERTIFICAT DE DÉCÈS' : 'CERTIFICAT MÉDICAL';
-        let contenu = '';
-        
-        // Format the dateConsultation properly
-        let formattedDate = '';
-        if (dateConsultation) {
-            const [year, month, day] = dateConsultation.split('-');
-            formattedDate = `${day}/${month}/${year}`;
-        } // Si la date n'est pas définie, on laisse formattedDate vide
-        
-        if (estDeces) {
-            contenu = `Je soussigné, Dr ${docteur}, certifie que M/Mme ${nom} ${prenom}, né(e) le ${dateNaissance}, est décédé(e) le ${formattedDate}.`;
-        } else {
-            contenu = `Je soussigné, Dr ${docteur}, certifie avoir examiné ce jour M/Mme ${nom} ${prenom}, né(e) le ${dateNaissance}.`;
-        }
-
-        const newWindow = window.open('', '_blank');
-        newWindow.document.write(`
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <title>${typeCertificat}</title>
-                <style>
-                    body { font-family: Arial, sans-serif; max-width: 800px; margin: 50px auto; padding: 20px; }
-                    h1 { text-align: center; margin-bottom: 40px; }
-                    .header { text-align: center; margin-bottom: 30px; }
-                    .content { line-height: 1.6; font-size: 16px; }
-                    .footer { margin-top: 50px; text-align: right; }
-                    button { margin-top: 20px; padding: 10px 20px; }
-                </style>
-            </head>
-            <body>
-                <div class="header">
-                    <h2>${polyclinique}</h2>
-                    <h1>${typeCertificat}</h1>
-                </div>
-                <div class="content">
-                    <p>${contenu}</p>
-                </div>
-                <div class="footer">
-                    <p>Fait le ${formattedDate}</p>
-                    <p><strong>Dr ${docteur}</strong></p>
-                    <p>Signature et cachet</p>
-                </div>
-                <button onclick="window.print()">Imprimer</button>
-            </body>
-            </html>
-        `);
-        newWindow.document.close();
-    }
+    
 
     function chargerMedicaments() {
         return JSON.parse(localStorage.getItem('medicaments') || '[]');
