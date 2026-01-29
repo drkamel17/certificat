@@ -1927,26 +1927,53 @@ function genererChronique() {
             text-decoration: underline;
             font-size: 20px;
         }
+        h2 {
+            text-align: center;
+            color: #555;
+            font-size: 16px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+        }
         p {
             line-height: 1.5;
             color: #555;
         }
-        .signature {
-            text-align: right;
-            margin-top: 50px;
+        .editable-field {
+            border-bottom: 1px dashed #666;
+            display: inline-block;
+            min-width: 50px;
+            min-height: 20px;
+            padding: 2px 4px;
+            margin: 0 3px;
         }
-        @media print {
-            body {
-                background-color: white;
-            }
-            .certificat {
-                border: none;
-                box-shadow: none;
-                margin-top: 0;
-            }
-            .print-button {
-                display: none;
-            }
+        .editable-area {
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 8px;
+            margin: 5px 0;
+            width: 100%;
+            min-height: 20px;
+            resize: vertical;
+            overflow: hidden;
+            font-family: inherit;
+            font-size: inherit;
+            line-height: inherit;
+        }
+        .editable-area:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+        #head {
+            margin-bottom: 20px;
+        }
+        #head table {
+            width: 100%;
+            border: 0px solid #000000;
+            padding: 4px;
+            margin-bottom: 15px;
+        }
+        #head td {
+            text-align: center;
         }
         .print-button {
             text-align: center;
@@ -1964,44 +1991,139 @@ function genererChronique() {
         .print-button button:hover {
             background-color: #0056b3;
         }
-        #head {
-            margin-bottom: 20px;
+        @media print {
+            @page {
+                size: A5;
+                margin: 0.2cm 0.2cm 0.2cm 0.2cm;
+            }
+            body {
+                margin: 0 !important;
+                padding: 0 !important;
+                font-size: 10pt !important;
+                background-color: white;
+            }
+            .certificat {
+                padding: 2px 8px !important;
+                max-width: 100% !important;
+                border: none;
+                box-shadow: none;
+                margin-top: 0;
+            }
+            h1 {
+                font-size: 14pt !important;
+                margin: 5px 0 !important;
+                margin-top: 2cm !important;
+            }
+            h2 {
+                font-size: 12pt !important;
+                margin: 3px 0 !important;
+            }
+            p {
+                font-size: 9pt !important;
+                margin: 2px 0 !important;
+                line-height: 1.2 !important;
+            }
+            input[type="text"],
+            input[type="date"],
+            textarea {
+                border: none !important;
+                background: none !important;
+                box-shadow: none !important;
+                outline: none !important;
+                font-size: 9pt !important;
+            }
+            input[type="text"]:focus,
+            input[type="date"]:focus,
+            textarea:focus {
+                border: none !important;
+                outline: none !important;
+            }
+            /* Rendre le placeholder transparent lors de l'impression */
+            input::placeholder,
+            textarea::placeholder {
+                color: transparent;
+            }
+            .print-button {
+                display: none;
+            }
+
+            /* Masquer les contrôles d'impression et de sauvegarde */
+            .print-button div[style*="align-items: center"],
+            .print-button button {
+                display: none !important;
+            }
+
+            .editable-field, .editable-area {
+                border: none !important;
+            }
         }
-        #head table {
-            width: 100%;
-            border: 0px solid #000000;
-            padding: 4px;
-            margin-bottom: 15px;
+
+        /* Masquer les contrôles d'impression et de sauvegarde */
+        .print-button div[style*="align-items: center"],
+        .print-button button {
+            display: none !important;
         }
-        #head td {
-            text-align: center;
+        
+        .editable-field, .editable-area {
+            border: none !important;
         }
+    }
     </style>
 </head>
 <body>
     ${enteteContent}
     <div class="certificat">
         <h1>CERTIFICAT DE MALADIE CHRONIQUE</h1>
-        <p>
-            Je soussigné(e), Dr <strong>${docteur || '[Nom du docteur]'}</strong>, certifie avoir examiné 
-            le patient <strong>${patientNomPrenom}</strong>, ${ageInfo}.
-        </p>
-        <p>
-            À la suite de cet examen, je constate que le patient souffre d'une maladie chronique nécessitant 
-            un suivi médical régulier et des soins continus.
-        </p>
-        <p>
-            Cette affection chronique nécessite des consultations périodiques et un traitement adapté.
-        </p>
-        <div class="signature">
-            Fait à <strong>${polyclinique || '[Nom de la polyclinique]'}</strong>, le <strong>${formattedDate}</strong><br><br><br>
-            Signature et cachet<br>
-            Dr <strong>${docteur || '[Nom du docteur]'}</strong>
+        <div class="contenu-certificat" style="margin-top: 1cm !important;">
+            <p>
+                Je soussigné(e), Dr <input type="text" id="docteur" value="${docteur}" placeholder="Medecin">, certifie avoir examiné ce jour :<br>
+                <strong><input type="text" value="${patientNomPrenom}" style="width: 180px;"></strong>
+                <br>
+                ${ageInfo}
+                <br>
+                Je constate que le patient souffre d'une maladie chronique.<br>
+                Ce certificat est délivré à la demande de l'intéressée et remis en main propre pour servir et valoir ce que de droit.<br>
+            </p>
+            <p style="text-align: right;">Signature :<br>
+                <span class="docteur" style="font-weight: bold;">Dr ${docteur}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </p>
         </div>
     </div>
-    <div class="print-button">
-        <button onclick="window.print()">Imprimer le certificat</button>
+    <div class="print-button" style="display: flex; align-items: center; justify-content: center; gap: 15px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <label for="fontSize" style="font-size: 14px; margin: 0;">Taille du texte:</label>
+            <input type="number" id="fontSize" min="8" max="20" value="14" style="width: 60px; padding: 5px; border: 1px solid #bdbdbd; border-radius: 4px;">
+        </div>
+        <button id="printButton">Imprimer le Certificat</button>
     </div>
+    <script src="print.js"></script>
+    <script src="certificat-unified-font-size.js"></script>
+    <script>
+    // Sauvegarder les modifications dans le localStorage
+    function sauvegarderModifications() {
+        const polycliniqueInput = document.getElementById('polyclinique');
+        const polycliniqueArInput = document.getElementById('polyclinique-ar');
+        const docteurInput = document.getElementById('docteur');
+        
+        if (polycliniqueInput && polycliniqueInput.value) {
+            localStorage.setItem('polyclinique', polycliniqueInput.value);
+        }
+        
+        if (polycliniqueArInput && polycliniqueArInput.value) {
+            localStorage.setItem('polyclinique-ar', polycliniqueArInput.value);
+        }
+        
+        if (docteurInput && docteurInput.value) {
+            localStorage.setItem('docteur', docteurInput.value);
+        }
+    }
+
+    // Ecouteur pour le bouton d'impression
+    document.getElementById('printButton').addEventListener('click', function() {
+        sauvegarderModifications();
+        window.print();
+    });
+    </script>
 </body>
 </html>
     `;
@@ -2010,6 +2132,7 @@ function genererChronique() {
     newWindow.document.write(certificatHtml);
     newWindow.document.close();
 }
+
 
 // Fonction pour générer un certificat de prolongation d'arrêt de travail
 function genererProlongation() {
@@ -12280,6 +12403,274 @@ function Tissulairesanssar(dateMorsure, poidsInput) {
     if (newWindow) {
         newWindow.document.write(certificatContent);
         newWindow.document.close();
+    } else {
+        console.log("Popup bloquée par le navigateur.");
+    }
+}
+
+// Fonction pour générer un certificat médical de circoncision
+function genererCirconcision() {
+    // Récupérer les informations du patient depuis les champs du formulaire
+    const patientNomPrenom = document.getElementById('patientNomPrenom').value || '';
+    const patientAge = document.getElementById('patientAge').value || '';
+    const patientDateNaissance = document.getElementById('patientDateNaissance').value || '';
+    const dateCertificatInput = document.getElementById('dateCertificat').value || '';
+    
+    // Convertir la date du format dd/mm/yyyy au format ISO (YYYY-MM-DD) pour l'utilisation interne
+    let dateCertificat = '';
+    if (dateCertificatInput && dateCertificatInput.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
+        const [day, month, year] = dateCertificatInput.split('/');
+        dateCertificat = `${year}-${month}-${day}`;
+    } else {
+        // Si la date n'est pas au bon format, utiliser la date d'aujourd'hui
+        const today = new Date();
+        const year = today.getFullYear();
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        dateCertificat = `${year}-${month}-${day}`;
+    }
+
+    // Diviser le nom et prénom
+    let nom = '';
+    let prenom = '';
+    if (patientNomPrenom) {
+        const parts = patientNomPrenom.split(' ');
+        nom = parts[0] || '';
+        prenom = parts.slice(1).join(' ') || '';
+    }
+
+    // Utiliser la date de naissance si disponible
+    const dob = patientDateNaissance || '';
+
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    const todayFormatted = `${year}-${month}-${day}`;
+
+    const polyclinique = localStorage.getItem('polyclinique') || "";
+    const polycliniqueAr = localStorage.getItem('polyclinique-ar') || "";
+    const docteur = localStorage.getItem('docteur') || "";
+
+    // Vérifier le format choisi
+    const avecEntete = localStorage.getItem('certificatFormat') === 'avecEntete';
+
+    let enteteContent = '';
+    if (avecEntete) {
+        enteteContent = generateHeader();
+    } else {
+        // Espace vide pour garder la meme mise en page
+        enteteContent = '<div style="height: 155px;"></div>';
+    }
+
+    const certificatContent = `
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CERTIFICAT MÉDICAL DE CIRCONCISION</title>
+    <style>
+body {
+font-family: Arial, sans-serif;
+padding: 20px;
+background-color: #f9f9f9;
+}
+.certificat {
+background-color: white;
+border: 1px solid #ddd;
+padding: 20px;
+max-width: 600px;
+margin: 0 auto;
+margin-top: 60px;
+box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+h1 {
+text-align: center;
+color: #333;
+text-decoration: underline;
+font-size: 20px;
+}
+p {
+line-height: 1.5;
+color: #555;
+}
+.editable-field {
+border-bottom: 1px dashed #666;
+display: inline-block;
+min-width: 50px;
+min-height: 20px;
+padding: 2px 4px;
+margin: 0 3px;
+}
+.editable-area {
+border: 1px solid #ddd;
+border-radius: 4px;
+padding: 8px;
+margin: 5px 0;
+width: 100%;
+min-height: 20px;
+resize: vertical;
+overflow: hidden;
+font-family: inherit;
+font-size: inherit;
+line-height: inherit;
+}
+.editable-area:focus {
+outline: none;
+border-color: #007bff;
+}
+#head {
+margin-bottom: 20px;
+}
+#head table {
+width: 100%;
+border: 0px solid #000000;
+padding: 4px;
+margin-bottom: 15px;
+}
+#head td {
+text-align: center;
+}
+.print-button {
+text-align: center;
+margin-top: 20px;
+}
+.print-button button {
+padding: 10px 20px;
+font-size: 16px;
+background-color: #007bff;
+color: white;
+border: none;
+border-radius: 5px;
+cursor: pointer;
+}
+.print-button button:hover {
+background-color: #0056b3;
+}
+@media print {
+@page {
+    size: A5;
+    margin: 0.2cm 0.2cm 0.2cm 0.2cm;
+}
+
+body {
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 10pt !important;
+    line-height: 1.2 !important;
+    background-color: white;
+}
+
+.certificat {
+    border: none;
+    box-shadow: none;
+    margin: 0 !important;
+    padding: 2px 8px !important;
+    max-width: 100% !important;
+}
+
+h1 {
+    font-size: 14pt !important;
+    margin: 5px 0 !important;
+    margin-top: 2cm !important;
+}
+ .footer-note {
+            margin-top: 30px;
+            font-style: italic;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+        }
+
+input[type="text"],
+input[type="date"],
+textarea {
+    border: none !important;
+    background: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    font-size: 9pt !important;
+}
+
+input[type="text"]:focus,
+input[type="date"]:focus,
+textarea:focus {
+    border: none !important;
+    outline: none !important;
+}
+
+
+/* Styles existants */
+.print-button {
+    display: none;
+}
+.editable-field, .editable-area {
+    border: none !important;
+}
+
+/* Additional space optimization */
+* {
+    margin-top: 0 !important;
+    margin-bottom: 2px !important;
+}
+
+p {
+    margin: 2px 0 !important;
+    font-size: 9pt !important;
+}
+}
+</style>
+</head>
+<body>
+${enteteContent}
+    <div class="certificat">
+        <h1>CERTIFICAT MÉDICAL DE CIRCONCISION</h1>
+        <div class="contenu-certificat" style="margin-top: 1.5cm !important;">
+        <p>
+            Je soussigné, Dr <input type="text" id="docteur" value="${docteur}" placeholder="" style="width: 120px;">,
+             certifie que l'enfant nommé(e) <span class="editable-field" contenteditable="true" style="min-width: 180px; display: inline-block;">${nom} ${prenom}</span>,
+            <span class="editable-field" contenteditable="true" style="min-width: 100px; display: inline-block;">né(e) le ${dob}</span> était récemment circoncis  . <span class="editable-field" contenteditable="true" style="min-width: 300px; display: inline-block;">Ce certificat a été délivré à son tuteur pour faire valoir ce que de droit .</span> 
+        </p>
+		 <div class="footer-note">
+                (Ce certificat est valable que pour le dossier des oeuvres sociales)
+            </div>
+        <p style="text-align: right; margin-top: 30px;">
+            Le <input type="text" id="dateCertificat" value="${dateCertificatInput}" style="width: 150px;">
+        </p>
+        <p style="text-align: right; margin-top: 30px;">
+            Dont certificat<br>
+            <span class="docteur" style="font-weight: bold;">Dr ${docteur}</span>
+        </p>
+    </div>
+    <div class="print-button" style="display: flex; align-items: center; justify-content: center; gap: 15px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <label for="fontSize" style="font-size: 14px; margin: 0;">Taille du texte:</label>
+            <input type="number" id="fontSize" min="8" max="20" value="14" style="width: 60px; padding: 5px; border: 1px solid #bdbdbd; border-radius: 4px;">
+        </div>
+        <button id="printButton">Imprimer le Certificat</button>
+    </div>
+    
+    <script src="certificat-unified-font-size.js"></script>
+
+</body>
+</html>
+`;
+
+    var newWindow = window.open("", "_blank");
+    if (newWindow) {
+        newWindow.document.write(certificatContent);
+        newWindow.document.close();
+
+        // Attacher l'événement d'impression directement après la fermeture du document
+        newWindow.onload = function () {
+            const printButton = newWindow.document.getElementById('printButton');
+            if (printButton) {
+                printButton.addEventListener('click', function () {
+                    newWindow.print();
+                });
+            }
+        };
     } else {
         console.log("Popup bloquée par le navigateur.");
     }
