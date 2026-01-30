@@ -639,7 +639,7 @@ p {
 <body>
 ${enteteContent}
 <div class="certificat">
-<h1>Certificat médical d'éviction scolaire</h1>
+<h1>Certificat médical d'éviction/arret scolaire</h1>
 <br><br><br>
 <p>
 Je soussigné, Dr <input type="text" id="docteur" value="${docteur}" placeholder="">, certifie avoir examiné ce jour
@@ -648,8 +648,8 @@ Je soussigné, Dr <input type="text" id="docteur" value="${docteur}" placeholder
 </p>
 <p>
 déclare que son état de santé nécessite une éviction scolaire de
-<input type="text" placeholder="1 (un)" style="width: 80px;"> Jour(s)
-à daté du <span class="editable-field" contenteditable="true" style="min-width: 120px; display: inline-block;">${formattedDate}</span> <br>
+<input type="text" value="1 (un)" style="width: 80px;"> Jour(s)
+à daté du <span class="editable-field" contenteditable="true" style="min-width: 120px; display: inline-block;">${dateCertificat}</span> <br>
 sauf complication.
 </p>
 <p>
@@ -667,7 +667,7 @@ Dont certificat&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<br>
     </div>
     <button id="printButton">Imprimer le Certificat</button>
 </div>
-<script src="print.js"></script>
+
 <script src="certificat-unified-font-size.js"></script>
 <script>
     // Appliquer la taille de police sauvegardée et masquer les éléments non désirés à l'impression
@@ -677,11 +677,7 @@ Dont certificat&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<br>
         styleElement.textContent = "@media print { .print-button { display: none !important; } }";
         styleElement.id = 'certificatFontSizeStyle';
         document.head.appendChild(styleElement);
-        
-        // Add print functionality
-        document.getElementById('printButton').addEventListener('click', function() {
-            window.print();
-        });
+                 
     });
 </script>
 </body>
@@ -690,362 +686,18 @@ Dont certificat&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp<br>
 
     var newWindow = window.open("", "_blank");
     if (newWindow) {
-        // Stocker la référence de la fenêtre pour le script de sauvegarde
-        window.lastOpenedWindow = newWindow;
-
-        // Définir manuellement window.opener pour permettre la communication
-        try {
-            Object.defineProperty(newWindow, 'opener', {
-                value: window,
-                writable: false,
-                configurable: false
-            });
-        } catch (e) {
-            // Si cela échoue, stocker la référence ailleurs
-            newWindow._parentWindow = window;
-        }
-
         newWindow.document.write(certificatHtml);
         newWindow.document.close();
-
-        // Fonction pour effectuer la sauvegarde
-        function effectuerSauvegarde(nombreJoursValue) {
-            // Récupérer les données depuis les champs de la popup
-            const docteurInput = newWindow.document.getElementById('docteur');
-            const medecin = docteurInput ? docteurInput.value.trim() : '';
-
-            // Récupérer le nom et prénom
-            const nomPrenomInput = newWindow.document.querySelector('strong input[type="text"]');
-            let nom = '', prenom = '';
-            if (nomPrenomInput && nomPrenomInput.value) {
-                const parts = nomPrenomInput.value.trim().split(' ');
-                if (parts.length >= 2) {
-                    nom = parts[0];
-                    prenom = parts.slice(1).join(' ');
-                }
-            }
-
-            // Vérifier les données
-            if (!nom || !prenom) {
-                afficherMessageDansPopup('Erreur: Nom et prénom du patient requis.', 'error');
-                return;
-            }
-
-            if (!medecin) {
-                afficherMessageDansPopup('Erreur: Nom du médecin requis.', 'error');
-                return;
-            }
-
-            // Récupérer la date de naissance depuis le champ editable-field
-            const editableFields = newWindow.document.querySelectorAll('.editable-field');
-            let dateNaissance = '';
-            for (let field of editableFields) {
-                const text = field.textContent || field.innerText || '';
-                const parentText = field.parentElement ? field.parentElement.textContent || '' : '';
-                if (parentText.includes('né(e)') || parentText.includes('né') || parentText.includes('née')) {
-                    dateNaissance = text.trim();
-                    break;
-                }
-            }
-
-            if (!dateNaissance && editableFields.length > 0) {
-                dateNaissance = (editableFields[0].textContent || editableFields[0].innerText || '').trim();
-            }
-
-            // Date du certificat depuis l'editable-field
-            let dateCertificat = '';
-            for (let field of editableFields) {
-                const text = field.textContent || field.innerText || '';
-                const parentText = field.parentElement ? field.parentElement.textContent || '' : '';
-                if (parentText.includes('daté du') || parentText.includes('daté')) {
-                    dateCertificat = text.trim();
-                    break;
-                }
-            }
-
-            if (!dateCertificat) {
-                const today = new Date();
-                dateCertificat = today.toISOString().split('T')[0];
-            }
-
-            // Préparer le message
-            const message = {
-                action: "ajouter_arret_travail",
-                nom: nom,
-                prenom: prenom,
-                medecin: medecin,
-                nombre_jours: parseInt(nombreJoursValue),
-                date_certificat: dateCertificat,
-                date_naissance: dateNaissance || null
-            };
-
-            console.log('📤 Message à envoyer:', message);
-
-            // Utiliser directement la fonction stockée dans la popup
-            const sauvegarderFn = window.sauvegarderArretTravailDepuisPopup;
-
-            if (sauvegarderFn && typeof sauvegarderFn === 'function') {
-                sauvegarderFn(message).then(response => {
-                    if (response && response.success) {  // Changé de response.ok à response.success
-                        afficherMessageDansPopup('Arrêt de travail sauvegardé avec succès !', 'success');
-                    } else {
-                        const errorMsg = response ? response.error : 'Réponse invalide';
-                        afficherMessageDansPopup('Erreur lors de la sauvegarde: ' + errorMsg, 'error');
-                    }
-                }).catch(error => {
-                    console.error('❌ Erreur lors de la sauvegarde:', error);
-                    afficherMessageDansPopup('Erreur lors de la sauvegarde: ' + error.message, 'error');
-                });
-            } else {
-                setTimeout(() => {
-                    const fn = window.sauvegarderArretTravailDepuisPopup;
-                    if (fn && typeof fn === 'function') {
-                        fn(message).then(response => {
-                            if (response && response.success) {  // Changé de response.ok à response.success
-                                afficherMessageDansPopup('Arrêt de travail sauvegardé avec succès !', 'success');
-                            } else {
-                                const errorMsg = response ? response.error : 'Réponse invalide';
-                                afficherMessageDansPopup('Erreur lors de la sauvegarde: ' + errorMsg, 'error');
-                            }
-                        }).catch(error => {
-                            console.error('❌ Erreur lors de la sauvegarde:', error);
-                            afficherMessageDansPopup('Erreur lors de la sauvegarde: ' + error.message, 'error');
-                        });
-                    } else {
-                        afficherMessageDansPopup('Erreur: Fonction de sauvegarde non disponible. Rechargez la page et réessayez.', 'error');
-                    }
-                }, 500);
-            }
-        }
 
         // Attacher l'événement d'impression directement après la fermeture du document
         newWindow.onload = function () {
             const printButton = newWindow.document.getElementById('printButton');
             if (printButton) {
-                const newPrintButton = printButton.cloneNode(true);
-                printButton.parentNode.replaceChild(newPrintButton, printButton);
-
-                newPrintButton.addEventListener('click', function () {
-                    const joursInputs = newWindow.document.querySelectorAll('input[type="text"]');
-                    let nombreJours = '';
-                    for (let input of joursInputs) {
-                        const parentText = input.parentElement ? input.parentElement.textContent : '';
-                        if (parentText.includes('Jour(s)') || parentText.includes('arret de travail')) {
-                            nombreJours = input.value.trim();
-                            break;
-                        }
-                    }
-
-                    if (nombreJours) {
-                        effectuerSauvegarde(nombreJours);
-                    }
-
-                    setTimeout(() => {
-                        newWindow.print();
-                    }, 500);
+                printButton.addEventListener('click', function () {
+                    newWindow.print();
                 });
             }
         };
-
-        // Fonction pour afficher un message personnalisé dans la popup
-        function afficherMessageDansPopup(message, type = 'info') {
-            if (newWindow && !newWindow.closed) {
-                newWindow.focus();
-                newWindow.alert(message);
-            }
-        }
-
-        // Ajouter le bouton de sauvegarde après que le document soit chargé
-        function ajouterBoutonSauvegarde() {
-            try {
-                const printButton = newWindow.document.getElementById('printButton');
-                const saveButton = newWindow.document.getElementById('sauvegarderArretPopup');
-
-                if (printButton && !saveButton) {
-                    console.log('✅ Ajout du bouton de sauvegarde dans la popup');
-
-                    const boutonSauvegarde = newWindow.document.createElement('button');
-                    boutonSauvegarde.id = 'sauvegarderArretPopup';
-                    boutonSauvegarde.innerHTML = '💾 Sauvegarder Arrêt';
-                    boutonSauvegarde.style.cssText = 'background-color: #28a745; color: white; border: none; padding: 10px 20px; margin-left: 15px; border-radius: 5px; cursor: pointer; font-size: 16px; transition: background-color 0.3s;';
-
-                    boutonSauvegarde.addEventListener('mouseenter', function () {
-                        this.style.backgroundColor = '#218838';
-                    });
-                    boutonSauvegarde.addEventListener('mouseleave', function () {
-                        this.style.backgroundColor = '#28a745';
-                    });
-
-                    printButton.parentNode.appendChild(boutonSauvegarde);
-
-                    boutonSauvegarde.addEventListener('click', function () {
-                        console.log('💾 Clic sur le bouton de sauvegarde');
-
-                        const joursInputs = newWindow.document.querySelectorAll('input[type="text"]');
-                        let nombreJours = '';
-                        for (let input of joursInputs) {
-                            const parentText = input.parentElement ? input.parentElement.textContent : '';
-                            if (parentText.includes('Jour(s)') || parentText.includes('arret de travail')) {
-                                nombreJours = input.value.trim();
-                                break;
-                            }
-                        }
-
-                        if (!nombreJours) {
-                            const promptDiv = newWindow.document.createElement('div');
-                            promptDiv.id = 'promptNombreJours';
-                            promptDiv.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 10001; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); min-width: 300px;';
-                            promptDiv.innerHTML = '<div style="margin-bottom: 15px; font-weight: bold; font-size: 16px;">Nombre de jours d\'arrêt de travail</div><input type="number" id="inputNombreJours" value="1" min="1" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; margin-bottom: 15px;"><div style="display: flex; gap: 10px; justify-content: flex-end;"><button id="btnPromptOk" style="padding: 8px 20px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">OK</button><button id="btnPromptCancel" style="padding: 8px 20px; background: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer;">Annuler</button></div>';
-
-                            const overlay = newWindow.document.createElement('div');
-                            overlay.id = 'promptOverlay';
-                            overlay.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 10000;';
-
-                            newWindow.document.body.appendChild(overlay);
-                            newWindow.document.body.appendChild(promptDiv);
-
-                            setTimeout(() => {
-                                const input = newWindow.document.getElementById('inputNombreJours');
-                                if (input) {
-                                    input.focus();
-                                    input.select();
-                                }
-                            }, 100);
-
-                            const btnOk = newWindow.document.getElementById('btnPromptOk');
-                            const btnCancel = newWindow.document.getElementById('btnPromptCancel');
-
-                            const cleanup = () => {
-                                if (promptDiv.parentNode) promptDiv.parentNode.removeChild(promptDiv);
-                                if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
-                            };
-
-                            btnOk.addEventListener('click', () => {
-                                const value = newWindow.document.getElementById('inputNombreJours').value;
-                                cleanup();
-                                if (value && !isNaN(value) && parseInt(value) > 0) {
-                                    effectuerSauvegarde(value);
-                                } else {
-                                    afficherMessageDansPopup('Veuillez entrer un nombre de jours valide', 'warning');
-                                }
-                            });
-
-                            btnCancel.addEventListener('click', () => {
-                                cleanup();
-                            });
-
-                            const input = newWindow.document.getElementById('inputNombreJours');
-                            input.addEventListener('keydown', (e) => {
-                                if (e.key === 'Enter') {
-                                    btnOk.click();
-                                } else if (e.key === 'Escape') {
-                                    btnCancel.click();
-                                }
-                            });
-                        } else {
-                            if (!nombreJours || isNaN(nombreJours) || parseInt(nombreJours) <= 0) {
-                                afficherMessageDansPopup('Veuillez entrer un nombre de jours valide', 'warning');
-                                return;
-                            }
-                            effectuerSauvegarde(nombreJours);
-                        }
-                    });
-
-                    console.log('✅ Bouton de sauvegarde ajouté avec succès');
-                } else if (!printButton) {
-                    console.log('⏳ Bouton printButton pas encore disponible, réessai...');
-                    setTimeout(ajouterBoutonSauvegarde, 100);
-                } else if (saveButton) {
-                    console.log('ℹ️ Bouton de sauvegarde déjà présent');
-                }
-            } catch (e) {
-                console.error('❌ Erreur lors de l\'ajout du bouton:', e);
-            }
-        }
-
-        // Créer une fonction de sauvegarde dans la fenêtre parent
-        const sauvegarderFn = async function (message) {
-            console.log('🔗 Sauvegarde depuis popup, message:', message);
-
-            // Implémentation de la vraie logique de sauvegarde en base de données
-            try {
-                // Utiliser l'API locale via l'extension
-                if (typeof chrome !== 'undefined' && chrome.runtime) {
-                    const extensionId = 'cmcpbphlonkllmnfkhefdjaddokophpb';
-
-                    return new Promise((resolve, reject) => {
-                        const requestData = {
-                            action: 'addArretTravail',
-                            arretData: {
-                                nom: message.nom,
-                                prenom: message.prenom,
-                                medecin: message.medecin,
-                                nombre_jours: message.nombre_jours,
-                                date_certificat: message.date_certificat,
-                                date_naissance: message.date_naissance
-                            }
-                        };
-
-                        chrome.runtime.sendMessage(
-                            extensionId,
-                            requestData,
-                            function (response) {
-                                if (chrome.runtime.lastError) {
-                                    console.error('Erreur Chrome runtime:', chrome.runtime.lastError);
-                                    reject(new Error(chrome.runtime.lastError.message));
-                                    return;
-                                }
-
-                                if (response && response.success) {
-                                    console.log('✅ Arrêt de travail sauvegardé avec succès via API locale');
-                                    resolve({ ok: true, message: 'Arrêt de travail sauvegardé avec succès' });
-                                } else {
-                                    const errorMsg = response ? response.error : 'Réponse invalide';
-                                    console.error('❌ Erreur lors de la sauvegarde:', errorMsg);
-                                    reject(new Error(errorMsg));
-                                }
-                            }
-                        );
-                    });
-                } else if (typeof browser !== 'undefined' && browser.runtime && browser.runtime.sendMessage) {
-                    // Alternative pour Firefox
-                    const extensionId = 'cmcpbphlonkllmnfkhefdjaddokophpb';
-
-                    const requestData = {
-                        action: 'addArretTravail',
-                        arretData: {
-                            nom: message.nom,
-                            prenom: message.prenom,
-                            medecin: message.medecin,
-                            nombre_jours: message.nombre_jours,
-                            date_certificat: message.date_certificat,
-                            date_naissance: message.date_naissance
-                        }
-                    };
-
-                    const response = await browser.runtime.sendMessage(extensionId, requestData);
-
-                    if (response && response.success) {
-                        console.log('✅ Arrêt de travail sauvegardé avec succès via API locale (Firefox)');
-                        return { ok: true, message: 'Arrêt de travail sauvegardé avec succès' };
-                    } else {
-                        const errorMsg = response ? response.error : 'Réponse invalide';
-                        throw new Error(errorMsg);
-                    }
-                } else {
-                    throw new Error('API Chrome/Firefox non disponible');
-                }
-            } catch (error) {
-                console.error('❌ Erreur lors de la sauvegarde:', error);
-                throw error;
-            }
-        };
-
-        // Stocker la fonction de sauvegarde
-        window.sauvegarderArretTravailDepuisPopup = sauvegarderFn;
-
-        // Ajouter le bouton de sauvegarde après un léger délai
-        setTimeout(ajouterBoutonSauvegarde, 200);
     } else {
         console.log("Popup bloquée par le navigateur.");
     }
@@ -1300,7 +952,7 @@ function inaptitudeSport() {
         <textarea class="editable-area" style="width: 90%;" placeholder=" "></textarea>
       </p>
       <p style="text-align: right;">
-        Signature :<br>
+        Le  : ${dateCertificat} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
         <span class="docteur" style="font-weight: bold;">Dr ${docteur}</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
       </p>
     </div>
@@ -1311,6 +963,8 @@ function inaptitudeSport() {
         </div>
         <button id="printButton">Imprimer le Certificat</button>
     </div>
+	<script src="certificat-unified-font-size.js"></script>
+	
     <script>
     // Sauvegarder les modifications dans le localStorage
     function sauvegarderModifications() {
@@ -1361,7 +1015,7 @@ function justification() {
     // Construire la partie de l'âge/date de naissance
     let ageInfo = '';
     if (patientAge) {
-        ageInfo = 'né(e) le ' + patientAge;
+        ageInfo = 'agé(e) de ' + patientAge;
     } else if (patientDateNaissance) {
         ageInfo = 'né(e) le ' + patientDateNaissance;
     } else {
@@ -1567,9 +1221,9 @@ ${enteteContent}
         </p>
         <p>
             est présenter pour la consultation ce jour le 
-             <span class="editable-field" contenteditable="true" style="min-width: 120px; display: inline-block;">${formattedDate}</span> à  l'heure:<input type="time" style="font-size: 11px !important;"> <br> 
+             <span class="editable-field" contenteditable="true" style="min-width: 120px; display: inline-block;">${dateCertificat}</span> à  l'heure:<input type="time" style="font-size: 11px !important;"> <br> 
             <div style="direction: rtl; text-align: right;">
-                 تم فحص المعني يوم :   <span class="editable-field" contenteditable="true" style="min-width: 120px; display: inline-block; margin-left: 10px;">${formattedDate}</span>   <br>
+                 تم فحص المعني يوم :   <span class="editable-field" contenteditable="true" style="min-width: 120px; display: inline-block; margin-left: 10px;">${dateCertificat}</span>   <br>
                 على الساعة : <input type="time" > 
             </div>
         </p>
@@ -2347,8 +2001,8 @@ ${enteteContent}
         </p>
         <p>
             déclare que son état de santé nécessite une prolongation d'arret de travail de 
-            <input type="text" placeholder="1 (un)" style="width: 70px;"> Jour(s)
-            à  dater du <span class="editable-field" contenteditable="true" style="min-width: 120px; display: inline-block;">${todayFormatted}</span> sauf complication.
+            <input type="text" value="07 (sept)" style="width: 70px;"> Jour(s)
+            à  dater du <span class="editable-field" contenteditable="true" style="min-width: 120px; display: inline-block;">${dateCertificat}</span> sauf complication.
         </p>
         <p style="text-align: right; margin-top: 30px;">
             Dont certificat<br>
@@ -2550,146 +2204,7 @@ ${JSON.stringify(message, null, 2)}
     }
 }
 
-// Fonction pour générer une lettre médicale
-function genererLettre() {
-    const polyclinique = document.getElementById('polyclinique').value;
-    const docteur = document.getElementById('docteur').value;
 
-    // Get patient information from the form fields
-    const patientNomPrenom = document.getElementById('patientNomPrenom').value || '[Nom du patient]';
-    const patientAge = document.getElementById('patientAge').value;
-    const patientDateNaissance = document.getElementById('patientDateNaissance').value;
-    const dateCertificat = document.getElementById('dateCertificat').value || new Date().toISOString().split('T')[0];
-
-    // Construire la partie de l'âge/date de naissance
-    let ageInfo = '';
-    if (patientAge) {
-        ageInfo = 'âgé(e) de ' + patientAge;
-    } else if (patientDateNaissance) {
-        ageInfo = 'né(e) le ' + patientDateNaissance;
-    } else {
-        ageInfo = 'né(e) le [Date de naissance]';
-    }
-
-    // Format the date for display
-    const formattedDate = new Date(dateCertificat).toLocaleDateString('fr-FR');
-
-    // Vérifier le format choisi
-    const avecEntete = localStorage.getItem('certificatFormat') === 'avecEntete';
-
-    let enteteContent = '';
-    if (avecEntete) {
-        enteteContent = generateHeader();
-    } else {
-        // Espace vide pour garder la meme mise en page
-        enteteContent = '<div style="height: 155px;"></div>';
-    }
-
-    const certificatHtml = `
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lettre Médicale</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            padding: 20px;
-            background-color: #f9f9f9;
-        }
-        .certificat {
-            background-color: white;
-            border: 1px solid #ddd;
-            padding: 20px;
-            max-width: 600px;
-            margin: 0 auto;
-            margin-top: 60px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        h1 {
-            text-align: center;
-            color: #333;
-            text-decoration: underline;
-            font-size: 20px;
-        }
-        p {
-            line-height: 1.5;
-            color: #555;
-        }
-        .signature {
-            text-align: right;
-            margin-top: 50px;
-        }
-        @media print {
-            body {
-                background-color: white;
-            }
-            .certificat {
-                border: none;
-                box-shadow: none;
-                margin-top: 0;
-            }
-            .print-button {
-                display: none;
-            }
-        }
-        .print-button {
-            text-align: center;
-            margin-top: 20px;
-        }
-        .print-button button {
-            padding: 10px 20px;
-            font-size: 16px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .print-button button:hover {
-            background-color: #0056b3;
-        }
-        #head {
-            margin-bottom: 20px;
-        }
-        #head table {
-            width: 100%;
-            border: 0px solid #000000;
-            padding: 4px;
-            margin-bottom: 15px;
-        }
-        #head td {
-            text-align: center;
-        }
-    </style>
-</head>
-<body>
-    ${enteteContent}
-    <div class="certificat">
-        <h1>LETTRE MEDICALE</h1>
-        <p>
-            Je soussigné(e), Dr <strong>${docteur || '[Nom du docteur]'}</strong>, certifie avoir examiné ce jour :
-            <strong>${patientNomPrenom}</strong>, ${ageInfo}.
-        </p>
-        <p>
-            Je constate que l'état de santé de ce patient nécessite des soins médicaux réguliers.
-        </p>
-        <p>
-            Ce certificat est délivré à la demande de l'intéressée et remis en main propre pour servir et valoir ce que de droit.
-        </p>
-    </div>
-    <div class="print-button">
-        <button onclick="window.print()">Imprimer le certificat</button>
-    </div>
-</body>
-</html>
-    `;
-
-    const newWindow = window.open();
-    newWindow.document.write(certificatHtml);
-    newWindow.document.close();
-}
 
 // Fonction pour générer une attestation de décès
 function genererDeces() {
@@ -3577,7 +3092,8 @@ function genererLettre() {
         '<p>Je vous le(la) confie pour avis et éventuelle prise en charge spécialisée.<\/p>',
         '<\/p>',
         '<p style="text-align: right; margin-right: 50px;">',
-        'Confraternellement Dr docteur',
+        'Confraternellement<br>',
+		'Dr docteur',
         '<\/p>',
         '<\/div>',
         '',
@@ -3626,6 +3142,7 @@ function genererLettre() {
         '    <\/div>',
         '    <button id="printButton">Imprimer la lettre<\/button>',
         '<\/div>',
+		'<script src="certificat-unified-font-size.js"><\/script>',
         '<script>',
         '// Initialisation des champs de la lettre',
         'document.addEventListener(\'DOMContentLoaded\', function() {',
@@ -3994,6 +3511,24 @@ function genererRadiox() {
         '// Ajouter l\'écouteur d\'événement pour le bouton d\'impression',
         'document.addEventListener(\'DOMContentLoaded\', function() {',
         '    const printButton = document.getElementById(\'printButton\');',
+        '    const fontSizeInput = document.getElementById(\'fontSize\');',
+        '    ',
+        '    if (fontSizeInput) {',
+        '        // Charger la taille de police sauvegardée',
+        '        const savedFontSize = localStorage.getItem(\'lettreFontSize\') || \'14\';',
+        '        fontSizeInput.value = savedFontSize;',
+        '        ',
+        '        // Appliquer la taille de police',
+        '        updateFontSizeInCertificat(savedFontSize, \'lettre\');',
+        '        ',
+        '        // Écouteur pour le changement de taille',
+        '        fontSizeInput.addEventListener(\'input\', function() {',
+        '            const fontSize = this.value;',
+        '            updateFontSizeInCertificat(fontSize, \'lettre\');',
+        '            localStorage.setItem(\'lettreFontSize\', fontSize);',
+        '        });',
+        '    }',
+        '    ',
         '    if (printButton) {',
         '        printButton.addEventListener(\'click\', function() {',
         '            window.print();',
@@ -4227,6 +3762,7 @@ function genererReprise() {
         '    <\/div>',
         '    <button id="printButton">Imprimer le Certificat<\/button>',
         '<\/div>',
+		'<script src="certificat-unified-font-size.js"><\/script>',
         '<script>',
         '// Sauvegarder les modifications dans le localStorage',
         'function sauvegarderModifications() {',
@@ -4256,9 +3792,6 @@ function genererReprise() {
         '        }',
         '    });',
         '}',
-        '',
-        '// Appeler la fonction de sauvegarde',
-        'sauvegarderModifications();',
         '',
         '// Ajouter l\'écouteur d\'événement pour le bouton d\'impression',
         'document.addEventListener(\'DOMContentLoaded\', function() {',
@@ -4501,6 +4034,7 @@ function genererNonGrossesse() {
         '    <\/div>',
         '    <button id="printButton">Imprimer le Certificat<\/button>',
         '<\/div>',
+		'<script src="certificat-unified-font-size.js"><\/script>',
         '<script>',
         '// Sauvegarder les modifications dans le localStorage',
         'function sauvegarderModifications() {',
@@ -4763,6 +4297,7 @@ function genererChronique() {
         '    <\/div>',
         '    <button id="printButton">Imprimer le Certificat<\/button>',
         '<\/div>',
+		'<script src="certificat-unified-font-size.js"><\/script>',
         '<script>',
         '// Sauvegarder les modifications dans le localStorage',
         'function sauvegarderModifications() {',
@@ -5088,7 +4623,7 @@ ${enteteContent}
             if (printButton) {
                 printButton.addEventListener('click', function () {
                     newWindow.print();
-                    window.location.reload();
+                    
                 });
             }
 
@@ -5252,7 +4787,7 @@ function genererArretTravail() {
     // Construire la partie de l'âge/date de naissance
     let ageInfo = '';
     if (patientAge) {
-        ageInfo = 'né(e) le ' + patientAge;
+        ageInfo = 'agé(e) de ' + patientAge;
     } else if (patientDateNaissance) {
         ageInfo = 'né(e) le ' + patientDateNaissance;
     } else {
@@ -5437,8 +4972,8 @@ Je soussigné, Dr <input type="text" id="docteur" value="${docteur}" placeholder
 </p>
 <p>
 déclare que son état de santé nécessite un arret de travail de
-<input type="text" placeholder="1 (un)" style="width: 80px;"> Jour(s)
-à daté du <span class="editable-field" contenteditable="true" style="min-width: 120px; display: inline-block;">${formattedDate}</span> <br>
+<input type="text" value="1 (un)" style="width: 80px;"> Jour(s)
+à daté du <span class="editable-field" contenteditable="true" style="min-width: 120px; display: inline-block;">${dateCertificat}</span> <br>
 sauf complication.
 </p>
 <p>
@@ -6678,9 +6213,14 @@ function requisitionApte() {
   </div>
  
   <div class="print-button">
+  <div style="display: flex; align-items: center; gap: 8px;">
+            <label for="fontSize" style="font-size: 14px; margin: 0;">Taille du texte:</label>
+            <input type="number" id="fontSize" min="8" max="20" value="14" style="width: 60px; padding: 5px; border: 1px solid #bdbdbd; border-radius: 4px;">
+        
 <button id="printButton">Imprimer le Certificat</button>
 
 </div>
+ <script src="certificat-unified-font-size.js"></script>
 <script src="print.js"></script>
 </body>
 </html>
@@ -6874,7 +6414,7 @@ function requisitionInapte() {
 <body>
   ${enteteContent}
   <div class="certificat">
-    <h1>CERTIFICAT MEDICAL D'INAPTITUDE AU GARDE-à-VUE</h1>
+    <h1>Certificat medical d'inaptitude au garde-à-vue</h1>
     <div class="contenu-certificat" style="margin-top: 1.5cm !important;">
     <p>
       Je soussigné(e), Dr 
@@ -6905,9 +6445,14 @@ Le présent certificat est remis à  l'autorité compétente pour servir et valo
   </div>
  
   <div class="print-button">
+  <div style="display: flex; align-items: center; gap: 8px;">
+            <label for="fontSize" style="font-size: 14px; margin: 0;">Taille du texte:</label>
+            <input type="number" id="fontSize" min="8" max="20" value="14" style="width: 60px; padding: 5px; border: 1px solid #bdbdbd; border-radius: 4px;">
+        
 <button id="printButton">Imprimer le Certificat</button>
 
 </div>
+ <script src="certificat-unified-font-size.js"></script>
 <script src="print.js"></script>
 </body>
 </html>

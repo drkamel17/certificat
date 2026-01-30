@@ -399,7 +399,7 @@
                 <div class="form-row single-row">
                     <div class="form-group">
                         <label for="patientNomPrenom">Nom et prénom</label>
-                        <input type="text" id="patientNomPrenom" placeholder="Ex: Dupont Jean" class="form-input">
+                        <input type="text" id="patientNomPrenom" placeholder="Ex: Daoudi Rami" class="form-input">
                     </div>
 
                     <div class="form-group">
@@ -516,6 +516,17 @@
     <script src="hide-print-buttons.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date();
+            const day = String(today.getDate()).padStart(2, '0');
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const year = today.getFullYear();
+            const todayFormatted = `${day}/${month}/${year}`;
+            
+            const dateCertificatInput = document.getElementById('dateCertificat');
+            if (dateCertificatInput) {
+                dateCertificatInput.value = todayFormatted;
+            }
+            
             const dateInputs = ['patientDateNaissance', 'dateCertificat'];
             
             // Add event listeners for patient number input
