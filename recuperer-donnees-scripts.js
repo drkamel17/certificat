@@ -88,8 +88,16 @@ document.addEventListener('DOMContentLoaded', function() {
         const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
         const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
         
-        document.getElementById('dateDebut').value = firstDay.toISOString().split('T')[0];
-        document.getElementById('dateFin').value = lastDay.toISOString().split('T')[0];
+        // Format jj/mm/aaaa
+        const formatDate = (date) => {
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        };
+        
+        document.getElementById('dateDebut').value = formatDate(firstDay);
+        document.getElementById('dateFin').value = formatDate(lastDay);
     }
     
     // Ajouter un bouton pour préremplir avec le mois courant
