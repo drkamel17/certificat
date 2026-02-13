@@ -15,6 +15,10 @@
       "src": "/options.html",
       "dest": "/options.html"
     },
+	{
+      "src": "/reglage.html",
+      "dest": "/reglage.html"
+    },
     {
       "src": "/(.*)",
       "dest": "/index.html"

@@ -124,34 +124,129 @@
             min-width: 400px;
         }
 
-        /* Resizable divider */
+        /* Resizable divider avec icône de main */
         .resize-divider {
             width: 6px;
+            min-width: 6px;
             background: var(--border-color);
             cursor: col-resize;
             position: relative;
             transition: background-color 0.2s ease;
             flex-shrink: 0;
+            z-index: 10;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .resize-divider:hover {
             background: var(--primary-color);
         }
 
+        /* Indicateur de flèche au survol */
         .resize-divider::before {
-            content: '';
+            content: '⇔';
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 2px;
-            height: 30px;
-            background: rgba(255, 255, 255, 0.7);
-            border-radius: 1px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 16px;
+            font-weight: bold;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .resize-divider:hover::before {
+            opacity: 1;
         }
 
         .resize-divider.dragging {
             background: var(--primary-color);
+        }
+
+        .resize-divider.dragging::before {
+            opacity: 1;
+            color: white;
+        }
+
+        /* Icône de main par défaut */
+        .resize-divider::after {
+            content: '✋';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: rgba(0, 0, 0, 0.4);
+            font-size: 14px;
+            pointer-events: none;
+            opacity: 1;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        .resize-divider:hover::after {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+
+        .resize-divider.dragging::after {
+            opacity: 0;
+        }
+
+        /* Mode plein écran - mise en page professionnelle */
+        .right-column.expanded .section-padding {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto auto auto;
+            gap: 1rem;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .right-column.expanded .section-padding > .card:nth-child(1) {
+            /* Saisie de l'ordonnance - à gauche */
+            grid-column: 1;
+            grid-row: 1;
+        }
+
+        .right-column.expanded .section-padding > .card:nth-child(2) {
+            /* Liste de l'ordonnance - à droite, prend toute la hauteur */
+            grid-column: 2;
+            grid-row: 1 / 4;
+        }
+
+        .right-column.expanded .section-padding > .card:nth-child(3) {
+            /* Ordonnances types - à gauche */
+            grid-column: 1;
+            grid-row: 2;
+        }
+
+        .right-column.expanded .section-padding > .card:nth-child(4) {
+            /* Ordonnances archivées - à gauche */
+            grid-column: 1;
+            grid-row: 3;
+        }
+
+        /* Responsive pour les petits écrans en mode plein écran */
+        @media (max-width: 1200px) {
+            .right-column.expanded .section-padding {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto;
+            }
+
+            .right-column.expanded .section-padding > .card:nth-child(1),
+            .right-column.expanded .section-padding > .card:nth-child(2),
+            .right-column.expanded .section-padding > .card:nth-child(3),
+            .right-column.expanded .section-padding > .card:nth-child(4) {
+                grid-column: 1;
+                grid-row: auto;
+            }
         }
 
         .collapsed {
@@ -838,6 +933,13 @@
                                 <input type="radio" name="header-option" value="DEM-header">
                                 Style DEM
                             </label>
+							 <label>
+                                <input type="radio" name="header-option" value="perso-header">
+                               Perso
+                            </label>
+                            <button type="button" id="btn-reglage-coordonnees" class="btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; margin-left: 0.5rem;" title="Régler les coordonnées">
+                                ⚙️
+                            </button>
                             <label>
                                 Date de consultation
                                 <input type="date" name="date-consultation" style="margin-left: 0.5rem; font-size: 0.8rem !important; padding: 0.4rem !important;">
@@ -951,19 +1053,77 @@
                         </h3>
                     </div>
                     <div class="card-content">
-                        <div class="medication-input">
-                            <div class="medication-field">
+                        <div class="medication-input" style="display: flex; gap: 0.5rem; align-items: flex-start;">
+                            <div class="medication-field" style="flex: 0 0 220px; min-width: 180px;">
                                 <label for="medicament">Médicament</label>
-                                <input list="medicaments" id="medicament" placeholder="Tapez pour rechercher un médicament">
+                                <input list="medicaments" id="medicament" placeholder="Sélectionnez ou saisissez un médicament">
                                 <datalist id="medicaments"></datalist>
                             </div>
-                            <div class="medication-field-small">
+                            <div class="medication-field-small" style="flex: 1; min-width: 180px;">
                                 <label for="posologie">Posologie</label>
-                                <input type="text" id="posologie" placeholder="Posologie">
+                                <div class="posologie-row" style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                    <!-- Quantité -->
+                                    <div class="input-group" style="display: flex; align-items: stretch; flex: 1;">
+                                        <input type="text" id="posologie-qte" value="01" style="width: 45px; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 8px 0 0 8px; border-right: none; text-align: center;">
+                                        <select id="posologie-forme" style="flex: 1; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 0 8px 8px 0; background: var(--surface-color);">
+                                            <option value="CP" selected="selected">CP</option>
+                                            <option value="AMP">AMP</option>
+                                            <option value="CàC">CàC</option>
+                                            <option value="CàS">CàS</option>
+                                            <option value="CAC">CAC</option>
+                                            <option value="Suppos">Suppos</option>
+                                            <option value="UI">UI</option>
+                                            <option value="Inj">Inj</option>
+                                            <option value="Caps">Caps</option>
+                                            <option value="Ovule">Ovule</option>
+                                            <option value="Sachet">Sachet</option>
+                                            <option value="Appli">Appli</option>
+                                            <option value="gel">gel</option>
+                                            <option value="Dose">Dose</option>
+                                            <option value="Gtte">Gtte</option>
+                                            <option value=".">.</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="posologie-row" style="display: flex; gap: 0.5rem;">
+                                    <!-- Fréquence -->
+                                    <div class="input-group" style="display: flex; align-items: stretch; flex: 1;">
+                                        <input type="text" id="posologie-nombre" value="01" style="width: 45px; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 8px 0 0 8px; border-right: none; text-align: center;">
+                                        <select id="posologie-frequence" style="flex: 1; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 0 8px 8px 0; background: var(--surface-color);">
+                                            <option value=" * * par jour" selected="selected"> * par jour</option>
+                                            <option value=" * * par Semaine"> * par Semaine</option>
+                                            <option value=" * * par Mois"> * par Mois</option>
+                                            <option value=" * * le matin">le matin</option>
+                                            <option value=" * * le soir">le soir</option>
+                                            <option value="* ">* </option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <!-- Champ texte pour posologie complète (optionnel) -->
+                                <input type="hidden" id="posologie" placeholder="">
                             </div>
-                            <div class="medication-field-small">
+                            <div class="medication-field-small" style="flex: 0 0 130px; min-width: 100px;">
                                 <label for="quantite">Quantité</label>
-                                <input type="text" id="quantite" placeholder="Quantité">
+                                <div class="quantite-row">
+                                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                        <span style="padding: 0.25rem 0.5rem; background: #f8fafc; border: 1px solid var(--border-color); border-radius: 4px; font-size: 0.8rem; font-weight: 500;">QSP</span>
+                                    </div>
+                                    <div class="input-group" style="display: flex; align-items: stretch;">
+                                        <input type="text" id="quantite-nombre" value="01" class="form-control" style="width: 40px; padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 8px 0 0 8px; border-right: none; text-align: center;">
+                                        <select required="required" class="form-control" id="quantite-unite" style="padding: 0.5rem; border: 1px solid var(--border-color); border-radius: 0 8px 8px 0; background: var(--surface-color); flex: 1;">
+                                            <option value="Bte" selected="selected">Bte</option>
+                                            <option value="Jours">Jours</option>
+                                            <option value="Mois">Mois</option>
+                                            <option value="Semaine">Semaine</option>
+                                            <option value="Btes">Btes</option>
+                                            <option value="Flc">Flc</option>
+                                            <option value="Tube">Tube</option>
+                                            <option value=".">.</option>
+                                        </select>
+                                    </div>
+                                    <!-- Champ caché pour la quantité complète -->
+                                    <input type="hidden" id="quantite" placeholder="">
+                                </div>
                             </div>
                         </div>
                         <button id="ajouter" class="btn-primary">

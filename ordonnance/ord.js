@@ -20,6 +20,54 @@ function convertArabicNumeralsToEuropean(str) {
 let ordonnancesTypesChargees = {};
 let ordonnanceList = [];
 
+// Fonctions pour construire la posologie et la quantité
+function construirePosologie() {
+    const qte = document.getElementById('posologie-qte')?.value.trim();
+    const forme = document.getElementById('posologie-forme')?.value;
+    const nombre = document.getElementById('posologie-nombre')?.value.trim();
+    const frequence = document.getElementById('posologie-frequence')?.value;
+    
+    let posologieTexte = '';
+    
+    // Construire la posologie
+    if (qte && forme) {
+        posologieTexte += qte + ' ' + forme;
+    }
+    
+    if (nombre && frequence) {
+        // Remplacer l'étoile par le nombre
+        const frequenceAvecNombre = frequence.replace('*', nombre);
+        if (posologieTexte) {
+            posologieTexte += ' - ' + frequenceAvecNombre;
+        } else {
+            posologieTexte = frequenceAvecNombre;
+        }
+    }
+    
+    // Mettre à jour le champ caché
+    const posologieField = document.getElementById('posologie');
+    if (posologieField) {
+        posologieField.value = posologieTexte;
+    }
+}
+
+function construireQuantite() {
+    const nombre = document.getElementById('quantite-nombre')?.value.trim();
+    const unite = document.getElementById('quantite-unite')?.value;
+    
+    let quantiteTexte = '';
+    
+    if (nombre && unite) {
+        quantiteTexte = 'QSP ' + nombre + ' ' + unite;
+    }
+    
+    // Mettre à jour le champ caché
+    const quantiteField = document.getElementById('quantite');
+    if (quantiteField) {
+        quantiteField.value = quantiteTexte;
+    }
+}
+
 window.mettreAJourListeOrdonnancesTypes = async function(ordonnancesTypes = null) {
     const select = document.getElementById('liste-ordonnances-types');
     
@@ -76,48 +124,113 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     await waitForMedicaments();
 
-    if (toggleButton) {
-        toggleButton.addEventListener('click', function() {
-            leftColumn.classList.toggle('collapsed');
-            rightColumn.classList.toggle('expanded');
+    // Fonction pour basculer entre mode normal et plein écran
+    function toggleColumns() {
+        const resizeDivider = document.getElementById('resizeDivider');
+
+        leftColumn.classList.toggle('collapsed');
+        rightColumn.classList.toggle('expanded');
+
+        // Masquer/afficher le diviseur de redimensionnement
+        if (resizeDivider) {
             if (leftColumn.classList.contains('collapsed')) {
-                toggleButton.innerHTML = '<i class="fas fa-compress-arrows-alt"></i> Mode normal';
+                // Mode plein écran : masquer le diviseur
+                resizeDivider.style.display = 'none';
             } else {
-                toggleButton.innerHTML = '<i class="fas fa-expand-arrows-alt"></i> Mode plein écran';
+                // Mode normal : afficher le diviseur
+                resizeDivider.style.display = 'block';
             }
-        });
+        }
+
+        // Changer le texte et l'icône du bouton
+        if (leftColumn.classList.contains('collapsed')) {
+            // État étendu (mode plein écran)
+            toggleButton.innerHTML = '<i class="fas fa-compress-arrows-alt"></i> Écran principal';
+        } else {
+            // Retour à l'état normal
+            toggleButton.innerHTML = '<i class="fas fa-expand-arrows-alt"></i> Mode plein écran';
+        }
+
+        console.log('Toggle clicked');
     }
 
+    // Ajouter les écouteurs d'événements
+    if (toggleButton) {
+        toggleButton.addEventListener('click', toggleColumns);
+    }
+    
     if (returnButton) {
-        returnButton.addEventListener('click', function() {
-            leftColumn.classList.remove('collapsed');
-            rightColumn.classList.remove('expanded');
-        });
+        returnButton.addEventListener('click', toggleColumns);
     }
 
-    if (resizeDivider) {
-        let isResizing = false;
+    // Functionality for resizable divider
+    function initResizableDivider() {
+        if (!leftColumn || !rightColumn || !resizeDivider) {
+            console.error('Éléments manquants pour le redimensionnement');
+            return;
+        }
 
-        resizeDivider.addEventListener('mousedown', function(e) {
+        let isResizing = false;
+        let startX = 0;
+        let startLeftWidth = 0;
+
+        resizeDivider.addEventListener('mousedown', (e) => {
             isResizing = true;
+            startX = e.clientX;
+            startLeftWidth = leftColumn.offsetWidth;
+
             resizeDivider.classList.add('dragging');
+            document.body.style.cursor = 'col-resize';
+            document.body.style.userSelect = 'none';
+
+            e.preventDefault();
         });
 
-        document.addEventListener('mousemove', function(e) {
+        document.addEventListener('mousemove', (e) => {
             if (!isResizing) return;
-            const containerWidth = document.querySelector('.main-container').offsetWidth;
-            const newLeftWidth = e.clientX;
-            
-            if (newLeftWidth > 300 && newLeftWidth < containerWidth - 400) {
-                leftColumn.style.flex = '0 0 ' + newLeftWidth + 'px';
+
+            const deltaX = e.clientX - startX;
+            const newLeftWidth = startLeftWidth + deltaX;
+
+            // Contraintes de largeur minimum et maximum
+            const minLeftWidth = 300;
+            const maxLeftWidth = window.innerWidth - 400; // Garde au moins 400px pour la colonne droite
+
+            if (newLeftWidth >= minLeftWidth && newLeftWidth <= maxLeftWidth) {
+                leftColumn.style.flex = `0 0 ${newLeftWidth}px`;
+                leftColumn.style.width = `${newLeftWidth}px`;
             }
         });
 
-        document.addEventListener('mouseup', function() {
-            isResizing = false;
-            resizeDivider.classList.remove('dragging');
-        });
+        const stopResizing = () => {
+            if (isResizing) {
+                isResizing = false;
+                resizeDivider.classList.remove('dragging');
+                document.body.style.cursor = '';
+                document.body.style.userSelect = '';
+                
+                // Sauvegarder la largeur préférée dans localStorage
+                const currentWidth = leftColumn.offsetWidth;
+                localStorage.setItem('leftColumnWidth', currentWidth.toString());
+            }
+        };
+        
+        document.addEventListener('mouseup', stopResizing);
+        document.addEventListener('mouseleave', stopResizing);
+
+        // Restaurer la largeur sauvegardée
+        const savedWidth = localStorage.getItem('leftColumnWidth');
+        if (savedWidth) {
+            const width = parseInt(savedWidth, 10);
+            if (width >= 300 && width <= window.innerWidth - 400) {
+                leftColumn.style.flex = `0 0 ${width}px`;
+                leftColumn.style.width = `${width}px`;
+            }
+        }
     }
+
+    // Initialiser le redimensionnement
+    initResizableDivider();
 
     const etablissemntBtn = document.getElementById('etablissemnt');
     if (etablissemntBtn) {
@@ -141,6 +254,38 @@ document.addEventListener('DOMContentLoaded', async function() {
             alert('Informations sauvegardées !');
         });
     }
+
+    // Charger le choix de header-option depuis localStorage
+    const savedHeaderOption = localStorage.getItem('header-option');
+    if (savedHeaderOption) {
+        const radioToCheck = document.querySelector(`input[name="header-option"][value="${savedHeaderOption}"]`);
+        if (radioToCheck) {
+            radioToCheck.checked = true;
+        }
+    }
+
+    // Sauvegarder le choix de header-option dans localStorage quand il change
+    document.querySelectorAll('input[name="header-option"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+            localStorage.setItem('header-option', this.value);
+        });
+    });
+
+    // Ajouter les écouteurs d'événements pour tous les champs de posologie
+    const posologieQte = document.getElementById('posologie-qte');
+    const posologieForme = document.getElementById('posologie-forme');
+    const posologieNombre = document.getElementById('posologie-nombre');
+    const posologieFrequence = document.getElementById('posologie-frequence');
+    const quantiteNombre = document.getElementById('quantite-nombre');
+    const quantiteUnite = document.getElementById('quantite-unite');
+
+    if (posologieQte) posologieQte.addEventListener('input', construirePosologie);
+    if (posologieForme) posologieForme.addEventListener('change', construirePosologie);
+    if (posologieNombre) posologieNombre.addEventListener('input', construirePosologie);
+    if (posologieFrequence) posologieFrequence.addEventListener('change', construirePosologie);
+    
+    if (quantiteNombre) quantiteNombre.addEventListener('input', construireQuantite);
+    if (quantiteUnite) quantiteUnite.addEventListener('change', construireQuantite);
 
     const ajouterPersonnelBtn = document.getElementById('ajouter-personnel');
     if (ajouterPersonnelBtn) {
@@ -191,6 +336,11 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (ajouterBtn) {
         ajouterBtn.addEventListener('click', async function() {
             const medicament = document.getElementById('medicament').value.trim();
+            
+            // Construire la posologie et la quantité avant de les récupérer
+            construirePosologie();
+            construireQuantite();
+            
             const posologie = document.getElementById('posologie').value.trim();
             const quantite = document.getElementById('quantite').value.trim();
 
@@ -209,7 +359,14 @@ document.addEventListener('DOMContentLoaded', async function() {
                 quantite: quantite
             });
 
+            // Réinitialiser tous les champs
             document.getElementById('medicament').value = '';
+            document.getElementById('posologie-qte').value = '01';
+            document.getElementById('posologie-forme').value = 'CP';
+            document.getElementById('posologie-nombre').value = '01';
+            document.getElementById('posologie-frequence').value = ' * * par jour';
+            document.getElementById('quantite-nombre').value = '01';
+            document.getElementById('quantite-unite').value = 'Bte';
             document.getElementById('posologie').value = '';
             document.getElementById('quantite').value = '';
 
@@ -220,15 +377,19 @@ document.addEventListener('DOMContentLoaded', async function() {
     const genererPdfBtn = document.getElementById('generer-pdf');
     if (genererPdfBtn) {
         genererPdfBtn.addEventListener('click', function() {
-            const headerOption = document.querySelector('input[name="header-option"]:checked').value;
-            if (headerOption === 'DEM-header') {
-                ordonnancedem('12');
-            } else {
-                ordonnance();
+            const headerOption = document.querySelector('input[name="header-option"]:checked');
+            if (headerOption) {
+                const optionValue = headerOption.value;
+                if (optionValue === 'DEM-header') {
+                    ordonnancedem();
+                } else if (optionValue === 'perso-header') {
+                    ordonnanceperso();
+                } else {
+                    ordonnance();
+                }
             }
         });
     }
-
     const enregistrerTypeBtn = document.getElementById('enregistrer-type');
 
     const rechercheOrdonnancesInput = document.getElementById('recherche-ordonnances-types');
@@ -1104,6 +1265,10 @@ document.addEventListener('DOMContentLoaded', async function() {
                         return;
                     }
                     
+                    // Construire la posologie et la quantité avant de les récupérer
+                    construirePosologie();
+                    construireQuantite();
+                    
                     const meds = await chargerMedicaments();
                     if (!meds.includes(medicament)) {
                         sauvegarderMedicamentPersonnalise(medicament);
@@ -1114,9 +1279,18 @@ document.addEventListener('DOMContentLoaded', async function() {
                         posologie: document.getElementById('posologie').value.trim(),
                         quantite: document.getElementById('quantite').value.trim()
                     });
+                    
+                    // Réinitialiser tous les champs
                     this.value = '';
+                    document.getElementById('posologie-qte').value = '01';
+                    document.getElementById('posologie-forme').value = 'CP';
+                    document.getElementById('posologie-nombre').value = '01';
+                    document.getElementById('posologie-frequence').value = ' * * par jour';
+                    document.getElementById('quantite-nombre').value = '01';
+                    document.getElementById('quantite-unite').value = 'Bte';
                     document.getElementById('posologie').value = '';
                     document.getElementById('quantite').value = '';
+                    
                     await mettreAJourTableau();
                 }
             });
