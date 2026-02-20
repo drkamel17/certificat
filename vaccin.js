@@ -62,6 +62,7 @@ class VaccinationApp {
                 category: "Pneumocoque",
                 message: "VPC 13 - 1 - Âge minimum 2 mois. Rattrapage possible jusqu'à 2 ans.",
                 minAgeDays: 60,
+                maxAgeDays: 730,
                 dependsOn: null,
                 minIntervalDays: 0,
                 color: "#9C27B0"
@@ -71,6 +72,7 @@ class VaccinationApp {
                 category: "Pneumocoque",
                 message: "VPC 13 - 2 - Âge minimum 4 mois. Intervalle minimum 6 semaines après la 1ère dose.",
                 minAgeDays: 120,
+                maxAgeDays: 730,
                 dependsOn: "VPC 13 - 1",
                 minIntervalDays: 42,
                 color: "#9C27B0"
@@ -80,6 +82,7 @@ class VaccinationApp {
                 category: "Pneumocoque",
                 message: "VPC 13 - Rappel - Rappel à partir de 12 mois. Intervalle minimum 6 mois après la 2ème dose.",
                 minAgeDays: 365,
+                maxAgeDays: 730,
                 dependsOn: "VPC 13 - 2",
                 minIntervalDays: 180,
                 color: "#9C27B0"
@@ -452,11 +455,34 @@ class VaccinationApp {
 
     checkHepatitisConditions(ageDays) {
         if (ageDays <= 7) return true;
-        // Utiliser les valeurs actuelles des cases à cocher pour assurer la synchronisation
         const lowWeightChecked = document.getElementById('lowWeight').checked;
         const hbPositiveMotherChecked = document.getElementById('hbPositiveMother').checked;
         if (lowWeightChecked) return true;
         if (hbPositiveMotherChecked && ageDays <= 30) return true;
+        return false;
+    }
+
+    isHepatitisBIrrattrapable(ageDays) {
+        const lowWeightChecked = document.getElementById('lowWeight').checked;
+        const hbPositiveMotherChecked = document.getElementById('hbPositiveMother').checked;
+        
+        const condition1 = ageDays > 7 && !lowWeightChecked && !hbPositiveMotherChecked;
+        const condition2 = ageDays > 30;
+        
+        return condition1 || condition2;
+    }
+
+    isVPC13Irrattrapable(ageDays) {
+        return ageDays > 730;
+    }
+
+    isVaccineIrrattrapable(vaccineName, ageDays) {
+        if (vaccineName === "Hépatite B 1") {
+            return this.isHepatitisBIrrattrapable(ageDays);
+        }
+        if (vaccineName === "VPC 13 - 1" || vaccineName === "VPC 13 - 2" || vaccineName === "VPC 13 - Rappel") {
+            return this.isVPC13Irrattrapable(ageDays);
+        }
         return false;
     }
 
@@ -794,11 +820,24 @@ class VaccinationApp {
             const date = this.data.vaccinations[vaccineName] || '';
             const isValid = date ? this.validateVaccineLogic(vaccineName, date) : false;
             const status = date ? (isValid ? '✅ Valide' : '❌ Invalide') : '⏳ Non fait';
+            
+            let dateDisplay = '-';
+            if (date) {
+                if (date.includes('/')) {
+                    const parts = date.split('/');
+                    if (parts.length === 3) {
+                        const dateStr = `${parts[2]}-${parts[1]}-${parts[0]}`;
+                        dateDisplay = new Date(dateStr).toLocaleDateString('fr-FR');
+                    }
+                } else {
+                    dateDisplay = new Date(date).toLocaleDateString('fr-FR');
+                }
+            }
 
             reportHTML += `
                 <tr>
                     <td style="border: 1px solid #ddd; padding: 8px;">${this.vaccineConfig[vaccineName].icon} ${vaccineName}</td>
-                    <td style="border: 1px solid #ddd; padding: 8px;">${date ? new Date(date).toLocaleDateString('fr-FR') : '-'}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px;">${dateDisplay}</td>
                     <td style="border: 1px solid #ddd; padding: 8px;">${status}</td>
                 </tr>
             `;
@@ -958,12 +997,23 @@ class VaccinationApp {
 
                 // Date recommandée avec calcul séquentiel
                 const recommendedDate = this.calculateRecommendedDate(vaccineName, config, birthDate, proposedDates);
-                proposedDates[vaccineName] = recommendedDate; // Stocker la date proposée
-                const recommendedDateCell = recommendedDate.toLocaleDateString('fr-FR');
+                proposedDates[vaccineName] = recommendedDate;
+                
+                // Vérifier si irrattrapable SEULEMENT si pas encore vacciné
+                const isIrrattrapable = !currentVaccination && this.isVaccineIrrattrapable(vaccineName, ageDays);
+                
+                let recommendedDateCell = '';
+                if (isIrrattrapable) {
+                    recommendedDateCell = '-';
+                } else {
+                    recommendedDateCell = recommendedDate.toLocaleDateString('fr-FR');
+                }
 
                 // Observations
                 let observations = '';
-                if (!currentVaccination) {
+                if (isIrrattrapable) {
+                    observations = 'Irrattrapable';
+                } else if (!currentVaccination) {
                     if (recommendedDate <= currentDate) {
                         observations = 'À faire maintenant';
                     } else {
@@ -1136,20 +1186,31 @@ class VaccinationApp {
             vaccines.forEach(([vaccineName, config]) => {
                 const currentVaccination = this.data.vaccinations[vaccineName];
                 const isValid = currentVaccination ? this.validateVaccineLogic(vaccineName, currentVaccination) : false;
+                const isIrrattrapable = this.isVaccineIrrattrapable(vaccineName, ageDays);
 
                 if (!currentVaccination || !isValid) {
-                    const recommendedDate = this.calculateRecommendedDate(vaccineName, config, birthDate, proposedDates);
-                    proposedDates[vaccineName] = recommendedDate; // Stocker la date proposée
-                    const status = !currentVaccination ? 'Non fait' : 'Date invalide.';
-                    const urgency = recommendedDate <= currentDate ? 'À faire maintenant' : 'À programmer';
+                    if (isIrrattrapable) {
+                        categoryHTML += `
+                            <li>
+                                <strong>${config.icon} ${vaccineName}</strong><br>
+                                <em>Statut:</em> Irrattrapable<br>
+                                <em>Recommandé:</em> -<br>
+                                <em>Note:</em> ${config.message}
+                            </li>`;
+                    } else {
+                        const recommendedDate = this.calculateRecommendedDate(vaccineName, config, birthDate, proposedDates);
+                        proposedDates[vaccineName] = recommendedDate;
+                        const status = !currentVaccination ? 'Non fait' : 'Date invalide.';
+                        const urgency = recommendedDate <= currentDate ? 'À faire maintenant' : 'À programmer';
 
-                    categoryHTML += `
-                        <li>
-                            <strong>${config.icon} ${vaccineName}</strong><br>
-                            <em>Statut:</em> ${status}<br>
-                            <em>Recommandé:</em> ${recommendedDate.toLocaleDateString('fr-FR')} (${urgency})<br>
-                            <em>Note:</em> ${config.message}
-                        </li>`;
+                        categoryHTML += `
+                            <li>
+                                <strong>${config.icon} ${vaccineName}</strong><br>
+                                <em>Statut:</em> ${status}<br>
+                                <em>Recommandé:</em> ${recommendedDate.toLocaleDateString('fr-FR')} (${urgency})<br>
+                                <em>Note:</em> ${config.message}
+                            </li>`;
+                    }
                     hasRecommendations = true;
                 } else {
                     categoryHTML += `
@@ -1599,13 +1660,23 @@ class VaccinationApp {
 
                 // Date recommandée avec calcul séquentiel
                 const recommendedDate = this.calculateRecommendedDate(vaccineName, config, birthDate, proposedDates);
-                proposedDates[vaccineName] = recommendedDate; // Stocker la date proposée
+                proposedDates[vaccineName] = recommendedDate;
+                
+                // Vérifier si irrattrapable SEULEMENT si pas encore vacciné
+                const isIrrattrapable = !currentVaccination && this.isVaccineIrrattrapable(vaccineName, ageDays);
+                
                 const recommendedDateCell = doc.createElement('td');
-                recommendedDateCell.textContent = recommendedDate.toLocaleDateString('fr-FR');
+                if (isIrrattrapable) {
+                    recommendedDateCell.textContent = '-';
+                } else {
+                    recommendedDateCell.textContent = recommendedDate.toLocaleDateString('fr-FR');
+                }
 
                 // Observations
                 let observations = '';
-                if (!currentVaccination) {
+                if (isIrrattrapable) {
+                    observations = 'Irrattrapable';
+                } else if (!currentVaccination) {
                     if (recommendedDate <= currentDate) {
                         observations = 'À faire maintenant';
                     } else {
