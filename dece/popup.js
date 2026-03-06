@@ -171,10 +171,151 @@ function remplirFormulaire(cert) {
     }
 }
 
+// ============================================================================
+// Gestion dynamique des communes en fonction de la wilaya
+// ============================================================================
 
+// Charger le fichier wilayas.json et peupler les communes
+let wilayasData = null;
+
+async function loadWilayasData() {
+    if (wilayasData) return wilayasData; // Retourner les données si déjà chargées
+    
+    try {
+        const response = await fetch('wilayas.json');
+        if (!response.ok) {
+            throw new Error('Failed to load wilayas.json');
+        }
+        wilayasData = await response.json();
+        console.log('✅ Wilayas data loaded successfully');
+        return wilayasData;
+    } catch (error) {
+        console.error('❌ Error loading wilayas.json:', error);
+        return null;
+    }
+}
+
+// Fonction pour peupler les communes en fonction du code wilaya
+function populateCommunes(wilayaCodeValue, communeInputId, datalistId) {
+    const communeInput = document.getElementById(communeInputId);
+    const datalist = document.getElementById(datalistId);
+    
+    if (!communeInput || !datalist || !wilayasData) return;
+    
+    console.log('🔍 Code wilaya reçu:', wilayaCodeValue);
+    
+    // Vider la liste actuelle
+    datalist.innerHTML = '';
+    
+    // Normaliser le code wilaya : convertir en nombre et gérer les formats différents
+    // Format HTML: "1000" (Adrar), "17000" (Djelfa) -> Doit devenir 1, 17, etc.
+    let wilayaCodeNum;
+    
+    if (wilayaCodeValue.length === 4) {
+        // Code à 4 chiffres: ex "1000" -> 1, "1700" -> 17
+        wilayaCodeNum = parseInt(wilayaCodeValue.substring(0, wilayaCodeValue.length - 3));
+    } else if (wilayaCodeValue.length === 5) {
+        // Code à 5 chiffres: ex "17000" -> 17, "58000" -> 58
+        wilayaCodeNum = parseInt(wilayaCodeValue.substring(0, wilayaCodeValue.length - 3));
+    } else {
+        // Autre format, on essaie de convertir directement
+        wilayaCodeNum = parseInt(wilayaCodeValue);
+    }
+    
+    console.log('🔢 Code wilaya normalisé:', wilayaCodeNum);
+    
+    // Trouver la wilaya correspondante
+    const wilaya = wilayasData.find(w => w.wilayaCode === wilayaCodeNum);
+    
+    if (!wilaya) {
+        console.warn('⚠️ Wilaya non trouvée pour le code:', wilayaCodeNum);
+        return;
+    }
+    
+    if (!wilaya.communes) {
+        console.warn('⚠️ Pas de communes pour cette wilaya:', wilaya.nameFr);
+        return;
+    }
+    
+    // Trier les communes par ordre alphabétique (nameFr)
+    const sortedCommunes = [...wilaya.communes].sort((a, b) => 
+        a.nameFr.localeCompare(b.nameFr)
+    );
+    
+    console.log(`✅ ${sortedCommunes.length} communes trouvées pour ${wilaya.nameFr}`);
+    
+    // Ajouter les options dans le datalist
+    sortedCommunes.forEach(commune => {
+        const option = document.createElement('option');
+        option.value = commune.nameFr; // Utiliser nameFr comme valeur
+        datalist.appendChild(option);
+    });
+    
+    console.log(`✅ ${sortedCommunes.length} communes chargées pour la wilaya ${wilayaCodeNum}`);
+}
+
+// Initialiser les écouteurs d'événements pour les sélects de wilayas
+async function initializeWilayaListeners() {
+    await loadWilayasData();
+    
+    // Écouteur pour WILAYAN (Wilaya de naissance)
+    const wilayanSelect = document.getElementById('WILAYAN');
+    if (wilayanSelect) {
+        wilayanSelect.addEventListener('change', function() {
+            // Passer directement la valeur complète, populateCommunes fera la normalisation
+            const wilayaCode = this.value;
+            console.log('📍 WILAYAN changed:', wilayaCode);
+            populateCommunes(wilayaCode, 'COMMUNEN', 'COMMUNEN_LIST');
+        });
+        
+        // Déclencher le changement initial si une wilaya est déjà sélectionnée
+        if (wilayanSelect.value) {
+            const wilayaCode = wilayanSelect.value;
+            console.log('📍 WILAYAN initial:', wilayaCode);
+            populateCommunes(wilayaCode, 'COMMUNEN', 'COMMUNEN_LIST');
+        }
+    }
+    
+    // Écouteur pour WILAYAR (Wilaya de résidence)
+    const wilayarSelect = document.getElementById('WILAYAR');
+    if (wilayarSelect) {
+        wilayarSelect.addEventListener('change', function() {
+            // Passer directement la valeur complète, populateCommunes fera la normalisation
+            const wilayaCode = this.value;
+            console.log('📍 WILAYAR changed:', wilayaCode);
+            populateCommunes(wilayaCode, 'COMMUNER', 'COMMUNER_LIST');
+        });
+        
+        // Déclencher le changement initial si une wilaya est déjà sélectionnée
+        if (wilayarSelect.value) {
+            const wilayaCode = wilayarSelect.value;
+            console.log('📍 WILAYAR initial:', wilayaCode);
+            populateCommunes(wilayaCode, 'COMMUNER', 'COMMUNER_LIST');
+        }
+    }
+    
+    // Écouteur pour WILAYAD (Wilaya de décès)
+    const wilayadSelect = document.getElementById('WILAYAD');
+    if (wilayadSelect) {
+        wilayadSelect.addEventListener('change', function() {
+            // Passer directement la valeur complète, populateCommunes fera la normalisation
+            const wilayaCode = this.value;
+            console.log('📍 WILAYAD changed:', wilayaCode);
+            populateCommunes(wilayaCode, 'COMMUNED', 'COMMUNED_LIST');
+        });
+        
+        // Déclencher le changement initial si une wilaya est déjà sélectionnée
+        if (wilayadSelect.value) {
+            const wilayaCode = wilayadSelect.value;
+            console.log('📍 WILAYAD initial:', wilayaCode);
+            populateCommunes(wilayaCode, 'COMMUNED', 'COMMUNED_LIST');
+        }
+    }
+}
+
+// ============================================================================
 /// Initialisation des onglets au chargement
 function setupTabs() {
-    // Masquer tous les contenus sauf le premier
     document.querySelectorAll('.tab-pane').forEach((content, index) => {
         if (index === 0) {
             content.classList.remove('hidden');
@@ -1058,6 +1199,9 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Initialiser les onglets
     setupTabs();
+    
+    // Initialiser les écouteurs pour les wilayas et communes
+    initializeWilayaListeners();
 
     // Initialiser les sélecteurs CIM-10
     if (typeof initializeCIM10Selectors === 'function') {
