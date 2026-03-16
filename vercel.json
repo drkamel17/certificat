@@ -61,8 +61,24 @@
       "src": "score/**/*.png",
       "use": "@vercel/static"
     },
-	   {
+    {
       "src": "score/**/_scripts.js.تنزيل",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "medicamentdz/**/*.js",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "medicamentdz/**/*.css",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "medicamentdz/**/*.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "medicamentdz/**/*.json",
       "use": "@vercel/static"
     },
     {
@@ -86,6 +102,10 @@
     {
       "src": "/score/(.*)",
       "dest": "/score/$1"
+    },
+    {
+      "src": "/medicamentdz/(.*)",
+      "dest": "/medicamentdz/$1"
     },
     {
       "src": "/(.*)\\.json",
