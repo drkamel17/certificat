@@ -1626,6 +1626,22 @@ async function initializePDFDocumentForSubmit() {
 
 // Liste des wilayas en français
 const wilayas = {
+   '1000': 'Adrar',
+    '2000': 'Chlef',
+    '3000': 'Laghouat',
+    '4000': 'Oum El Bouaghi',
+    '5000': 'Batna',
+    '6000': 'Béjaïa',
+    '7000': 'Biskra',
+    '8000': 'Béchar',
+    '9000': 'Blida',
+    '10000': 'Bouïra',
+    '11000': 'Tamanrasset',
+    '12000': 'Tébessa',
+    '13000': 'Tlemcen',
+    '14000': 'Tiaret',
+    '15000': 'Tizi Ouzou',
+    '16000': 'Alger',
     '17000': 'Djelfa',
     '18000': 'Jijel',
     '19000': 'Sétif',
@@ -1668,6 +1684,17 @@ const wilayas = {
     '56000': 'Djanet',
     '57000': 'El M\'Ghair',
     '58000': 'El Meniaa',
+	'59000': 'EL ABIOUDH SIDI CHEIKH',
+    '60000': 'AFLOU',
+    '61000': 'BARIKA',
+    '62000': 'BIR EL ATER',
+    '63000': 'BOUSSAADA',
+    '64000': 'EL ARICHA',
+    '65000': 'AIN OUSSERA',
+    '66000': 'KSAR EL BOUKHARI',
+    '67000': 'KSAR CHELLALA',
+    '68000': 'EL KANTARA',
+    '69000': 'MESSAAD',
     '99000': 'Etranger'
 };
 
@@ -1729,6 +1756,17 @@ const wilayaar = {
     '56000': 'جانت',
     '57000': 'المغير',
     '58000': 'المنيعة',
+	'59000': 'الأبيض سيدي الشيخ',
+    '60000': 'أفلو',
+    '61000': 'بريكة',
+    '62000': 'بئر العاتر',
+    '63000': 'بوسعادة',
+    '64000': 'العريشة',
+    '65000': 'عين وسارة',
+    '66000': 'قصر البخاري',
+    '67000': 'قصر الشلالة',
+    '68000': 'القنطرة',
+    '69000': 'مسعد',
     '99000': 'خارج الوطن'
 };
 

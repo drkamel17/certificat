@@ -8055,8 +8055,19 @@
       }
     ]
   },
-  {
+    {
     "wilayaCode": 59,
+    "nameFr": "EL ABIOUDH SIDI CHEIKH",
+    "nameAr": "الأبيض سيدي الشيخ",
+    "communes": [
+      {
+        "nameFr": "El Abiodh Sidi Cheikh",
+        "nameAr": "الأبيض سيدي الشيخ"
+      }
+    ]
+  },
+  {
+    "wilayaCode": 60,
     "nameFr": "AFLOU",
     "nameAr": "أفلو",
     "communes": [
@@ -8075,7 +8086,7 @@
     ]
   },
   {
-    "wilayaCode": 60,
+    "wilayaCode": 61,
     "nameFr": "BARIKA",
     "nameAr": "بريكة",
     "communes": [
@@ -8094,7 +8105,90 @@
     ]
   },
   {
-    "wilayaCode": 61,
+    "wilayaCode": 62,
+    "nameFr": "BIR EL ATER",
+    "nameAr": "بئر العاتر",
+    "communes": [
+      {
+        "nameFr": "Bir El Ater",
+        "nameAr": "بئر العاتر"
+      },
+      {
+        "nameFr": "Ogla Melha",
+        "nameAr": "عقلة ملحة"
+      }
+    ]
+  },
+  {
+    "wilayaCode": 63,
+    "nameFr": "BOUSSAADA",
+    "nameAr": "بوسعادة",
+    "communes": [
+      {
+        "nameFr": "Boussaâda",
+        "nameAr": "بوسعادة"
+      },
+      {
+        "nameFr": "El Hamel",
+        "nameAr": "الحمل"
+      },
+      {
+        "nameFr": "Oultem",
+        "nameAr": "ولتام"
+      }
+    ]
+  },
+   {
+    "wilayaCode": 64,
+    "nameFr": "EL ARICHA",
+    "nameAr": "العريشة",
+    "communes": [
+      {
+        "nameFr": "El Aricha",
+        "nameAr": "العريشة"
+      },
+      {
+        "nameFr": "El Gor",
+        "nameAr": "القر"
+      }
+    ]
+  },
+    {
+    "wilayaCode": 65,
+    "nameFr": "AIN OUSSERA",
+    "nameAr": "عين وسارة",
+    "communes": [
+      {
+        "nameFr": "Aïn Oussera",
+        "nameAr": "عين وسارة"
+      },
+      {
+        "nameFr": "Guernini",
+        "nameAr": "قرنيني"
+      }
+    ]
+  },
+    {
+    "wilayaCode": 66,
+    "nameFr": "KSAR EL BOUKHARI",
+    "nameAr": "قصر البخاري",
+    "communes": [
+      {
+        "nameFr": "Ksar El Boukhari",
+        "nameAr": "قصر البخاري"
+      },
+      {
+        "nameFr": "Meftaha",
+        "nameAr": "مفتاح"
+      },
+      {
+        "nameFr": "Saneg",
+        "nameAr": "السانق"
+      }
+    ]
+  },
+  {
+    "wilayaCode": 67,
     "nameFr": "KSAR CHELLALA",
     "nameAr": "قصر الشلالة",
     "communes": [
@@ -8112,8 +8206,23 @@
       }
     ]
   },
+    {
+    "wilayaCode": 68,
+    "nameFr": "EL KANTARA",
+    "nameAr": "القنطرة",
+    "communes": [
+      {
+        "nameFr": "El Kantara",
+        "nameAr": "القنطرة"
+      },
+      {
+        "nameFr": "Aïn Zaatout",
+        "nameAr": "عين زعطوط"
+      }
+    ]
+  },
   {
-    "wilayaCode": 62,
+    "wilayaCode": 69,
     "nameFr": "MESSAAD",
     "nameAr": "مسعد",
     "communes": [
@@ -8138,114 +8247,6 @@
         "nameAr": "القطارة"
       }
     ]
-  },
-  {
-    "wilayaCode": 63,
-    "nameFr": "AIN OUSSERA",
-    "nameAr": "عين وسارة",
-    "communes": [
-      {
-        "nameFr": "Aïn Oussera",
-        "nameAr": "عين وسارة"
-      },
-      {
-        "nameFr": "Guernini",
-        "nameAr": "قرنيني"
-      }
-    ]
-  },
-  {
-    "wilayaCode": 64,
-    "nameFr": "BOUSSAADA",
-    "nameAr": "بوسعادة",
-    "communes": [
-      {
-        "nameFr": "Boussaâda",
-        "nameAr": "بوسعادة"
-      },
-      {
-        "nameFr": "El Hamel",
-        "nameAr": "الحمل"
-      },
-      {
-        "nameFr": "Oultem",
-        "nameAr": "ولتام"
-      }
-    ]
-  },
-  {
-    "wilayaCode": 65,
-    "nameFr": "EL ABIOUDH SIDI CHEIKH",
-    "nameAr": "الأبيض سيدي الشيخ",
-    "communes": [
-      {
-        "nameFr": "El Abiodh Sidi Cheikh",
-        "nameAr": "الأبيض سيدي الشيخ"
-      }
-    ]
-  },
-  {
-    "wilayaCode": 66,
-    "nameFr": "EL KANTARA",
-    "nameAr": "القنطرة",
-    "communes": [
-      {
-        "nameFr": "El Kantara",
-        "nameAr": "القنطرة"
-      },
-      {
-        "nameFr": "Aïn Zaatout",
-        "nameAr": "عين زعطوط"
-      }
-    ]
-  },
-  {
-    "wilayaCode": 67,
-    "nameFr": "BIR EL ATER",
-    "nameAr": "بئر العاتر",
-    "communes": [
-      {
-        "nameFr": "Bir El Ater",
-        "nameAr": "بئر العاتر"
-      },
-      {
-        "nameFr": "Ogla Melha",
-        "nameAr": "عقلة ملحة"
-      }
-    ]
-  },
-  {
-    "wilayaCode": 68,
-    "nameFr": "KSAR EL BOUKHARI",
-    "nameAr": "قصر البخاري",
-    "communes": [
-      {
-        "nameFr": "Ksar El Boukhari",
-        "nameAr": "قصر البخاري"
-      },
-      {
-        "nameFr": "Meftaha",
-        "nameAr": "مفتاح"
-      },
-      {
-        "nameFr": "Saneg",
-        "nameAr": "السانق"
-      }
-    ]
-  },
-  {
-    "wilayaCode": 69,
-    "nameFr": "EL ARICHA",
-    "nameAr": "العريشة",
-    "communes": [
-      {
-        "nameFr": "El Aricha",
-        "nameAr": "العريشة"
-      },
-      {
-        "nameFr": "El Gor",
-        "nameAr": "القر"
-      }
-    ]
   }
+
 ]
