@@ -57,12 +57,8 @@
       "src": "score/**/*.html",
       "use": "@vercel/static"
     },
-	 {
-      "src": "score/**/*.png",
-      "use": "@vercel/static"
-    },
     {
-      "src": "score/**/_scripts.js.تنزيل",
+      "src": "score/**/*.png",
       "use": "@vercel/static"
     },
     {
@@ -84,9 +80,25 @@
     {
       "src": "templates/*.pdf",
       "use": "@vercel/static"
+    },
+    {
+      "src": "ordonnance type/**/*",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "api/config.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/save-supabase.js",
+      "use": "@vercel/node"
     }
   ],
   "routes": [
+    {
+      "src": "/api/save-supabase",
+      "dest": "/api/save-supabase.js"
+    },
     {
       "src": "/styles/(.*)",
       "dest": "/styles/$1"
@@ -106,6 +118,34 @@
     {
       "src": "/medicamentdz/(.*)",
       "dest": "/medicamentdz/$1"
+    },
+    {
+      "src": "/ordonnance%20type/(.*)",
+      "dest": "/ordonnance%20type/$1"
+    },
+    {
+      "src": "/ordonnance%20type/api/config.js",
+      "dest": "/ordonnance%20type/api/config.js"
+    },
+    {
+      "src": "/ordonnance%20type/api/save-supabase.js",
+      "dest": "/ordonnance%20type/api/save-supabase.js"
+    },
+    {
+      "src": "/ordonnance%20type/api/save.js",
+      "dest": "/ordonnance%20type/api/save.js"
+    },
+    {
+      "src": "/ordonnance%20type/api/save-github.js",
+      "dest": "/ordonnance%20type/api/save-github.js"
+    },
+    {
+      "src": "/ordonnance%20type/ordonnances-types.json",
+      "dest": "/ordonnance/ordonnances-types.json"
+    },
+    {
+      "src": "/ordonnance%20type/medicaments.json",
+      "dest": "/ordonnance/medicaments.json"
     },
     {
       "src": "/(.*)\\.json",
@@ -135,6 +175,48 @@
       "src": "(.*)",
       "dest": "/$1.html"
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/ordonnance%20type/api/config.js",
+      "destination": "/ordonnance%20type/api/config.js"
+    },
+    {
+      "source": "/ordonnance%20type/api/save-supabase",
+      "destination": "/ordonnance%20type/api/save-supabase.js"
+    },
+    {
+      "source": "/ordonnances-types.json",
+      "destination": "/ordonnances-types.json"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)\\.js",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/javascript; charset=utf-8"
+        }
+      ]
+    },
+    {
+      "source": "/(.*)\\.json",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/json; charset=utf-8"
+        }
+      ]
+    }
   ]
-
 }
