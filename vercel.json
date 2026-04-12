@@ -86,11 +86,23 @@
       "use": "@vercel/static"
     },
     {
+      "src": "commentaire/**/*",
+      "use": "@vercel/static"
+    },
+    {
       "src": "api/config.js",
       "use": "@vercel/node"
     },
     {
       "src": "api/save-supabase.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/commentaires.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "api/send-email.js",
       "use": "@vercel/node"
     }
   ],
@@ -98,6 +110,14 @@
     {
       "src": "/api/save-supabase",
       "dest": "/api/save-supabase.js"
+    },
+    {
+      "src": "/api/commentaires",
+      "dest": "/api/commentaires.js"
+    },
+    {
+      "src": "/api/send-email",
+      "dest": "/api/send-email.js"
     },
     {
       "src": "/styles/(.*)",

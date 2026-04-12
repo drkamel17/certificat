@@ -6,6 +6,71 @@ const DEFAULT_CONFIG = {
   WRITE_PASSWORD: 'DAOUDI'
 };
 
+async function sendResendEmail(to, subject, type, nom, situation, lien1, lien2) {
+  const apiKey = process.env.RESEND_API_KEY;
+  
+  console.log('[DEBUG] sendResendEmail - API key presente:', !!apiKey);
+  console.log('[DEBUG] sendResendEmail - Destinataire:', to);
+  console.log('[DEBUG] sendResendEmail - Sujet:', subject);
+  
+  if (!apiKey) {
+    console.log('[DEBUG] ERREUR: RESEND_API_KEY non configuree dans Vercel');
+    return { success: false, message: 'RESEND_API_KEY non configuree' };
+  }
+  
+  const bgColor = type === 'Ordonnance' ? '#ff9800' : '#9C27B0';
+  const htmlContent = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+      <div style="background: ${bgColor}; color: white; padding: 20px; border-radius: 10px 10px 0 0; text-align: center;">
+        <h2 style="margin: 0;">📩 Nouveau message en attente</h2>
+      </div>
+      <div style="background: #f5f5f5; padding: 20px; border-radius: 0 0 10px 10px;">
+        <p style="font-size: 16px;"><strong>Type:</strong> ${type}</p>
+        <p style="font-size: 16px;"><strong>Nom:</strong> ${nom}</p>
+        ${situation ? `<p style="font-size: 16px;"><strong>Situation:</strong> ${situation}</p>` : ''}
+        <p style="margin-top: 20px;">Cliquez sur un des liens ci-dessous pour gerer ce message:</p>
+        <div style="text-align: center; margin: 20px 0;">
+          <a href="${lien1}" style="display: inline-block; background: #667eea; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; margin: 5px;">🔧 Ordonnances Sur Web</a>
+          <br>
+          <a href="${lien2}" style="display: inline-block; background: #4CAF50; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; margin: 5px;">🔧 Certificats Medicaux</a>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  console.log('[DEBUG] Envoi requete vers Resend API...');
+  
+  try {
+    const resendResponse = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        from: 'Dr Daoudi Notifications <onboarding@resend.dev>',
+        to: to,
+        subject: subject,
+        html: htmlContent
+      })
+    });
+    
+    console.log('[DEBUG] Resend response status:', resendResponse.status);
+    
+    if (resendResponse.ok) {
+      console.log('[DEBUG] Email envoye avec succes!');
+      return { success: true };
+    } else {
+      const errorText = await resendResponse.text();
+      console.log('[DEBUG] ERREUR Resend:', errorText);
+      return { success: false, message: errorText };
+    }
+  } catch (error) {
+    console.log('[DEBUG] ERREUR exception:', error.message);
+    return { success: false, message: error.message };
+  }
+}
+
 export async function POST(request) {
   console.log('=== SUPABASE POST: Debut ===');
   
@@ -13,42 +78,24 @@ export async function POST(request) {
     const body = await request.json();
     const { data, password, username, action, pendingKey, pendingId, titre, nouveauxMedicaments } = body;
     console.log('Data received:', data ? Object.keys(data).length : 0, 'ordonnances');
-    console.log('Password received:', password ? 'Yes' : 'No');
-    console.log('Username received:', username ? 'Yes' : 'No');
-    console.log('Action:', action || 'save');
     
     const supabaseUrl = process.env.SUPABASE_URL || DEFAULT_CONFIG.SUPABASE_URL;
     const supabaseKey = process.env.SUPABASE_KEY || DEFAULT_CONFIG.SUPABASE_KEY;
-    
-    if (!supabaseUrl || !supabaseKey) {
-      return new Response(JSON.stringify({ 
-        success: false, 
-        message: 'Supabase config not set' 
-      }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
-      });
-    }
-    
     const writePassword = process.env.WRITE_PASSWORD || DEFAULT_CONFIG.WRITE_PASSWORD;
     
-    // Action: Confirmer (admin confirme pending et ajoute aux données principales)
+    if (!supabaseUrl || !supabaseKey) {
+      return new Response(JSON.stringify({ success: false, message: 'Supabase config not set' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
+    }
+    
+    // Action: Confirmer
     if (action === 'confirm' && pendingKey) {
       if (!password || password !== writePassword) {
         return new Response(JSON.stringify({ success: false, message: 'Mot de passe admin requis' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
       }
       
-      // Le pendingKey contient l'ID complet comme "pending_ahmed"
-      const pendingId = pendingKey;
-      
-      // Récupérer les données pending pour cet utilisateur
-      const pendingResponse = await fetch(`${supabaseUrl}/rest/v1/ordonnances?id=eq.${pendingId}`, {
+      const pendingResponse = await fetch(`${supabaseUrl}/rest/v1/ordonnances?id=eq.${pendingKey}`, {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': supabaseKey,
-          'Authorization': `Bearer ${supabaseKey}`
-        }
+        headers: { 'Content-Type': 'application/json', 'apikey': supabaseKey, 'Authorization': `Bearer ${supabaseKey}` }
       });
       
       if (!pendingResponse.ok) {
@@ -62,14 +109,9 @@ export async function POST(request) {
       
       const pendingData = pendingDataResult[0].data || {};
       
-      // Récupérer les données default existantes
       const defaultResponse = await fetch(`${supabaseUrl}/rest/v1/ordonnances?id=eq.default`, {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': supabaseKey,
-          'Authorization': `Bearer ${supabaseKey}`
-        }
+        headers: { 'Content-Type': 'application/json', 'apikey': supabaseKey, 'Authorization': `Bearer ${supabaseKey}` }
       });
       
       let defaultData = {};
@@ -80,72 +122,45 @@ export async function POST(request) {
         }
       }
       
-      // Fusionner: ajouter les nouvelles ordonnances aux existantes
-      Object.keys(pendingData).forEach(key => {
-        defaultData[key] = pendingData[key];
-      });
+      Object.keys(pendingData).forEach(key => { defaultData[key] = pendingData[key]; });
       
-      // Mettre à jour default avec les données fusionnées
-      const updateResponse = await fetch(`${supabaseUrl}/rest/v1/ordonnances?id=eq.default`, {
+      await fetch(`${supabaseUrl}/rest/v1/ordonnances?id=eq.default`, {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': supabaseKey,
-          'Authorization': `Bearer ${supabaseKey}`,
-          'Prefer': 'return=minimal'
-        },
-        body: JSON.stringify({
-          data: defaultData,
-          status: 'confirmed',
-          suggested_by: null,
-          updated_at: new Date().toISOString()
-        })
+        headers: { 'Content-Type': 'application/json', 'apikey': supabaseKey, 'Authorization': `Bearer ${supabaseKey}`, 'Prefer': 'return=minimal' },
+        body: JSON.stringify({ data: defaultData, status: 'confirmed', suggested_by: null, updated_at: new Date().toISOString() })
       });
       
-      // Supprimer le pending de cet utilisateur
-      await fetch(`${supabaseUrl}/rest/v1/ordonnances?id=eq.${pendingId}`, {
+      await fetch(`${supabaseUrl}/rest/v1/ordonnances?id=eq.${pendingKey}`, {
         method: 'DELETE',
-        headers: {
-          'apikey': supabaseKey,
-          'Authorization': `Bearer ${supabaseKey}`
-        }
+        headers: { 'apikey': supabaseKey, 'Authorization': `Bearer ${supabaseKey}` }
       });
       
-      return new Response(JSON.stringify({ success: updateResponse.ok, message: updateResponse.ok ? 'Confirme' : 'Erreur' }), { headers: { 'Content-Type': 'application/json' } });
+      return new Response(JSON.stringify({ success: true, message: 'Confirme' }), { headers: { 'Content-Type': 'application/json' } });
     }
     
-    // Action: Refuser (admin supprime pending)
+    // Action: Rejeter
     if (action === 'reject' && pendingKey) {
       if (!password || password !== writePassword) {
         return new Response(JSON.stringify({ success: false, message: 'Mot de passe admin requis' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
       }
       
-      // Supprimer la ligne pending pour cet utilisateur
       const response = await fetch(`${supabaseUrl}/rest/v1/ordonnances?id=eq.${pendingKey}`, {
         method: 'DELETE',
-        headers: {
-          'apikey': supabaseKey,
-          'Authorization': `Bearer ${supabaseKey}`
-        }
+        headers: { 'apikey': supabaseKey, 'Authorization': `Bearer ${supabaseKey}` }
       });
       
       return new Response(JSON.stringify({ success: response.ok, message: response.ok ? 'Rejete' : 'Erreur' }), { headers: { 'Content-Type': 'application/json' } });
     }
     
-    // Action: Modifier (admin modifie les medicaments d'un pending)
+    // Action: Modifier
     if (action === 'modify' && pendingId && titre && nouveauxMedicaments) {
       if (!password || password !== writePassword) {
         return new Response(JSON.stringify({ success: false, message: 'Mot de passe admin requis' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
       }
       
-      // Récupérer le pending actuel
       const pendingResponse = await fetch(`${supabaseUrl}/rest/v1/ordonnances?id=eq.${pendingId}`, {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': supabaseKey,
-          'Authorization': `Bearer ${supabaseKey}`
-        }
+        headers: { 'Content-Type': 'application/json', 'apikey': supabaseKey, 'Authorization': `Bearer ${supabaseKey}` }
       });
       
       if (!pendingResponse.ok) {
@@ -157,7 +172,6 @@ export async function POST(request) {
         return new Response(JSON.stringify({ success: false, message: 'Aucune donnée pending' }), { status: 404, headers: { 'Content-Type': 'application/json' } });
       }
       
-      // Modifier les médicaments
       const pendingData = pendingResult[0].data || {};
       if (pendingData && pendingData[titre]) {
         pendingData[titre] = nouveauxMedicaments;
@@ -165,40 +179,24 @@ export async function POST(request) {
         return new Response(JSON.stringify({ success: false, message: 'Titre non trouvé' }), { status: 404, headers: { 'Content-Type': 'application/json' } });
       }
       
-      // Sauvegarder
       const updateResponse = await fetch(`${supabaseUrl}/rest/v1/ordonnances?id=eq.${pendingId}`, {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': supabaseKey,
-          'Authorization': `Bearer ${supabaseKey}`,
-          'Prefer': 'return=minimal'
-        },
-        body: JSON.stringify({
-          data: pendingData,
-          updated_at: new Date().toISOString()
-        })
+        headers: { 'Content-Type': 'application/json', 'apikey': supabaseKey, 'Authorization': `Bearer ${supabaseKey}`, 'Prefer': 'return=minimal' },
+        body: JSON.stringify({ data: pendingData, updated_at: new Date().toISOString() })
       });
       
       return new Response(JSON.stringify({ success: updateResponse.ok, message: updateResponse.ok ? 'Modifie' : 'Erreur' }), { headers: { 'Content-Type': 'application/json' } });
     }
     
-    // Sans mot de passe → sauvegarder comme pending (nouvelle ordonnance uniquement)
+    // Sans mot de passe → sauvegarder comme pending
     if (!password && username) {
       console.log('Sauvegarde pending avec username:', username);
-      console.log('Data a sauvegarder:', Object.keys(data).length, 'ordonnances');
       
-      // Créer un ID unique pour cet utilisateur
       const pendingId = `pending_${username.toLowerCase().replace(/\s+/g, '_')}`;
       
-      // Chercher si cet utilisateur a déjà un pending
       const existingResponse = await fetch(`${supabaseUrl}/rest/v1/ordonnances?id=eq.${pendingId}`, {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': supabaseKey,
-          'Authorization': `Bearer ${supabaseKey}`
-        }
+        headers: { 'Content-Type': 'application/json', 'apikey': supabaseKey, 'Authorization': `Bearer ${supabaseKey}` }
       });
       
       let pendingData = {};
@@ -208,22 +206,15 @@ export async function POST(request) {
       if (existingResponse.ok) {
         const existing = await existingResponse.json();
         if (existing.length > 0) {
-          // Utilisateur a déjà un pending, on récupère ses données
           pendingData = existing[0].data || {};
           method = 'PATCH';
           url = `${supabaseUrl}/rest/v1/ordonnances?id=eq.${pendingId}`;
-          console.log('Pending existant trouvé, données:', Object.keys(pendingData).length);
         }
       }
       
-      // Récupérer les données default pour éviter les doublons
       const defaultResponse = await fetch(`${supabaseUrl}/rest/v1/ordonnances?id=eq.default`, {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': supabaseKey,
-          'Authorization': `Bearer ${supabaseKey}`
-        }
+        headers: { 'Content-Type': 'application/json', 'apikey': supabaseKey, 'Authorization': `Bearer ${supabaseKey}` }
       });
       
       let defaultData = {};
@@ -234,17 +225,12 @@ export async function POST(request) {
         }
       }
       
-      // Ajouter seulement les nouvelles ordonnances (pas celles qui sont déjà dans default)
       Object.keys(data).forEach(key => {
-        // Ajouter le nom d'utilisateur au titre
         const newKey = `${key} (par ${username})`;
-        // Ne pas ajouter si cette clé existe déjà dans default
         if (!defaultData[key]) {
           pendingData[newKey] = data[key];
         }
       });
-      
-      console.log('Pending final:', Object.keys(pendingData).length, 'ordonnances');
       
       const finalData = {
         ...(method === 'PATCH' ? {} : { id: pendingId }),
@@ -256,19 +242,28 @@ export async function POST(request) {
       
       const response = await fetch(url, {
         method: method,
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': supabaseKey,
-          'Authorization': `Bearer ${supabaseKey}`,
-          'Prefer': 'return=minimal'
-        },
+        headers: { 'Content-Type': 'application/json', 'apikey': supabaseKey, 'Authorization': `Bearer ${supabaseKey}`, 'Prefer': 'return=minimal' },
         body: JSON.stringify(finalData)
       });
       
-      console.log('Response status:', response.status);
-      
       if (response.ok) {
         console.log('=== SUPABASE POST: Pending saved ===');
+        
+        const adminEmail = process.env.ADMIN_EMAIL || 'drkamel17@gmail.com';
+        console.log('[DEBUG] Envoi email notification a:', adminEmail);
+        
+        const emailResult = await sendResendEmail(
+          adminEmail,
+          `Nouvelle ordonnance en attente - ${username}`,
+          'Ordonnance',
+          username,
+          null,
+          'https://ordonnances-sur-web.vercel.app/admin.html',
+          'https://certificats-medicaux.vercel.app/admin.html'
+        );
+        
+        console.log('[DEBUG] Resultat email:', emailResult);
+        
         return new Response(JSON.stringify({ 
           success: true, 
           message: 'pending',
@@ -277,28 +272,15 @@ export async function POST(request) {
       }
       
       const error = await response.text();
-      console.log('Erreur:', error);
       return new Response(JSON.stringify({ success: false, message: error }), { status: 500, headers: { 'Content-Type': 'application/json' } });
     }
     
-    // Avec mot de passe → sauvegarder directement (confirmed)
+    // Avec mot de passe → sauvegarder directement
     if (password === writePassword) {
-      console.log('Sauvegarde confirmed avec mot de passe');
-      
       const response = await fetch(`${supabaseUrl}/rest/v1/ordonnances?id=eq.default`, {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': supabaseKey,
-          'Authorization': `Bearer ${supabaseKey}`,
-          'Prefer': 'return=minimal'
-        },
-        body: JSON.stringify({
-          data: data,
-          status: 'confirmed',
-          suggested_by: null,
-          updated_at: new Date().toISOString()
-        })
+        headers: { 'Content-Type': 'application/json', 'apikey': supabaseKey, 'Authorization': `Bearer ${supabaseKey}`, 'Prefer': 'return=minimal' },
+        body: JSON.stringify({ data: data, status: 'confirmed', suggested_by: null, updated_at: new Date().toISOString() })
       });
       
       if (response.ok) {
@@ -309,11 +291,7 @@ export async function POST(request) {
       return new Response(JSON.stringify({ success: false, message: error }), { status: response.status, headers: { 'Content-Type': 'application/json' } });
     }
     
-    return new Response(JSON.stringify({ 
-      success: false, 
-      message: 'Mot de passe incorrect ou nom d\'utilisateur requis',
-      requiresPassword: true
-    }), { status: 401, headers: { 'Content-Type': 'application/json' } });
+    return new Response(JSON.stringify({ success: false, message: 'Mot de passe incorrect ou nom d\'utilisateur requis', requiresPassword: true }), { status: 401, headers: { 'Content-Type': 'application/json' } });
     
   } catch (error) {
     console.log('=== SUPABASE POST: Erreur ===', error.message);
@@ -334,68 +312,33 @@ export async function GET(request) {
       return new Response(JSON.stringify({ success: false, message: 'Supabase config not set' }), { status: 400, headers: { 'Content-Type': 'application/json' } });
     }
     
-    // Demander pending (pour admin) - récupérer toutes les lignes avec status=pending
     if (pending === 'true') {
-      console.log('Chargement pending...');
-      
       const response = await fetch(`${supabaseUrl}/rest/v1/ordonnances?status=eq.pending`, {
         method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': supabaseKey,
-          'Authorization': `Bearer ${supabaseKey}`
-        }
+        headers: { 'Content-Type': 'application/json', 'apikey': supabaseKey, 'Authorization': `Bearer ${supabaseKey}` }
       });
       
       if (response.ok) {
         const result = await response.json();
-        console.log('Pending ordonnances:', result.length);
-        
-        // Renvoyer chaque utilisateur avec ses données
-        const usersWithData = result.map(row => ({
-          id: row.id,
-          suggested_by: row.suggested_by,
-          data: row.data || {}
-        }));
-        
-        return new Response(JSON.stringify({ 
-          success: true, 
-          users: usersWithData
-        }), { headers: { 'Content-Type': 'application/json' } });
+        const usersWithData = result.map(row => ({ id: row.id, suggested_by: row.suggested_by, data: row.data || {} }));
+        return new Response(JSON.stringify({ success: true, users: usersWithData }), { headers: { 'Content-Type': 'application/json' } });
       }
       
       return new Response(JSON.stringify({ success: false, message: 'Erreur' }), { status: 500, headers: { 'Content-Type': 'application/json' } });
     }
     
-    // Chargement normal (confirmed seulement)
-    console.log('Tentative de chargement depuis Supabase...');
-    
     const response = await fetch(`${supabaseUrl}/rest/v1/ordonnances?id=eq.default`, {
       method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': supabaseKey,
-        'Authorization': `Bearer ${supabaseKey}`
-      }
+      headers: { 'Content-Type': 'application/json', 'apikey': supabaseKey, 'Authorization': `Bearer ${supabaseKey}` }
     });
-    
-    console.log('Response status:', response.status);
     
     if (response.ok) {
       const result = await response.json();
-      console.log('Donnees recues:', result.length, 'lignes');
-      console.log('=== SUPABASE GET: Succes ===');
-      
-      // Les données de `id=default` sont déjà les données confirmées
       let data = {};
       if (result.length > 0 && result[0].data) {
         data = result[0].data;
       }
-      
-      return new Response(JSON.stringify({ 
-        success: true, 
-        data: data
-      }), { headers: { 'Content-Type': 'application/json' } });
+      return new Response(JSON.stringify({ success: true, data: data }), { headers: { 'Content-Type': 'application/json' } });
     } else {
       const error = await response.text();
       return new Response(JSON.stringify({ success: false, message: error }), { status: response.status, headers: { 'Content-Type': 'application/json' } });
