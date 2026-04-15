@@ -193,10 +193,17 @@
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <i class="fas fa-user-doctor"></i>
-            <h1>Solution Médicale Intégrée</h1>
-            <p class="subtitle">Espace professionnel dédié à la gestion documentaire et clinique du praticien.</p>
+<div class="header" style="display: flex; align-items: center; justify-content: center; gap: 30px; flex-wrap: wrap;">
+            <div style="text-align: center;">
+                <i class="fas fa-user-doctor"></i>
+                <h1>Solution Médicale Intégrée</h1>
+                <p class="subtitle">Espace professionnel dédié à la gestion documentaire et clinique du praticien.</p>
+            </div>
+            <a href="https://certificats-medicaux.vercel.app" target="_blank">
+                <img src="qr-main.png" 
+                     alt="QR Code" 
+                     style="border: 3px solid #2563eb; border-radius: 10px; padding: 5px; width: 120px; height: 120px;">
+            </a>
         </div>
         
         <div class="buttons-grid">
@@ -230,9 +237,12 @@
                 <span>Médicaments Dz</span>
             </a>
             
-            <a href="ordonnance type/ord_type.html" class="cta-button btn-type" target="_blank">
+<a href="ordonnance type/ord_type.html" class="cta-button btn-type" target="_blank" style="position: relative;">
                 <i class="fas fa-notes-medical"></i>
                 <span>Ordonnance Type</span>
+                <img src="qr-ord-type.png" 
+                     alt="QR" 
+                     style="position: absolute; top: 8px; right: 8px; border-radius: 4px; border: 2px solid #2563eb; width: 50px; height: 50px;">
             </a>
             
             <a href="aide.html" class="cta-button btn-guide" target="_blank">
