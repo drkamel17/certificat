@@ -321,11 +321,18 @@
         })
         .catch(error => console.error('Erreur chargement index:', error));
     
+    // Fonction de normalisation (supprime accents + minuscules)
+    function normalizeText(text) {
+        return text.toLowerCase()
+                   .normalize('NFD')
+                   .replace(/[\u0300-\u036f]/g, '');
+    }
+    
     const searchInput = document.getElementById('searchInput');
     const searchResults = document.getElementById('searchResults');
     
     searchInput.addEventListener('input', function() {
-        const query = this.value.toLowerCase().trim();
+        const query = this.value.trim();
         
         if (query.length < 2) {
             searchResults.classList.remove('active');
@@ -333,8 +340,10 @@
             return;
         }
         
+        const normalizedQuery = normalizeText(query);
+        
         const results = pages.filter(page => 
-            page.title.toLowerCase().includes(query)
+            normalizeText(page.title).includes(normalizedQuery)
         ).slice(0, 20);
         
         if (results.length === 0) {

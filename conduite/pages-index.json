@@ -1,16 +1,16 @@
 [
   {
-    "title": "AbcèS Dentaire",
-    "path": "orl/abcès-dentaire.html",
-    "specialty": "orl"
-  },
-  {
     "title": "Abces Paroi",
     "path": "gynecologie/abces-paroi.html",
     "specialty": "gynecologie"
   },
   {
-    "title": "AbcèS PéRianal",
+    "title": "Abcès Dentaire",
+    "path": "orl/abcès-dentaire.html",
+    "specialty": "orl"
+  },
+  {
+    "title": "Abcès Périanal",
     "path": "gastrologie/abcès-périanal.html",
     "specialty": "gastrologie"
   },
@@ -185,7 +185,7 @@
     "specialty": "reanimation"
   },
   {
-    "title": "Arthrite JuvéNile",
+    "title": "Arthrite Juvénile",
     "path": "pediatrie/arthrite-juvénile.html",
     "specialty": "pediatrie"
   },
@@ -490,7 +490,7 @@
     "specialty": "dermatologie"
   },
   {
-    "title": "Colique HéPatique",
+    "title": "Colique Hépatique",
     "path": "gastrologie/colique-hépatique.html",
     "specialty": "gastrologie"
   },
@@ -630,7 +630,7 @@
     "specialty": "ordonnances"
   },
   {
-    "title": "Crise HéMorroïDaire",
+    "title": "Crise Hémorroïdaire",
     "path": "gastrologie/crise-hémorroïdaire.html",
     "specialty": "gastrologie"
   },
@@ -710,16 +710,6 @@
     "specialty": "ordonnances"
   },
   {
-    "title": "DéShydration",
-    "path": "pediatrie/déshydration.html",
-    "specialty": "pediatrie"
-  },
-  {
-    "title": "DéTresse Respiratoire",
-    "path": "pediatrie/détresse-respiratoire.html",
-    "specialty": "pediatrie"
-  },
-  {
     "title": "Dexamethasone",
     "path": "medicaments-urgence/dexamethasone.html",
     "specialty": "medicaments-urgence"
@@ -755,7 +745,7 @@
     "specialty": "ordonnances"
   },
   {
-    "title": "DiarrhéEs Aigues",
+    "title": "Diarrhées Aigues",
     "path": "gastrologie/diarrhées-aigues.html",
     "specialty": "gastrologie"
   },
@@ -865,6 +855,16 @@
     "specialty": "cat-consultation"
   },
   {
+    "title": "Déshydration",
+    "path": "pediatrie/déshydration.html",
+    "specialty": "pediatrie"
+  },
+  {
+    "title": "Détresse Respiratoire",
+    "path": "pediatrie/détresse-respiratoire.html",
+    "specialty": "pediatrie"
+  },
+  {
     "title": "Eclampsie",
     "path": "gynecologie/eclampsie.html",
     "specialty": "gynecologie"
@@ -923,11 +923,6 @@
     "title": "Entorse",
     "path": "ordonnances/entorse.html",
     "specialty": "ordonnances"
-  },
-  {
-    "title": "éNuréSie",
-    "path": "pediatrie/énurésie.html",
-    "specialty": "pediatrie"
   },
   {
     "title": "Ephedrine",
@@ -990,11 +985,6 @@
     "specialty": "gynecologie"
   },
   {
-    "title": "FièVre",
-    "path": "pediatrie/fièvre.html",
-    "specialty": "pediatrie"
-  },
-  {
     "title": "Fievre Boutonneuse",
     "path": "infectiologie/fievre-boutonneuse.html",
     "specialty": "infectiologie"
@@ -1008,6 +998,11 @@
     "title": "Fissures",
     "path": "dermatologie/fissures.html",
     "specialty": "dermatologie"
+  },
+  {
+    "title": "Fièvre",
+    "path": "pediatrie/fièvre.html",
+    "specialty": "pediatrie"
   },
   {
     "title": "Flagyl",
@@ -1095,12 +1090,12 @@
     "specialty": "cat-consultation"
   },
   {
-    "title": "GastroentéRite",
+    "title": "Gastroentérite",
     "path": "gastrologie/gastroentérite.html",
     "specialty": "gastrologie"
   },
   {
-    "title": "Gaz BéBé",
+    "title": "Gaz Bébé",
     "path": "pediatrie/gaz-bébé.html",
     "specialty": "pediatrie"
   },
@@ -1185,11 +1180,6 @@
     "specialty": "medicaments-urgence"
   },
   {
-    "title": "HéPatites",
-    "path": "gastrologie/hépatites.html",
-    "specialty": "gastrologie"
-  },
-  {
     "title": "Hernie Discale",
     "path": "neurologie/hernie-discale.html",
     "specialty": "neurologie"
@@ -1245,14 +1235,14 @@
     "specialty": "gynecologie"
   },
   {
-    "title": "HydrocèLe",
-    "path": "pediatrie/hydrocèle.html",
-    "specialty": "pediatrie"
-  },
-  {
     "title": "Hydrocortisone",
     "path": "medicaments-urgence/hydrocortisone.html",
     "specialty": "medicaments-urgence"
+  },
+  {
+    "title": "Hydrocèle",
+    "path": "pediatrie/hydrocèle.html",
+    "specialty": "pediatrie"
   },
   {
     "title": "Hypercholesterolemie",
@@ -1315,7 +1305,7 @@
     "specialty": "endocrinologie"
   },
   {
-    "title": "HypoglycéMie",
+    "title": "Hypoglycémie",
     "path": "pediatrie/hypoglycémie.html",
     "specialty": "pediatrie"
   },
@@ -1335,7 +1325,12 @@
     "specialty": "endocrinologie"
   },
   {
-    "title": "IctèRe NéOnatal",
+    "title": "Hépatites",
+    "path": "gastrologie/hépatites.html",
+    "specialty": "gastrologie"
+  },
+  {
+    "title": "Ictère Néonatal",
     "path": "pediatrie/ictère-néonatal.html",
     "specialty": "pediatrie"
   },
@@ -1750,7 +1745,7 @@
     "specialty": "dermatologie"
   },
   {
-    "title": "PancréAtite",
+    "title": "Pancréatite",
     "path": "gastrologie/pancréatite.html",
     "specialty": "gastrologie"
   },
@@ -1783,11 +1778,6 @@
     "title": "Perichondrite",
     "path": "orl/perichondrite.html",
     "specialty": "orl"
-  },
-  {
-    "title": "PéRitonite",
-    "path": "gastrologie/péritonite.html",
-    "specialty": "gastrologie"
   },
   {
     "title": "Pfla",
@@ -1870,7 +1860,7 @@
     "specialty": "urologie"
   },
   {
-    "title": "Pna PéDiatrie",
+    "title": "Pna Pédiatrie",
     "path": "pediatrie/pna-pédiatrie.html",
     "specialty": "pediatrie"
   },
@@ -1890,7 +1880,7 @@
     "specialty": "reanimation"
   },
   {
-    "title": "PousséE Dentaire",
+    "title": "Poussée Dentaire",
     "path": "pediatrie/poussée-dentaire.html",
     "specialty": "pediatrie"
   },
@@ -1938,6 +1928,11 @@
     "title": "Purpura Rhumatoide",
     "path": "medecine-interne/purpura-rhumatoide.html",
     "specialty": "medecine-interne"
+  },
+  {
+    "title": "Péritonite",
+    "path": "gastrologie/péritonite.html",
+    "specialty": "gastrologie"
   },
   {
     "title": "Qrs",
@@ -2015,7 +2010,7 @@
     "specialty": "infectiologie"
   },
   {
-    "title": "RubéOle",
+    "title": "Rubéole",
     "path": "pediatrie/rubéole.html",
     "specialty": "pediatrie"
   },
@@ -2120,7 +2115,7 @@
     "specialty": "gynecologie"
   },
   {
-    "title": "SuppléMentation Vitamine D",
+    "title": "Supplémentation Vitamine D",
     "path": "pediatrie/supplémentation-vitamine-d.html",
     "specialty": "pediatrie"
   },
@@ -2335,7 +2330,7 @@
     "specialty": "infectiologie"
   },
   {
-    "title": "Viroses PéDiatrie",
+    "title": "Viroses Pédiatrie",
     "path": "pediatrie/viroses-pédiatrie.html",
     "specialty": "pediatrie"
   },
@@ -2373,5 +2368,10 @@
     "title": "Zovirax",
     "path": "medicaments-urgence/zovirax.html",
     "specialty": "medicaments-urgence"
+  },
+  {
+    "title": "Énurésie",
+    "path": "pediatrie/énurésie.html",
+    "specialty": "pediatrie"
   }
 ]
