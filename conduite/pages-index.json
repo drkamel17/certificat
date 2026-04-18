@@ -1605,16 +1605,6 @@
     "specialty": "medicaments-urgence"
   },
   {
-    "title": "Morsure Animal",
-    "path": "infectiologie/morsure-animal.html",
-    "specialty": "infectiologie"
-  },
-  {
-    "title": "Morsure Homme",
-    "path": "infectiologie/morsure-homme.html",
-    "specialty": "infectiologie"
-  },
-  {
     "title": "Morsure Serpent",
     "path": "infectiologie/morsure-serpent.html",
     "specialty": "infectiologie"
@@ -1978,6 +1968,11 @@
     "title": "Rhinopharyngite",
     "path": "orl/rhinopharyngite.html",
     "specialty": "orl"
+  },
+  {
+    "title": "Risque Rabique",
+    "path": "infectiologie/risque-rabique.html",
+    "specialty": "infectiologie"
   },
   {
     "title": "Rongeurs",
