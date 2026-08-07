@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>Gestion des médicaments et ordonnances types</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <script src="browser-polyfill.js"></script>
   <style>
     body {
@@ -48,6 +49,18 @@
     }
     .btn-warning:hover {
       background-color: #e0a800;
+    }
+    .btn-cloud-export {
+      background-color: #6f42c1;
+    }
+    .btn-cloud-export:hover {
+      background-color: #5a32a3;
+    }
+    .btn-cloud-import {
+      background-color: #e83e8c;
+    }
+    .btn-cloud-import:hover {
+      background-color: #c72e75;
     }
     #message {
       margin-top: 15px;
@@ -119,7 +132,74 @@
       margin-right: 10px;
     }
     .hidden {
+      display: none !important;
+    }
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .modal-overlay.hidden {
       display: none;
+    }
+    .modal {
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      max-width: 450px;
+      width: 90%;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+    }
+    .modal h3 {
+      margin-top: 0;
+    }
+    .modal .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .btn-provider {
+      flex: 1;
+      padding: 18px;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .btn-provider:hover {
+      opacity: 0.85;
+    }
+    .password-wrapper {
+      position: relative;
+    }
+    .password-wrapper input {
+      width: 100%;
+      padding-right: 40px;
+      box-sizing: border-box;
+    }
+    .password-toggle {
+      position: absolute;
+      right: 8px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #666;
+      font-size: 16px;
+      padding: 4px;
+    }
+    .password-toggle:hover {
+      color: #333;
     }
   </style>
 </head>
@@ -196,10 +276,94 @@
     <button id="btn-importer-ordonnances-archivees" style="background-color: #17a2b8;">
       <i class="fas fa-upload"></i> Importer les ordonnances archivées
     </button>
+    <button id="exporter-ordonnances-cloud" class="btn-cloud-export" style="margin-left: 10px;">
+      <i class="fas fa-cloud-upload-alt"></i> Exporter dans cloud
+    </button>
+    <button id="importer-ordonnances-cloud" class="btn-cloud-import">
+      <i class="fas fa-cloud-download-alt"></i> Importer de cloud
+    </button>
   </div>
 
   <div id="infos-ordonnances-archivees" style="margin-top: 15px; color: #666; font-style: italic;">
     Ces ordonnances sont sauvegardées dans le localStorage de votre navigateur.
+    <span style="color: #6f42c1;">(Compatible Mega.nz et Seafile Cloud)</span>
+  </div>
+
+  <!-- Modal : choix du service cloud -->
+  <div id="modal-choix-provider" class="modal-overlay hidden">
+    <div class="modal">
+      <h3>Choix du service cloud</h3>
+      <p id="modal-provider-message"></p>
+      <div style="display: flex; gap: 10px; margin-top: 15px;">
+        <button id="btn-provider-mega" class="btn-provider" style="background-color: #d93025;">
+          <i class="fas fa-cloud-upload-alt"></i> Mega.nz
+        </button>
+        <button id="btn-provider-seafile" class="btn-provider" style="background-color: #2b6cb0;">
+          <i class="fas fa-cloud"></i> Seafile
+        </button>
+      </div>
+      <div class="modal-actions">
+        <button id="btn-provider-annuler" class="btn-secondary">Annuler</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal : identifiants Seafile -->
+  <div id="modal-seafile" class="modal-overlay hidden">
+    <div class="modal">
+      <h3>Seafile Cloud</h3>
+      <div class="form-group">
+        <label for="seafile-email">Email :</label>
+        <input type="text" id="seafile-email" placeholder="votre@email.com" />
+      </div>
+      <div class="form-group">
+        <label for="seafile-password">Mot de passe :</label>
+        <div class="password-wrapper">
+          <input type="password" id="seafile-password" placeholder="Mot de passe" />
+          <button type="button" id="toggle-seafile-password" class="password-toggle" title="Afficher / Masquer">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+      </div>
+      <div class="form-group" style="display: flex; align-items: center;">
+        <input type="checkbox" id="seafile-remember" style="width: auto; margin-right: 8px;" />
+        <label for="seafile-remember" style="margin: 0; font-weight: normal;">Se souvenir des identifiants</label>
+      </div>
+      <div class="modal-actions">
+        <button id="btn-seafile-ok" class="btn-success">Continuer</button>
+        <button id="btn-seafile-deconnecter" class="btn-danger">Se déconnecter</button>
+        <button id="btn-seafile-annuler" class="btn-secondary">Annuler</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal : identifiants Mega.nz -->
+  <div id="modal-mega" class="modal-overlay hidden">
+    <div class="modal">
+      <h3>Mega.nz</h3>
+      <div class="form-group">
+        <label for="mega-email">Email :</label>
+        <input type="text" id="mega-email" placeholder="votre@email.com" />
+      </div>
+      <div class="form-group">
+        <label for="mega-password">Mot de passe :</label>
+        <div class="password-wrapper">
+          <input type="password" id="mega-password" placeholder="Mot de passe" />
+          <button type="button" id="toggle-mega-password" class="password-toggle" title="Afficher / Masquer">
+            <i class="fas fa-eye"></i>
+          </button>
+        </div>
+      </div>
+      <div class="form-group" style="display: flex; align-items: center;">
+        <input type="checkbox" id="mega-remember" style="width: auto; margin-right: 8px;" />
+        <label for="mega-remember" style="margin: 0; font-weight: normal;">Se souvenir des identifiants</label>
+      </div>
+      <div class="modal-actions">
+        <button id="btn-mega-ok" class="btn-success">Continuer</button>
+        <button id="btn-mega-deconnecter" class="btn-danger">Se déconnecter</button>
+        <button id="btn-mega-annuler" class="btn-secondary">Annuler</button>
+      </div>
+    </div>
   </div>
 
   <div id="firefox-warning" style="margin-top: 15px; padding: 10px; background: #fff3cd; color: #856404; border-radius: 5px; border-left: 3px solid #ffc107; display: none;">
