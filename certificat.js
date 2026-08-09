@@ -22,6 +22,14 @@ function sauvegarderModifications() {
     });
 }
 
+// Convertir une date ISO (AAAA-MM-JJ, format des inputs date) en format français (JJ/MM/AAAA)
+function convertirDateFr(isoDate) {
+    if (!isoDate) return '';
+    const m = isoDate.match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (m) return `${m[3]}/${m[2]}/${m[1]}`;
+    return isoDate;
+}
+
 // Fonction pour charger les données
 function loadData() {
     const polyclinique = localStorage.getItem('polyclinique') || '';
@@ -29,11 +37,25 @@ function loadData() {
     const docteur = localStorage.getItem('docteur') || '';
 
     // Charger les données du patient
-    const patientNomPrenom = localStorage.getItem('patientNomPrenom') || '';
-    const patientAge = localStorage.getItem('patientAge') || '';
-    const patientDateNaissance = localStorage.getItem('patientDateNaissance') || '';
-    const dateCertificat = localStorage.getItem('dateCertificat') || '';
-    const patientNumero = localStorage.getItem('patientNumero') || '';
+    let patientNomPrenom = localStorage.getItem('patientNomPrenom') || '';
+    let patientAge = localStorage.getItem('patientAge') || '';
+    let patientDateNaissance = localStorage.getItem('patientDateNaissance') || '';
+    let dateCertificat = localStorage.getItem('dateCertificat') || '';
+    let patientNumero = localStorage.getItem('patientNumero') || '';
+
+    // Pré-remplir par défaut depuis les valeurs saisies dans ord.html
+    const nomOrd = localStorage.getItem('nom') || '';
+    const prenomOrd = localStorage.getItem('prenom') || '';
+    const ageOrd = localStorage.getItem('age') || '';
+    const dateNaissanceOrd = localStorage.getItem('dateNaissance') || '';
+    const numeroOrd = localStorage.getItem('numero') || '';
+    const dateConsultationOrd = localStorage.getItem('date-consultation') || '';
+
+    if (nomOrd || prenomOrd) patientNomPrenom = `${nomOrd} ${prenomOrd}`.trim();
+    if (ageOrd) patientAge = ageOrd;
+    if (dateNaissanceOrd) patientDateNaissance = convertirDateFr(dateNaissanceOrd);
+    if (numeroOrd) patientNumero = numeroOrd;
+    if (dateConsultationOrd) dateCertificat = convertirDateFr(dateConsultationOrd);
 
     document.getElementById('polyclinique').value = polyclinique;
     document.getElementById('polyclinique-ar').value = polycliniqueAr;
@@ -44,7 +66,12 @@ function loadData() {
     document.getElementById('patientAge').value = patientAge;
     document.getElementById('patientDateNaissance').value = patientDateNaissance;
     document.getElementById('dateCertificat').value = dateCertificat;
-    document.getElementById('patientNumero').value = patientNumero;
+
+    // Vérifier si l'élément patientNumero existe avant de lui assigner une valeur
+    const patientNumeroElement = document.getElementById('patientNumero');
+    if (patientNumeroElement) {
+        patientNumeroElement.value = patientNumero;
+    }
 
     // Si aucune date n'est définie, utiliser la date du jour
     if (!dateCertificat) {
@@ -54,12 +81,6 @@ function loadData() {
         const year = today.getFullYear();
         const formattedDate = `${day}/${month}/${year}`;
         document.getElementById('dateCertificat').value = formattedDate;
-    }
-    
-    // Vérifier si l'élément patientNumero existe avant de lui assigner une valeur
-    const patientNumeroElement = document.getElementById('patientNumero');
-    if (patientNumeroElement) {
-        patientNumeroElement.value = patientNumero;
     }
 
     // Initialiser l'état des boutons de format
@@ -12214,6 +12235,350 @@ ${enteteContent}
                 printButton.addEventListener('click', function () {
                     newWindow.print();
                 });
+            }
+        };
+    } else {
+        console.log("Popup bloquée par le navigateur.");
+    }
+}
+
+// ===================== Congé Maternité =====================
+
+// Fonction pour capitaliser automatiquement les noms et prénoms
+function capitalizeNames(text) {
+    if (!text) return text;
+    return text.toLowerCase().replace(/\b\w/g, letter => letter.toUpperCase());
+}
+
+// Récupérer les informations du patient
+function extractInfo() {
+    const nom = capitalizeNames(localStorage.getItem("nom") || "");
+    const prenom = capitalizeNames(localStorage.getItem("prenom") || "");
+    const dob = localStorage.getItem("dateNaissance") || "";
+    const numero = localStorage.getItem("numero") || "";
+    return { nom, prenom, dob, numero };
+}
+
+// Conversion d'un nombre en toutes lettres (français)
+function nombreEnLettres(n) {
+    n = parseInt(n, 10);
+    if (isNaN(n)) return '';
+    if (n === 0) return 'zéro';
+    const unite = ['', 'un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf', 'dix', 'onze', 'douze', 'treize', 'quatorze', 'quinze', 'seize', 'dix-sept', 'dix-huit', 'dix-neuf'];
+    const dizaine = ['', 'dix', 'vingt', 'trente', 'quarante', 'cinquante', 'soixante', 'soixante', 'quatre-vingt', 'quatre-vingt'];
+    const special = {
+        71: 'soixante et onze', 72: 'soixante-douze', 73: 'soixante-treize', 74: 'soixante-quatorze',
+        75: 'soixante-quinze', 76: 'soixante-seize', 77: 'soixante-dix-sept', 78: 'soixante-dix-huit',
+        79: 'soixante-dix-neuf', 81: 'quatre-vingt-un', 91: 'quatre-vingt-onze', 92: 'quatre-vingt-douze',
+        93: 'quatre-vingt-treize', 94: 'quatre-vingt-quatorze', 95: 'quatre-vingt-quinze',
+        96: 'quatre-vingt-seize', 97: 'quatre-vingt-dix-sept', 98: 'quatre-vingt-dix-huit', 99: 'quatre-vingt-dix-neuf'
+    };
+
+    function moinsDeCent(v) {
+        if (v < 20) return unite[v];
+        if (special[v]) return special[v];
+        const d = Math.floor(v / 10);
+        const u = v % 10;
+        if (d === 7) return 'soixante' + (u === 1 ? ' et ' : '-') + unite[10 + u];
+        if (d === 9) return 'quatre-vingt' + (u === 1 ? '-un' : '-' + unite[10 + u]);
+        if (u === 1 && d > 1) return dizaine[d] + ' et un';
+        if (u === 0) return d === 8 ? 'quatre-vingts' : dizaine[d];
+        return dizaine[d] + '-' + unite[u];
+    }
+
+    function troisChiffres(v) {
+        const c = Math.floor(v / 100);
+        const r = v % 100;
+        let res = '';
+        if (c > 0) {
+            res += c === 1 ? 'cent' : unite[c] + ' cent';
+            if (r === 0 && c > 1) res += 's';
+        }
+        if (r > 0) res += (res ? ' ' : '') + moinsDeCent(r);
+        return res;
+    }
+
+    if (n < 100) return moinsDeCent(n);
+    if (n < 1000) return troisChiffres(n);
+    const m = Math.floor(n / 1000);
+    const r = n % 1000;
+    let res = m === 1 ? 'mille' : troisChiffres(m) + ' mille';
+    if (r > 0) res += ' ' + troisChiffres(r);
+    return res;
+}
+
+// Fonction pour générer un certificat de congé de maternité
+function ouvrirCertificatMaternite() {
+    // Récupérer les informations du patient depuis les champs du formulaire certificat.html
+    const patientNomPrenom = document.getElementById('patientNomPrenom').value || '';
+    const patientAge = document.getElementById('patientAge').value || '';
+    const patientDateNaissance = document.getElementById('patientDateNaissance').value || '';
+    const dateCertificatInput = document.getElementById('dateCertificat').value || '';
+
+    // Extraire nom et prénom
+    const nomPrenomArray = patientNomPrenom.split(' ');
+    const nom = nomPrenomArray[nomPrenomArray.length - 1] || '';
+    const prenom = nomPrenomArray.slice(0, -1).join(' ') || '';
+
+    // Âge : utiliser le champ âge, sinon calculer depuis la date de naissance
+    let age = '';
+    const ageMatch = String(patientAge).match(/(\d+)/);
+    if (ageMatch) {
+        age = ageMatch[1];
+    } else if (patientDateNaissance) {
+        const parts = patientDateNaissance.split('/');
+        if (parts.length === 3) {
+            const birthDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+            if (!isNaN(birthDate.getTime())) {
+                const today = new Date();
+                let calculatedAge = today.getFullYear() - birthDate.getFullYear();
+                const monthDiff = today.getMonth() - birthDate.getMonth();
+                if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                    calculatedAge--;
+                }
+                age = String(calculatedAge);
+            }
+        }
+    }
+
+    // Date du certificat : utiliser le champ dateCertificat, sinon la date du jour
+    let dateCertificat = dateCertificatInput;
+    if (!dateCertificat || !dateCertificat.match(/^\d{2}\/\d{2}\/\d{4}$/)) {
+        const today = new Date();
+        const day = String(today.getDate()).padStart(2, '0');
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const year = today.getFullYear();
+        dateCertificat = `${day}/${month}/${year}`;
+    }
+
+    const polyclinique = localStorage.getItem('polyclinique') || "";
+    const polycliniqueAr = localStorage.getItem('polyclinique-ar') || "";
+    const docteur = localStorage.getItem('docteur') || "";
+
+    // Vérifier le format choisi
+    const avecEntete = localStorage.getItem('certificatFormat') === 'avecEntete';
+
+    let enteteContent = '';
+    if (avecEntete) {
+        enteteContent = generateHeader();
+    } else {
+        // Espace vide pour garder la meme mise en page
+        enteteContent = '<div style="height: 155px;"></div>';
+    }
+
+    const certificatContent = `
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CERTIFICAT DE CONGÉ DE MATERNITÉ</title>
+    <style>
+body {
+font-family: Arial, sans-serif;
+padding: 20px;
+background-color: #f9f9f9;
+}
+.certificat {
+background-color: white;
+border: 1px solid #ddd;
+padding: 20px;
+max-width: 600px;
+margin: 0 auto;
+margin-top: 60px;
+box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+h1 {
+text-align: center;
+color: #333;
+text-decoration: underline;
+font-size: 20px;
+}
+p {
+line-height: 1.5;
+color: #555;
+}
+.editable-field {
+border-bottom: 1px dashed #666;
+display: inline-block;
+min-width: 50px;
+min-height: 20px;
+padding: 2px 4px;
+margin: 0 3px;
+}
+.print-button {
+text-align: center;
+margin-top: 20px;
+}
+.print-button button {
+padding: 10px 20px;
+font-size: 16px;
+background-color: #007bff;
+color: white;
+border: none;
+border-radius: 5px;
+cursor: pointer;
+}
+.print-button button:hover {
+background-color: #0056b3;
+}
+@media print {
+@page {
+    size: A5;
+    margin: 0.2cm 0.2cm 0.2cm 0.2cm;
+}
+
+body {
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 10pt !important;
+    line-height: 1.2 !important;
+    background-color: white;
+}
+
+.certificat {
+    border: none;
+    box-shadow: none;
+    margin: 0 !important;
+    padding: 2px 8px !important;
+    max-width: 100% !important;
+}
+
+h1 {
+    font-size: 14pt !important;
+    margin: 5px 0 !important;
+    margin-top: 2cm !important;
+}
+
+input[type="text"],
+input[type="date"],
+input[type="number"],
+textarea {
+    border: none !important;
+    background: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    font-size: 9pt !important;
+}
+
+input[type="text"]:focus,
+input[type="date"]:focus,
+input[type="number"]:focus,
+textarea:focus {
+    border: none !important;
+    outline: none !important;
+}
+
+input#nbJours {
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
+    appearance: textfield;
+    border: none !important;
+    background: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+    text-align: center !important;
+    min-width: 20px !important;
+}
+
+input#nbJours::-webkit-inner-spin-button,
+input#nbJours::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input#nbJours::-moz-number-spin-box {
+    -moz-appearance: none;
+}
+
+.print-button {
+    display: none;
+}
+.editable-field, .editable-area {
+    border: none !important;
+}
+
+* {
+    margin-top: 0 !important;
+    margin-bottom: 2px !important;
+}
+
+p {
+    margin: 2px 0 !important;
+    font-size: 9pt !important;
+}
+}
+</style>
+</head>
+<body>
+${enteteContent}
+    <div class="certificat">
+        <h1>CERTIFICAT DE CONGÉ DE MATERNITÉ</h1>
+        <div class="contenu-certificat" style="margin-top: 1.5cm !important;">
+        <p>
+            Je soussigné, Dr <span class="editable-field" contenteditable="true" id="docteur">${docteur}</span>,
+            certifie avoir examiné ce jour la susnommée <span class="editable-field" contenteditable="true" style="min-width: 180px; display: inline-block;">${nom} ${prenom}</span>,
+            âgée de <span class="editable-field" contenteditable="true" style="min-width: 40px; display: inline-block;">${age}</span> ans,
+            déclare qu'elle nécessite d'un congé de maternité de <input type="number" id="nbJours" value="98" min="0" max="9999" style="min-width: 55px; text-align: center; border: 1px solid #ccc; border-radius: 4px; padding: 2px 4px;"> Jours <span id="nbJoursLettres" style="font-style: italic;">
+(Quatre-vingt-dix-huit jours)
+</span> à daté du
+            <span class="editable-field" contenteditable="true" style="min-width: 110px; display: inline-block;">${dateCertificat}</span>,
+            sauf complication.
+        </p>
+        
+        <p style="text-align: right; margin-top: 30px;">
+            Le <input type="text" id="dateCertificat" value="${dateCertificat}" style="width: 150px;">
+        </p>
+        <p style="text-align: right; margin-top: 30px;">
+            Dr <span style="font-weight: bold;">${docteur}</span>
+        </p>
+    </div>
+    <div class="print-button" style="display: flex; align-items: center; justify-content: center; gap: 15px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <label for="fontSize" style="font-size: 14px; margin: 0;">Taille du texte:</label>
+            <input type="number" id="fontSize" min="8" max="20" value="14" style="width: 60px; padding: 5px; border: 1px solid #bdbdbd; border-radius: 4px;">
+        </div>
+        <button id="printButton">Imprimer le Certificat</button>
+    </div>
+    
+    <script src="certificat-unified-font-size.js"></script>
+
+</body>
+</html>
+`;
+
+    var newWindow = window.open("", "_blank");
+    if (newWindow) {
+        newWindow.document.write(certificatContent);
+        newWindow.document.close();
+
+        // Attacher l'événement d'impression directement après la fermeture du document
+        newWindow.onload = function () {
+            const printButton = newWindow.document.getElementById('printButton');
+            if (printButton) {
+                printButton.addEventListener('click', function () {
+                    if (newWindow && !newWindow.closed) {
+                        newWindow.print();
+                    }
+                });
+            }
+
+            // Mettre à jour le nombre de jours en toutes lettres quand le chiffre change
+            const inputJours = newWindow.document.getElementById('nbJours');
+            const noteLettres = newWindow.document.getElementById('nbJoursLettres');
+            function majJoursEnLettres() {
+                if (!noteLettres) return;
+                const v = parseInt(inputJours.value, 10);
+                if (isNaN(v) || v < 0) {
+                    noteLettres.textContent = '( ... )';
+                    return;
+                }
+                const texte = nombreEnLettres(v);
+                noteLettres.textContent = '(' + texte.charAt(0).toUpperCase() + texte.slice(1) + ' jours)';
+            }
+            if (inputJours) {
+                inputJours.addEventListener('input', majJoursEnLettres);
+                inputJours.addEventListener('change', majJoursEnLettres);
             }
         };
     } else {
