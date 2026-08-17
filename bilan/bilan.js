@@ -34,6 +34,7 @@
         });
 
         document.getElementById('btnGenererDemande').addEventListener('click', imprimerDemande);
+        document.getElementById('notesBilan').addEventListener('input', saveState);
         loadBilanTypes();
 
         // Fermer le menu si on clique ailleurs
@@ -55,8 +56,8 @@
             if (e.key === 'Escape') closeSaveTypeModal();
         });
 
-        // Après fermeture de la page : tout réinitialiser
-        window.addEventListener('beforeunload', resetForm);
+        // Sauvegarder l'état avant fermeture
+        window.addEventListener('beforeunload', saveState);
     });
 
     // ── Format buttons ──
@@ -154,9 +155,10 @@
         document.getElementById('bilanInput').value = '';
         document.getElementById('autocompleteList').style.display = 'none';
         renderTags();
+        saveState();
     }
 
-    function removeExam(index) { selectedExams.splice(index, 1); renderTags(); }
+    function removeExam(index) { selectedExams.splice(index, 1); renderTags(); saveState(); }
 
     function renderTags() {
         var tagsArea = document.getElementById('tagsArea');
@@ -480,6 +482,16 @@
         } catch (e) { }
 
         window.print();
+    }
+
+    // ── Sauvegarder l'état ──
+    function saveState() {
+        try {
+            localStorage.setItem('demandeBilan', JSON.stringify({
+                exams: selectedExams,
+                notes: document.getElementById('notesBilan').value
+            }));
+        } catch (e) { }
     }
 
     // ── Réinitialiser après impression ──

@@ -123,7 +123,7 @@
   { "name": "Lipase", "cat": "Autres" },
   { "name": "Vitamine D (25-OH-D3)", "cat": "Autres" },
   { "name": "Vitamine B12", "cat": "Autres" },
-  { "name": "Acide folique (B9)", "cat": "Autres" },
+  { "name": "Acide folique", "cat": "Autres" },
   { "name": "Vitamine B1", "cat": "Autres" },
   { "name": "Vitamine B6", "cat": "Autres" },
   { "name": "Vitamine A", "cat": "Autres" },
@@ -161,7 +161,7 @@
   { "name": "Sérologie hépatite C", "cat": "Sérologie" },
   { "name": "Sérologie hépatite E", "cat": "Sérologie" },
   { "name": "Sérologie syphilis (TPHA/VDRL)", "cat": "Sérologie" },
-  { "name": "Sérologie Rubéole", "cat": "Sérologie" },
+  { "name": "Sérologie rubéole", "cat": "Sérologie" },
   { "name": "Sérologie Lyme", "cat": "Sérologie" },
   { "name": "Sérologie Parvovirus B19", "cat": "Sérologie" },
   { "name": "AgHBs", "cat": "Sérologie" },
@@ -176,7 +176,7 @@
   { "name": "Anticorps anti-CCP", "cat": "Auto-immunité" },
   { "name": "ANCA", "cat": "Auto-immunité" },
   { "name": "Anticorps anti-transglutaminase IgA", "cat": "Auto-immunité" },
-  { "name": "Complement C3", "cat": "Auto-immunité" },
-  { "name": "Complement C4", "cat": "Auto-immunité" },
+  { "name": "Complément C3", "cat": "Auto-immunité" },
+  { "name": "Complément C4", "cat": "Auto-immunité" },
   { "name": "CH50", "cat": "Auto-immunité" }
 ]
