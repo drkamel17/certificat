@@ -117,6 +117,10 @@
       "src": "conduite/**/*",
       "use": "@vercel/static"
     },
+	{
+      "src": "bilan/**/*",
+      "use": "@vercel/static"
+    },
     {
       "src": "api/config.js",
       "use": "@vercel/node"
@@ -166,6 +170,10 @@
     {
       "src": "/score/(.*)",
       "dest": "/score/$1"
+    },
+	{
+      "src": "/bilan/(.*)",
+      "dest": "/bilan/$1"
     },
     {
       "src": "/medicamentdz/(.*)",
