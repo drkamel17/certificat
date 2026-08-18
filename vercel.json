@@ -122,19 +122,7 @@
       "use": "@vercel/static"
     },
     {
-      "src": "api/config.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "api/save-supabase.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "api/commentaires.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "api/send-email.js",
+      "src": "api/**/*.js",
       "use": "@vercel/node"
     }
   ],
@@ -218,6 +206,14 @@
     {
       "src": "/api/recuperer_donnees",
       "dest": "/api/recuperer_donnees.js"
+    },
+    {
+      "src": "/api/brevo",
+      "dest": "/api/brevo.js"
+    },
+    {
+      "src": "/api/archives",
+      "dest": "/api/archives.js"
     },
     {
       "src": "/",
