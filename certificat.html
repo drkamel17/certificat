@@ -584,6 +584,12 @@
             </button>
         </div>
 
+        <!-- PANNEAU ADMIN - Gestion des termes juridiques -->
+        <div style="margin-top: 25px; border-top: 2px solid #e0e0e0; padding-top: 15px; text-align:center;">
+            <button onclick="window.open('admin-termes.html', '_blank')" type="button" style="display:inline-flex; align-items:center; justify-content:center; gap:8px; padding:10px 20px; background-color:#546e7a; color:white; border:none; border-radius:5px; cursor:pointer; font-size:0.9em; width:auto;">
+                <i class="fas fa-cogs"></i> Gestion des termes juridiques
+            </button>
+        </div>
     </div>
 
     <script src="api_auth.js"></script>
@@ -592,6 +598,15 @@
     <script src="hide-print-buttons.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialiser les termes juridiques dans localStorage si absent
+            if (!localStorage.getItem('termesJuridiques')) {
+                fetch('termeslegale.json').then(function(r) { return r.json(); }).then(function(json) {
+                    var data = json.certificat_medico_legal_cbv || json;
+                    localStorage.setItem('termesJuridiquesDefaut', JSON.stringify(data));
+                    localStorage.setItem('termesJuridiques', JSON.stringify(data));
+                }).catch(function() {});
+            }
+
             const today = new Date();
             const day = String(today.getDate()).padStart(2, '0');
             const month = String(today.getMonth() + 1).padStart(2, '0');

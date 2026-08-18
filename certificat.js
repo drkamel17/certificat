@@ -1728,10 +1728,10 @@ function genererChronique() {
                 display: none !important;
             }
 
-            .editable-field, .editable-area {
-                border: none !important;
-            }
-        }
+.editable-field, .editable-area {
+border: none !important;
+}
+}
 
         /* Masquer les contrôles d'impression et de sauvegarde */
         .print-button div[style*="align-items: center"],
@@ -4565,6 +4565,9 @@ display: none;
 .editable-field, .editable-area {
 border: none !important;
 }
+#btnCorriger, #correctionStatus, #correctionsContainer {
+display: none !important;
+}
 }
 </style>
 </head>
@@ -4608,11 +4611,21 @@ ${enteteContent}
     <input type="text" id="descriptionAccident" placeholder="" style="width: 180px; margin: 5px 0;" value=" ">
     </p>
         </p>
-		<p>
-              <textarea placeholder=" " style="width: 580px;height: 100px;"></textarea><br>
-			   ce certificat est établi et remis en mains propre de l'interesse pour
+		<div>
+              <div id="autocompleteWrapper" style="position:relative;display:inline-block;">
+                <textarea id="texteDescription" lang="fr" spellcheck="true" placeholder="Décrivez ici l'état du patient..." style="width: 580px;height: 100px;"></textarea>
+                <div id="autocompleteDropdown" style="display:none;position:absolute;left:0;top:100%;background:#fff;border:1px solid #2196F3;border-radius:4px;max-height:180px;overflow-y:auto;z-index:9999;width:580px;box-shadow:0 4px 12px rgba(0,0,0,0.15);"></div>
+              </div><br>
+              <div style="margin-top: 5px;">
+                <button id="btnCorriger" type="button" style="padding: 5px 12px; font-size: 12px; background-color: #2196F3; color: white; border: none; border-radius: 4px; cursor: pointer; margin-bottom: 5px;">
+                  <i class="fas fa-spell-check"></i> Corriger l'orthographe
+                </button>
+                <span id="correctionStatus" style="font-size: 12px; color: #666; margin-left: 8px;"></span>
+              </div>
+              <div id="correctionsContainer" style="margin-top: 5px; max-height: 200px; overflow-y: auto;"></div>
+			   ce certificat est établi et remis en mains propre de l'intéressé(e) pour
  faire valoir ce que de droit .
-        </p>
+        </div>
         <p style="text-align: right; margin-top: 30px;">
             Dont certificat<br>
             <span class="docteur" style="font-weight: bold;">Dr ${docteur}</span>
@@ -4627,7 +4640,6 @@ ${enteteContent}
 		<button id="saveButtoncbv">Sauvegarder</button>
     </div>
     
-    <script src="certificat-unified-font-size.js"></script>
 
 </body>
 </html>
@@ -4640,16 +4652,170 @@ ${enteteContent}
 
         // Attacher l'événement d'impression directement après la fermeture du document
         newWindow.onload = function () {
-            const printButton = newWindow.document.getElementById('printButton');
-            if (printButton) {
-                printButton.addEventListener('click', function () {
-                    newWindow.print();
-                    
+            var doc = newWindow.document;
+
+            // --- CHARGER LE SCRIPT FONT SIZE ---
+            var fsScript = doc.createElement('script');
+            fsScript.src = 'certificat-unified-font-size.js';
+            doc.head.appendChild(fsScript);
+
+            // --- CHARGER LES TERMES DEPUIS localStorage ---
+            var TERMES = [];
+            try {
+                var termesData = localStorage.getItem('termesJuridiques');
+                if (termesData) {
+                    var parsed = JSON.parse(termesData);
+                    for (var key in parsed) {
+                        if (parsed.hasOwnProperty(key) && Array.isArray(parsed[key])) {
+                            TERMES = TERMES.concat(parsed[key]);
+                        }
+                    }
+                }
+            } catch(e) {}
+
+            var textarea = doc.getElementById('texteDescription');
+            var btnCorriger = doc.getElementById('btnCorriger');
+            var statusEl = doc.getElementById('correctionStatus');
+            var correctionsContainer = doc.getElementById('correctionsContainer');
+            var dropdown = doc.getElementById('autocompleteDropdown');
+
+            if (textarea && dropdown) {
+                textarea.addEventListener('input', function() {
+                    var cursorPos = textarea.selectionStart;
+                    var textBefore = textarea.value.substring(0, cursorPos);
+                    var words = textBefore.split(/[\s\n]/);
+                    var currentWord = words[words.length - 1];
+
+                    if (currentWord.length < 2) { dropdown.style.display = 'none'; return; }
+
+                    var search = currentWord.toLowerCase();
+                    var matches = TERMES.filter(function(t) {
+                        return t.toLowerCase().indexOf(search) !== -1;
+                    }).slice(0, 8);
+
+                    if (matches.length === 0) { dropdown.style.display = 'none'; return; }
+
+                    dropdown.innerHTML = '';
+                    matches.forEach(function(m) {
+                        var item = doc.createElement('div');
+                        item.textContent = m;
+                        item.style.cssText = 'padding:6px 10px;cursor:pointer;font-size:12px;border-bottom:1px solid #eee;';
+                        item.onmouseenter = function() { item.style.background = '#e3f2fd'; };
+                        item.onmouseleave = function() { item.style.background = '#fff'; };
+                        item.onclick = function() {
+                            var after = textarea.value.substring(cursorPos);
+                            var prefix = textarea.value.substring(0, cursorPos - currentWord.length);
+                            textarea.value = prefix + m + after;
+                            dropdown.style.display = 'none';
+                            textarea.focus();
+                            var newPos = prefix.length + m.length;
+                            textarea.setSelectionRange(newPos, newPos);
+                        };
+                        dropdown.appendChild(item);
+                    });
+                    dropdown.style.display = 'block';
+                });
+
+                textarea.addEventListener('blur', function() {
+                    setTimeout(function() { dropdown.style.display = 'none'; }, 200);
                 });
             }
 
-            // Attacher l'événement de sauvegarde
-            const saveButton = newWindow.document.getElementById('saveButtoncbv');
+            if (btnCorriger && textarea && statusEl && correctionsContainer) {
+                btnCorriger.addEventListener('click', function() {
+                    var text = textarea.value.trim();
+                    if (!text) {
+                        statusEl.textContent = 'Veuillez saisir du texte a verifier.';
+                        statusEl.style.color = '#e67e22';
+                        return;
+                    }
+
+                    statusEl.textContent = 'Verification en cours...';
+                    statusEl.style.color = '#2196F3';
+                    correctionsContainer.innerHTML = '';
+
+                    fetch('https://api.languagetool.org/v2/check', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: 'text=' + encodeURIComponent(text) + '&language=fr-FR&enabledOnly=false'
+                    })
+                    .then(function(response) {
+                        if (!response.ok) throw new Error('API error');
+                        return response.json();
+                    })
+                    .then(function(data) {
+                        if (data.matches.length === 0) {
+                            statusEl.textContent = 'Aucune erreur trouvee.';
+                            statusEl.style.color = '#4CAF50';
+                            return;
+                        }
+
+                        statusEl.textContent = data.matches.length + ' erreur(s) trouvee(s).';
+                        statusEl.style.color = '#e74c3c';
+
+                        data.matches.forEach(function(match) {
+                            var div = doc.createElement('div');
+                            div.style.cssText = 'background:#fff3cd;border:1px solid #ffc107;border-radius:4px;padding:8px;margin-bottom:5px;font-size:12px;';
+
+                            var erroneousText = text.substring(match.offset, match.offset + match.length);
+                            var suggestions = match.replacements.slice(0, 5);
+
+                            var html = '<div style="margin-bottom:4px;"><strong style="color:#856404;">&#9888; ' +
+                                match.message + '</strong></div>';
+
+                            html += '<div style="margin-bottom:4px;">Texte : <span style="background:#ffc107;padding:1px 4px;border-radius:2px;">' +
+                                erroneousText + '</span></div>';
+
+                            if (suggestions.length > 0) {
+                                html += '<div style="margin-bottom:2px;">Suggestions :</div>';
+                                suggestions.forEach(function(rep) {
+                                    html += '<button class="suggestion-btn" data-replacement="' +
+                                        rep.value.replace(/"/g, '&quot;') +
+                                        '" data-offset="' + match.offset +
+                                        '" data-length="' + match.length +
+                                        '" style="display:inline-block;padding:2px 8px;margin:2px;font-size:11px;background:#e3f2fd;border:1px solid #2196F3;border-radius:3px;cursor:pointer;">' +
+                                        rep.value + '</button>';
+                                });
+                            }
+
+                            div.innerHTML = html;
+                            correctionsContainer.appendChild(div);
+                        });
+
+                        correctionsContainer.addEventListener('click', function(e) {
+                            var btn = e.target.closest('.suggestion-btn');
+                            if (!btn) return;
+
+                            var replacement = btn.getAttribute('data-replacement');
+                            var offset = parseInt(btn.getAttribute('data-offset'));
+                            var length = parseInt(btn.getAttribute('data-length'));
+                            var currentText = textarea.value;
+
+                            textarea.value = currentText.substring(0, offset) + replacement + currentText.substring(offset + length);
+
+                            statusEl.textContent = 'Correction appliquee.';
+                            statusEl.style.color = '#4CAF50';
+
+                            btn.parentElement.style.display = 'none';
+                        });
+                    })
+                    .catch(function() {
+                        statusEl.textContent = 'Erreur reseau. Reessayez.';
+                        statusEl.style.color = '#e74c3c';
+                    });
+                });
+            }
+
+            // Impression
+            var printButton = doc.getElementById('printButton');
+            if (printButton) {
+                printButton.addEventListener('click', function () {
+                    newWindow.print();
+                });
+            }
+
+            // Sauvegarde
+            var saveButton = doc.getElementById('saveButtoncbv');
             if (saveButton) {
                 saveButton.addEventListener('click', function () {
                     sauvegarderCBV(newWindow);
@@ -5678,11 +5844,11 @@ Confraternellement,<br>
     <button id="printButton">Imprimer la lettre </button>
 </div>
 <script src="print.js"></script>
-<script src="certificat-unified-font-size.js"></script>
+    <script src="certificat-unified-font-size.js"></script>
+
 </body>
 </html>
 `;
-
     const newWindow = window.open("", "_blank");
     newWindow.document.write(certificatContent);
     newWindow.document.close();
