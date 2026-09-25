@@ -12776,6 +12776,16 @@ function genererProfilTensionnel() {
     }
 
     const docteur = localStorage.getItem('docteur') || '';
+    // Nom du medecin retenu pour la signature : espaces seuls = champ vide.
+    const nomMedecin = String(docteur).replace(/\s+/g, ' ').trim();
+    // Sans nom, on n'affiche rien du tout (pas de "Dr" isole) et on n'ajoute
+    // pas de "Dr" en double si le nom est deja enregistre avec ce prefixe.
+    // '&nbsp;' reserve la hauteur de la ligne pour que la mise en page reste
+    // identique que le nom du medecin soit saisi ou non.
+    const signatureMedecin = !nomMedecin ? ''
+        : (/^dr\.?\s/i.test(nomMedecin)
+            ? escHtml(nomMedecin)
+            : 'Dr ' + escHtml(nomMedecin));
     const avecEntete = localStorage.getItem('certificatFormat') === 'avecEntete';
     const enteteContent = avecEntete ? generateHeader() : '<div style="height: 155px;"></div>';
 
@@ -13104,7 +13114,7 @@ ${enteteContent}
     </div>
 
     <div class="signature">
-        <div style="text-align: right; font-weight: bold;">Dr ${escHtml(docteur)}</div>
+        <div style="text-align: right; font-weight: bold;">${signatureMedecin || '&nbsp;'}</div>
     </div>
 </div>
 
