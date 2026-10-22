@@ -1,10 +1,6 @@
 export const runtime = 'edge';
 
-const DEFAULT_CONFIG = {
-  SUPABASE_URL: 'https://nlvrgabznsmzodnylyly.supabase.co',
-  SUPABASE_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNniDbkdgTQA5uiNqmG6TnLJ3wL4',
-  WRITE_PASSWORD: 'DAOUDI'
-};
+
 
 async function sendResendEmail(to, subject, type, nom, situation, lien1, lien2) {
   const apiKey = process.env.RESEND_API_KEY;
