@@ -113,6 +113,10 @@
       "src": "commentaire/**/*",
       "use": "@vercel/static"
     },
+	{
+      "src": "api/avis.js",
+      "use": "@vercel/node"
+    },
     {
       "src": "conduite/**/*",
       "use": "@vercel/static"
@@ -138,6 +142,10 @@
     {
       "src": "/api/commentaires",
       "dest": "/api/commentaires.js"
+    },
+	{
+      "src": "/api/avis",
+      "dest": "/api/avis.js"
     },
     {
       "src": "/api/send-email",
