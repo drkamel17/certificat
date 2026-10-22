@@ -1,7 +1,5 @@
 export const runtime = 'edge';
 
-
-
 async function sendResendEmail(to, subject, type, nom, situation, lien1, lien2) {
   const apiKey = process.env.RESEND_API_KEY;
   
@@ -74,8 +72,8 @@ export async function POST(request) {
     const body = await request.json();
     const { nom, situation, message, action, password, commentId, nouveauMessage, reponse } = body;
     
-    const supabaseUrl = process.env.SUPABASE_URL || DEFAULT_CONFIG.SUPABASE_URL;
-    const supabaseKey = process.env.SUPABASE_KEY || DEFAULT_CONFIG.SUPABASE_KEY;
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_KEY;
     const writePassword = process.env.WRITE_PASSWORD;
     
     if (!supabaseUrl || !supabaseKey) {
@@ -237,8 +235,8 @@ export async function GET(request) {
   console.log('=== COMMENTAIRES GET: Debut ===');
   
   try {
-    const supabaseUrl = process.env.SUPABASE_URL || DEFAULT_CONFIG.SUPABASE_URL;
-    const supabaseKey = process.env.SUPABASE_KEY || DEFAULT_CONFIG.SUPABASE_KEY;
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_KEY;
     const writePassword = process.env.WRITE_PASSWORD;
     const urlParams = new URL(request.url).searchParams;
     const pending = urlParams.get('pending');
